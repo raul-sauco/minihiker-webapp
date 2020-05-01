@@ -77,6 +77,8 @@ AppAsset::register($this);
     </div>
 </footer>
 
+<?php $this->render('jsvars') ?>
+
 <?php $this->endBody() ?>
 </body>
 </html>
