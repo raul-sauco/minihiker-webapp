@@ -1,121 +1,986 @@
+/* ************ Semantic colors ************** */
+/* *************** Breakpoints ***************** */
+/* line 1, ../../sass/_yii.scss */
 html,
 body {
-    height: 100%;
+  height: 100%;
 }
 
+/* line 6, ../../sass/_yii.scss */
 .wrap {
-    min-height: 100%;
-    height: auto;
-    margin: 0 auto -60px;
-    padding: 0 0 60px;
+  min-height: 100%;
+  height: auto;
+  margin: 0 auto -60px;
+  padding: 0 0 60px;
 }
 
+/* line 13, ../../sass/_yii.scss */
 .wrap > .container {
-    padding: 70px 15px 20px;
+  padding: 70px 15px 20px;
 }
 
+/* line 17, ../../sass/_yii.scss */
 .footer {
-    height: 60px;
-    background-color: #f5f5f5;
-    border-top: 1px solid #ddd;
-    padding-top: 20px;
+  height: 60px;
+  background-color: #f5f5f5;
+  border-top: 1px solid #ddd;
+  padding-top: 20px;
 }
 
+/* line 24, ../../sass/_yii.scss */
 .jumbotron {
-    text-align: center;
-    background-color: transparent;
+  text-align: center;
+  background-color: transparent;
 }
 
+/* line 29, ../../sass/_yii.scss */
 .jumbotron .btn {
-    font-size: 21px;
-    padding: 14px 24px;
+  font-size: 21px;
+  padding: 14px 24px;
 }
 
+/* line 34, ../../sass/_yii.scss */
 .not-set {
-    color: #c55;
-    font-style: italic;
+  color: #c55;
+  font-style: italic;
 }
 
 /* add sorting icons to gridview sort links */
+/* line 40, ../../sass/_yii.scss */
 a.asc:after, a.desc:after {
-    position: relative;
-    top: 1px;
-    display: inline-block;
-    font-family: 'Glyphicons Halflings';
-    font-style: normal;
-    font-weight: normal;
-    line-height: 1;
-    padding-left: 5px;
+  position: relative;
+  top: 1px;
+  display: inline-block;
+  font-family: 'Glyphicons Halflings';
+  font-style: normal;
+  font-weight: normal;
+  line-height: 1;
+  padding-left: 5px;
 }
 
+/* line 51, ../../sass/_yii.scss */
 a.asc:after {
-    content: /*"\e113"*/ "\e151";
+  content: "\e151";
 }
 
+/* line 55, ../../sass/_yii.scss */
 a.desc:after {
-    content: /*"\e114"*/ "\e152";
+  content: "\e152";
 }
 
+/* line 59, ../../sass/_yii.scss */
 .sort-numerical a.asc:after {
-    content: "\e153";
+  content: "\e153";
 }
 
+/* line 63, ../../sass/_yii.scss */
 .sort-numerical a.desc:after {
-    content: "\e154";
+  content: "\e154";
 }
 
+/* line 67, ../../sass/_yii.scss */
 .sort-ordinal a.asc:after {
-    content: "\e155";
+  content: "\e155";
 }
 
+/* line 71, ../../sass/_yii.scss */
 .sort-ordinal a.desc:after {
-    content: "\e156";
+  content: "\e156";
 }
 
-.grid-view th,
-.grid-view td:last-child {
-    white-space: nowrap;
+/* line 75, ../../sass/_yii.scss */
+.grid-view th {
+  white-space: nowrap;
 }
 
-.grid-view .filters input,
-.grid-view .filters select {
-    min-width: 50px;
-}
-
+/* line 79, ../../sass/_yii.scss */
 .hint-block {
-    display: block;
-    margin-top: 5px;
-    color: #999;
+  display: block;
+  margin-top: 5px;
+  color: #999;
 }
 
+/* line 85, ../../sass/_yii.scss */
 .error-summary {
-    color: #a94442;
-    background: #fdf7f7;
-    border-left: 3px solid #eed3d7;
-    padding: 10px 20px;
-    margin: 0 0 15px 0;
+  color: #a94442;
+  background: #fdf7f7;
+  border-left: 3px solid #eed3d7;
+  padding: 10px 20px;
+  margin: 0 0 15px 0;
 }
 
 /* align the logout "link" (button in form) of the navbar */
+/* line 94, ../../sass/_yii.scss */
 .nav li > form > button.logout {
-    padding: 15px;
-    border: none;
+  padding: 15px;
+  border: none;
 }
 
-@media(max-width:767px) {
-    .nav li > form > button.logout {
-        display:block;
-        text-align: left;
-        width: 100%;
-        padding: 10px 15px;
-    }
+@media (max-width: 767px) {
+  /* line 100, ../../sass/_yii.scss */
+  .nav li > form > button.logout {
+    display: block;
+    text-align: left;
+    width: 100%;
+    padding: 10px 15px;
+  }
 }
-
+/* line 108, ../../sass/_yii.scss */
 .nav > li > form > button.logout:focus,
 .nav > li > form > button.logout:hover {
-    text-decoration: none;
+  text-decoration: none;
 }
 
+/* line 113, ../../sass/_yii.scss */
 .nav > li > form > button.logout:focus {
-    outline: none;
+  outline: none;
+}
+
+/* line 4, ../../sass/_app.scss */
+header {
+  font-size: 1.2em;
+  font-weight: bold;
+}
+
+/* line 9, ../../sass/_app.scss */
+#notification-window {
+  position: fixed;
+  top: 100px;
+  text-align: center;
+  width: 100%;
+}
+
+/* line 16, ../../sass/_app.scss */
+#notification-window > div {
+  margin: 0 auto 0.3em auto;
+  width: 50%;
+}
+
+/* line 21, ../../sass/_app.scss */
+#notification-window > .notification-message {
+  display: none;
+}
+
+/* line 25, ../../sass/_app.scss */
+p.create-info {
+  font-size: 0.8em;
+  color: #555;
+}
+
+/* line 30, ../../sass/_app.scss */
+.fixed-position-save-button {
+  position: fixed;
+  top: 60px;
+  right: 0;
+  border-radius: 1em 0 0 1em;
+}
+
+/* line 37, ../../sass/_app.scss */
+table.index-search-table {
+  background: #f9f9f9;
+  margin-bottom: 0;
+}
+/* line 43, ../../sass/_app.scss */
+table.index-search-table td.action-links {
+  vertical-align: bottom;
+}
+
+/* line 48, ../../sass/_app.scss */
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  background: rgba(220, 220, 220, 0.6);
+  display: flex;
+  justify-content: center;
+  transition: visibility 1s;
+}
+/* line 59, ../../sass/_app.scss */
+.loading-overlay img {
+  margin: auto;
+}
+
+/* line 64, ../../sass/_app.scss */
+.material-card {
+  padding: 2%;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+}
+
+/* line 69, ../../sass/_app.scss */
+.list-item {
+  margin: 2% 0;
+}
+
+/* line 73, ../../sass/_app.scss */
+.index-page-search-box {
+  margin: 20px 0;
+}
+/* line 75, ../../sass/_app.scss */
+.index-page-search-box input.form-control {
+  border-top-left-radius: 2em;
+  border-bottom-left-radius: 2em;
+}
+/* line 79, ../../sass/_app.scss */
+.index-page-search-box .input-group-btn button {
+  border-top-right-radius: 2em;
+  border-bottom-right-radius: 2em;
+}
+
+/* line 1, ../../sass/_client.scss */
+.client-search {
+  margin-bottom: 0.7em;
+}
+/* line 7, ../../sass/_client.scss */
+.client-search #client-index-search-box .form-control:first-child {
+  -moz-border-radius: 2em 0 0 2em;
+  -webkit-border-radius: 2em;
+  border-radius: 2em 0 0 2em;
+}
+/* line 11, ../../sass/_client.scss */
+.client-search #client-index-search-box .input-group-addon:last-child {
+  -moz-border-radius: 0 2em 2em 0;
+  -webkit-border-radius: 0;
+  border-radius: 0 2em 2em 0;
+}
+
+/* line 20, ../../sass/_client.scss */
+.client-form .hidden-field {
+  display: none;
+}
+
+/* line 1, ../../sass/_family.scss */
+.search-family .search-box {
+  margin-bottom: 2%;
+}
+
+/* line 6, ../../sass/_family.scss */
+.family-search-item-details {
+  display: flex;
+  justify-content: space-between;
+}
+/* line 10, ../../sass/_family.scss */
+.family-search-item-details .family-search-item-name {
+  font-weight: bold;
+}
+
+/* line 15, ../../sass/_family.scss */
+.family-search-item-details,
+.family-search-item-membership-date,
+.family-search-item-address,
+.family-search-item-remarks,
+.family-search-item-members {
+  margin-bottom: 0.7rem;
+}
+
+/* line 24, ../../sass/_family.scss */
+.family-search-item-actions a {
+  width: 100%;
+}
+
+/* line 29, ../../sass/_family.scss */
+.orginal-family-container {
+  background-color: #c3e4ac;
+}
+
+/* line 33, ../../sass/_family.scss */
+.duplicate-family-container {
+  background-color: #fce5b3;
+}
+
+/* line 38, ../../sass/_family.scss */
+.family-merge-confirm #family-confirm-merge-button {
+  margin-top: 1rem;
+  width: 100%;
+}
+
+/* line 1, ../../sass/_financial.scss */
+.financial-negative-balance {
+  color: #e63232;
+}
+
+/* Styles for the /site route */
+/* line 3, ../../sass/_home.scss */
+.site-index {
+  text-align: center;
+}
+/* line 7, ../../sass/_home.scss */
+.site-index img {
+  max-width: 100%;
+}
+/* line 11, ../../sass/_home.scss */
+.site-index #search-form-container {
+  max-width: 100%;
+  margin: 1em auto;
+}
+/* line 16, ../../sass/_home.scss */
+.site-index p {
+  font-size: 1.7em;
+}
+@media (min-width: 576px) {
+  /* line 22, ../../sass/_home.scss */
+  .site-index #search-form-container {
+    max-width: 80%;
+    margin: 1.2em auto;
+  }
+  /* line 27, ../../sass/_home.scss */
+  .site-index p {
+    font-size: 2em;
+  }
+}
+@media (min-width: 768px) {
+  /* line 35, ../../sass/_home.scss */
+  .site-index #search-form-container {
+    max-width: 70%;
+    margin: 1.5em auto;
+  }
+  /* line 40, ../../sass/_home.scss */
+  .site-index p {
+    font-size: 2.5em;
+  }
+}
+@media (min-width: 992px) {
+  /* line 48, ../../sass/_home.scss */
+  .site-index #search-form-container {
+    max-width: 60%;
+    margin: 1.8em auto;
+  }
+  /* line 53, ../../sass/_home.scss */
+  .site-index p {
+    font-size: 3.2em;
+  }
+}
+@media (min-width: 1200px) {
+  /* line 61, ../../sass/_home.scss */
+  .site-index #search-form-container {
+    max-width: 60%;
+    margin: 2em auto;
+  }
+  /* line 66, ../../sass/_home.scss */
+  .site-index p {
+    font-size: 4em;
+  }
+}
+
+/* line 3, ../../sass/_man.scss */
+.site-manual h1, .site-manual h2, .site-manual h3, .site-manual h4, .site-manual h5 {
+  color: blue;
+  margin-top: -40px;
+  padding-top: 55px;
+}
+/* line 9, ../../sass/_man.scss */
+.site-manual h1 {
+  font-size: 1.7em;
+}
+/* line 13, ../../sass/_man.scss */
+.site-manual h2 {
+  font-size: 1.445em;
+}
+/* line 17, ../../sass/_man.scss */
+.site-manual h3 {
+  font-size: 1.19em;
+}
+/* line 21, ../../sass/_man.scss */
+.site-manual #site-manual-sidebar {
+  background: #eee;
+  -moz-border-radius: 4px;
+  -webkit-border-radius: 4px;
+  border-radius: 4px;
+  padding: 1em;
+}
+/* line 28, ../../sass/_man.scss */
+.site-manual #site-manual-sidebar ol {
+  list-style-type: none;
+  counter-reset: item;
+  margin: 0;
+  padding: 0;
+}
+/* line 35, ../../sass/_man.scss */
+.site-manual #site-manual-sidebar ol > li {
+  display: table;
+  counter-increment: item;
+  margin-bottom: 0.6em;
+}
+/* line 41, ../../sass/_man.scss */
+.site-manual #site-manual-sidebar ol > li:before {
+  content: counters(item,".") ". ";
+  display: table-cell;
+  padding-right: 0.6em;
+}
+/* line 47, ../../sass/_man.scss */
+.site-manual #site-manual-sidebar li ol > li {
+  margin: 0;
+}
+/* line 51, ../../sass/_man.scss */
+.site-manual #site-manual-sidebar li ol > li:before {
+  content: counters(item,".") " ";
+}
+
+/* line 1, ../../sass/_program.scss */
+table.program-view-table-old {
+  border-collapse: collapse;
+  font-size: 0.9em;
+}
+/* line 7, ../../sass/_program.scss */
+table.program-view-table-old th, table.program-view-table-old td {
+  text-align: center;
+  border: 1px solid #555;
+}
+/* line 13, ../../sass/_program.scss */
+table.program-view-table-old th.participant-count-column, table.program-view-table-old td.participant-count-column {
+  min-width: 4em;
+}
+
+/* line 21, ../../sass/_program.scss */
+div.program-group-links {
+  margin-bottom: 0.7em;
+}
+
+/* line 27, ../../sass/_program.scss */
+div.program-view-links {
+  position: fixed;
+  bottom: 0.3em;
+}
+/* line 32, ../../sass/_program.scss */
+div.program-view-links a {
+  text-align: center;
+  padding: 0.2em 1em 0.2em 0.5em;
+  margin: 0 -0.5em 0 0;
+  background-color: #eee;
+  border: 1px solid #ccc;
+  border-radius: 0 80em 0 0;
+}
+
+/* line 46, ../../sass/_program.scss */
+div.program-view header.summary {
+  margin-bottom: 0.7em;
+}
+
+/* line 56, ../../sass/_program.scss */
+table.program-view-table tr.shaded-row {
+  background-color: #f9f9f9;
+}
+/* line 62, ../../sass/_program.scss */
+table.program-view-table > thead > tr > th, table.program-view-table > tbody > tr > td {
+  text-align: center;
+  vertical-align: middle;
+}
+
+/* line 73, ../../sass/_program.scss */
+td.program-view-client-remarks-cell p:last-child, td.program-view-family-status-cell p:last-child {
+  margin-bottom: 0;
+}
+
+/* line 81, ../../sass/_program.scss */
+.client-name-display-is-kid {
+  color: #555;
+  font-size: 0.8em;
+}
+
+/* line 94, ../../sass/_program.scss */
+.status-urgent-problem {
+  background-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4gPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJncmFkIiBncmFkaWVudFVuaXRzPSJvYmplY3RCb3VuZGluZ0JveCIgeDE9IjAuNSIgeTE9IjAuMCIgeDI9IjAuNSIgeTI9IjEuMCI+PHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2VhOTM5MSIvPjxzdG9wIG9mZnNldD0iNTAlIiBzdG9wLWNvbG9yPSIjZmVmY2ZjIi8+PHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjZWE5MzkxIi8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNncmFkKSIgLz48L3N2Zz4g');
+  background-size: 100%;
+  background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #ea9391), color-stop(50%, #fefcfc), color-stop(100%, #ea9391));
+  background-image: -moz-linear-gradient(#ea9391, #fefcfc, #ea9391);
+  background-image: -webkit-linear-gradient(#ea9391, #fefcfc, #ea9391);
+  background-image: linear-gradient(#ea9391, #fefcfc, #ea9391);
+}
+
+/* line 98, ../../sass/_program.scss */
+.status-problem {
+  background-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4gPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJncmFkIiBncmFkaWVudFVuaXRzPSJvYmplY3RCb3VuZGluZ0JveCIgeDE9IjAuNSIgeTE9IjAuMCIgeDI9IjAuNSIgeTI9IjEuMCI+PHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2ZhYzY5YSIvPjxzdG9wIG9mZnNldD0iNTAlIiBzdG9wLWNvbG9yPSIjZmZmZmZmIi8+PHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjZmFjNjlhIi8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNncmFkKSIgLz48L3N2Zz4g');
+  background-size: 100%;
+  background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #fac69a), color-stop(50%, #ffffff), color-stop(100%, #fac69a));
+  background-image: -moz-linear-gradient(#fac69a, #ffffff, #fac69a);
+  background-image: -webkit-linear-gradient(#fac69a, #ffffff, #fac69a);
+  background-image: linear-gradient(#fac69a, #ffffff, #fac69a);
+}
+
+/* line 102, ../../sass/_program.scss */
+.status-requires-attention {
+  background-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4gPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJncmFkIiBncmFkaWVudFVuaXRzPSJvYmplY3RCb3VuZGluZ0JveCIgeDE9IjAuNSIgeTE9IjAuMCIgeDI9IjAuNSIgeTI9IjEuMCI+PHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2ZiZGQ5YSIvPjxzdG9wIG9mZnNldD0iNTAlIiBzdG9wLWNvbG9yPSIjZmZmZmZmIi8+PHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjZmJkZDlhIi8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNncmFkKSIgLz48L3N2Zz4g');
+  background-size: 100%;
+  background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #fbdd9a), color-stop(50%, #ffffff), color-stop(100%, #fbdd9a));
+  background-image: -moz-linear-gradient(#fbdd9a, #ffffff, #fbdd9a);
+  background-image: -webkit-linear-gradient(#fbdd9a, #ffffff, #fbdd9a);
+  background-image: linear-gradient(#fbdd9a, #ffffff, #fbdd9a);
+}
+
+/* line 106, ../../sass/_program.scss */
+.status-waiting {
+  background-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4gPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJncmFkIiBncmFkaWVudFVuaXRzPSJvYmplY3RCb3VuZGluZ0JveCIgeDE9IjAuNSIgeTE9IjAuMCIgeDI9IjAuNSIgeTI9IjEuMCI+PHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2JiYmJiYiIvPjxzdG9wIG9mZnNldD0iNTAlIiBzdG9wLWNvbG9yPSIjZmJmYmZiIi8+PHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjYmJiYmJiIi8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNncmFkKSIgLz48L3N2Zz4g');
+  background-size: 100%;
+  background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #bbbbbb), color-stop(50%, #fbfbfb), color-stop(100%, #bbbbbb));
+  background-image: -moz-linear-gradient(#bbbbbb, #fbfbfb, #bbbbbb);
+  background-image: -webkit-linear-gradient(#bbbbbb, #fbfbfb, #bbbbbb);
+  background-image: linear-gradient(#bbbbbb, #fbfbfb, #bbbbbb);
+}
+
+/* line 110, ../../sass/_program.scss */
+.status-processing {
+  background-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4gPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJncmFkIiBncmFkaWVudFVuaXRzPSJvYmplY3RCb3VuZGluZ0JveCIgeDE9IjAuNSIgeTE9IjAuMCIgeDI9IjAuNSIgeTI9IjEuMCI+PHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2I2ZGJlMyIvPjxzdG9wIG9mZnNldD0iNTAlIiBzdG9wLWNvbG9yPSIjZmZmZmZmIi8+PHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjYjZkYmUzIi8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNncmFkKSIgLz48L3N2Zz4g');
+  background-size: 100%;
+  background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #b6dbe3), color-stop(50%, #ffffff), color-stop(100%, #b6dbe3));
+  background-image: -moz-linear-gradient(#b6dbe3, #ffffff, #b6dbe3);
+  background-image: -webkit-linear-gradient(#b6dbe3, #ffffff, #b6dbe3);
+  background-image: linear-gradient(#b6dbe3, #ffffff, #b6dbe3);
+}
+
+/* line 114, ../../sass/_program.scss */
+.status-almost-done {
+  background-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4gPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJncmFkIiBncmFkaWVudFVuaXRzPSJvYmplY3RCb3VuZGluZ0JveCIgeDE9IjAuNSIgeTE9IjAuMCIgeDI9IjAuNSIgeTI9IjEuMCI+PHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2I1ZGQ5OSIvPjxzdG9wIG9mZnNldD0iNTAlIiBzdG9wLWNvbG9yPSIjZmFmZGY5Ii8+PHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjYjVkZDk5Ii8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNncmFkKSIgLz48L3N2Zz4g');
+  background-size: 100%;
+  background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #b5dd99), color-stop(50%, #fafdf9), color-stop(100%, #b5dd99));
+  background-image: -moz-linear-gradient(#b5dd99, #fafdf9, #b5dd99);
+  background-image: -webkit-linear-gradient(#b5dd99, #fafdf9, #b5dd99);
+  background-image: linear-gradient(#b5dd99, #fafdf9, #b5dd99);
+}
+
+/* line 118, ../../sass/_program.scss */
+.status-all-ready {
+  background-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4gPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJncmFkIiBncmFkaWVudFVuaXRzPSJvYmplY3RCb3VuZGluZ0JveCIgeDE9IjAuNSIgeTE9IjAuMCIgeDI9IjAuNSIgeTI9IjEuMCI+PHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzk5ZDA3MyIvPjxzdG9wIG9mZnNldD0iNTAlIiBzdG9wLWNvbG9yPSIjZGZmMGQyIi8+PHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjOTlkMDczIi8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNncmFkKSIgLz48L3N2Zz4g');
+  background-size: 100%;
+  background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #99d073), color-stop(50%, #dff0d2), color-stop(100%, #99d073));
+  background-image: -moz-linear-gradient(#99d073, #dff0d2, #99d073);
+  background-image: -webkit-linear-gradient(#99d073, #dff0d2, #99d073);
+  background-image: linear-gradient(#99d073, #dff0d2, #99d073);
+}
+
+/* line 122, ../../sass/_program.scss */
+#program-prices-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 0.3rem;
+}
+
+/* line 129, ../../sass/_program.scss */
+#program-price-form-loading-container {
+  height: 200px;
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+/* line 137, ../../sass/_program.scss */
+#program-prices-container {
+  padding-bottom: 0.5rem;
+}
+/* line 139, ../../sass/_program.scss */
+#program-prices-container .program-price-container {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.3rem 0;
+  border-bottom: 1px solid #ddd;
+}
+/* line 146, ../../sass/_program.scss */
+#program-prices-container .program-price-container:first-child {
+  border-top: 1px solid #ddd;
+}
+/* line 149, ../../sass/_program.scss */
+#program-prices-container .program-price-container .program-price-details {
+  flex-grow: 1;
+}
+/* line 152, ../../sass/_program.scss */
+#program-prices-container .program-price-container .update-program-price-button {
+  margin-right: 0.3rem;
+}
+
+/* line 158, ../../sass/_program.scss */
+.program-index table.table-striped tr.program-index-has-unanswered {
+  box-shadow: inset 0 0 2px #D93F3C;
+  background-color: rgba(255, 26, 26, 0.1);
+}
+
+/* line 163, ../../sass/_program.scss */
+.program-index table.table-striped tr.program-index-has-update {
+  box-shadow: inset 0 0 2px #6DB7C6;
+  background-color: #c9e4ea;
+}
+
+/* line 1, ../../sass/_programFamily.scss */
+div.program-family-form {
+  background: #f9f9f9;
+  -moz-box-shadow: inset 0 0 1px #5e5e5e, 0 0 1px #ddd;
+  -webkit-box-shadow: inset 0 0 1px #5e5e5e, 0 0 1px #ddd;
+  box-shadow: inset 0 0 1px #5e5e5e, 0 0 1px #ddd;
+  padding: 0.7em;
+}
+
+/*
+ * Program-group QAs styles
+ */
+/* line 8, ../../sass/_qa.scss */
+.program-group-qas-index .program-group-qa-container {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+  margin: 1% 0;
+  background-color: #fff;
+  font-size: 1.5rem;
+  padding: 0.5rem;
+  position: relative;
+  display: flex;
+}
+/* line 16, ../../sass/_qa.scss */
+.program-group-qas-index .program-group-qa-container .qa-asked-by-info {
+  font-size: 1.4rem;
+  color: #555;
+}
+/* line 21, ../../sass/_qa.scss */
+.program-group-qas-index .program-group-qa-container .qa-avatar-container {
+  margin-right: 1rem;
+}
+/* line 23, ../../sass/_qa.scss */
+.program-group-qas-index .program-group-qa-container .qa-avatar-container > img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  box-shadow: 1px 1px 2px #000;
+}
+/* line 31, ../../sass/_qa.scss */
+.program-group-qas-index .program-group-qa-container .qa-text-container {
+  flex: 1;
+}
+/* line 35, ../../sass/_qa.scss */
+.program-group-qas-index .program-group-qa-container .qa-question-container {
+  font-weight: bold;
+}
+/* line 39, ../../sass/_qa.scss */
+.program-group-qas-index .program-group-qa-container .qa-answer-textarea {
+  width: 100%;
+  border: none;
+}
+/* line 42, ../../sass/_qa.scss */
+.program-group-qas-index .program-group-qa-container .qa-answer-textarea:before {
+  content: 'A:';
+}
+/* line 47, ../../sass/_qa.scss */
+.program-group-qas-index .program-group-qa-container .loading-spinner {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+/* line 55, ../../sass/_qa.scss */
+.program-group-qas-index .qa-unanswered {
+  box-shadow: inset 0 0 2px #D93F3C, 0 0 2px 1px #D93F3C;
+}
+
+/* line 3, ../../sass/_search.scss */
+#search-index #search-form-container {
+  max-width: 100%;
+  margin: 0.5em 0;
+}
+@media (min-width: 576px) {
+  /* line 10, ../../sass/_search.scss */
+  #search-index #search-form-container {
+    max-width: 80%;
+    margin: 0.6em 0;
+  }
+}
+@media (min-width: 768px) {
+  /* line 19, ../../sass/_search.scss */
+  #search-index #search-form-container {
+    max-width: 70%;
+    margin: 0.7em 0;
+  }
+}
+@media (min-width: 992px) {
+  /* line 28, ../../sass/_search.scss */
+  #search-index #search-form-container {
+    max-width: 60%;
+  }
+}
+@media (min-width: 1200px) {
+  /* line 37, ../../sass/_search.scss */
+  #search-index #search-form-container {
+    max-width: 60%;
+  }
+}
+/* line 44, ../../sass/_search.scss */
+#search-index .search-result {
+  margin-bottom: 0.4em;
+}
+/* line 48, ../../sass/_search.scss */
+#search-index .search-result .search-result-header a {
+  text-decoration: underline;
+}
+/* line 52, ../../sass/_search.scss */
+#search-index .search-result .search-result-header .search-result-model {
+  font-size: 0.8em;
+  color: #555;
+}
+/* line 58, ../../sass/_search.scss */
+#search-index .search-result .search-result-sub-header {
+  font-size: 0.6em;
+  color: #555;
+}
+/* line 64, ../../sass/_search.scss */
+#search-index .search-result .search-result-body {
+  font-size: 0.9em;
+}
+/* line 68, ../../sass/_search.scss */
+#search-index .search-result .search-result-body .attribute-label {
+  font-size: 0.8em;
+  color: #555;
+}
+/* line 80, ../../sass/_search.scss */
+#search-index .search-query-string {
+  color: red;
+}
+
+/* line 1, ../../sass/_supplier.scss */
+.supplier-form header {
+  margin-bottom: 0.7em;
+}
+
+/* line 5, ../../sass/_supplier.scss */
+.supplier-index-name {
+  font-weight: bold;
+}
+
+/* line 9, ../../sass/_supplier.scss */
+.supplier-index-address {
+  color: #555;
+}
+
+/* line 13, ../../sass/_supplier.scss */
+.supplier-index-contact-name {
+  font-weight: bold;
+}
+
+/* line 17, ../../sass/_supplier.scss */
+.supplier-index-contact-role {
+  color: #555;
+}
+/* line 19, ../../sass/_supplier.scss */
+.supplier-index-contact-role:after {
+  content: ") ";
+}
+/* line 22, ../../sass/_supplier.scss */
+.supplier-index-contact-role:before {
+  content: " (";
+}
+
+/* line 27, ../../sass/_supplier.scss */
+.supplier-index-contact-phone {
+  margin-right: 0.7em;
+}
+/* line 28, ../../sass/_supplier.scss */
+.supplier-index-contact-phone span.glyphicon {
+  margin-right: 0.3em;
+}
+
+/* line 5, ../../sass/_weapp.scss */
+.program-group-weapp-data h1 {
+  font-size: 2rem;
+}
+/* line 9, ../../sass/_weapp.scss */
+.program-group-weapp-data h2 {
+  font-size: 1.8rem;
+}
+/* line 13, ../../sass/_weapp.scss */
+.program-group-weapp-data h3 {
+  font-size: 1.6rem;
+}
+/* line 17, ../../sass/_weapp.scss */
+.program-group-weapp-data h4 {
+  font-size: 1.4rem;
+}
+/* line 21, ../../sass/_weapp.scss */
+.program-group-weapp-data h5 {
+  font-size: 1.2rem;
+}
+/* line 25, ../../sass/_weapp.scss */
+.program-group-weapp-data h6 {
+  font-size: 1rem;
+}
+
+/* line 30, ../../sass/_weapp.scss */
+.weapp-pg-name {
+  font-size: 2rem;
+}
+
+/* line 34, ../../sass/_weapp.scss */
+.weapp-pg-theme {
+  font-size: 1.7rem;
+}
+
+/* line 38, ../../sass/_weapp.scss */
+.weapp-pg-visible {
+  font-size: 1.5rem;
+}
+
+/* line 42, ../../sass/_weapp.scss */
+.weapp-cover-image-container {
+  text-align: left;
+}
+
+/* line 46, ../../sass/_weapp.scss */
+.weapp-age-range, .weapp-description-container {
+  margin-top: 1rem;
+}
+
+/* line 50, ../../sass/_weapp.scss */
+.weapp-pg-instances-container {
+  display: flex;
+  overflow: auto;
+  margin-bottom: 1rem;
+}
+/* line 55, ../../sass/_weapp.scss */
+.weapp-pg-instances-container > a > div.weapp-pg-instance-container {
+  color: #333;
+  margin: 6px;
+  padding: 0.5rem;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+}
+/* line 62, ../../sass/_weapp.scss */
+.weapp-pg-instances-container > a > div.weapp-pg-instance-container > h3, .weapp-pg-instances-container > a > div.weapp-pg-instance-container div {
+  white-space: nowrap;
+}
+/* line 66, ../../sass/_weapp.scss */
+.weapp-pg-instances-container > a > div.weapp-pg-instance-container > h3 {
+  margin: 0 0 0.5rem 0;
+}
+
+/* line 72, ../../sass/_weapp.scss */
+.weapp-program-instance-name {
+  font-size: 1.4rem;
+  font-weight: bold;
+}
+
+/* line 77, ../../sass/_weapp.scss */
+img#pg-weapp-cover-image {
+  margin-bottom: 1rem;
+  max-width: 100%;
+}
+
+/* line 82, ../../sass/_weapp.scss */
+#cover-image-selection-modal .modal-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+/* line 87, ../../sass/_weapp.scss */
+#cover-image-selection-modal .modal-body .pg-images-preview {
+  margin-bottom: 1rem;
+  max-width: 100%;
+}
+
+/* line 93, ../../sass/_weapp.scss */
+#imageuploadform-file-fileupload .files tr td:first-child {
+  max-width: 300px;
+}
+/* line 95, ../../sass/_weapp.scss */
+#imageuploadform-file-fileupload .files tr td:first-child .preview > a {
+  max-width: 100%;
+}
+/* line 97, ../../sass/_weapp.scss */
+#imageuploadform-file-fileupload .files tr td:first-child .preview > a > img {
+  max-width: 100%;
+}
+
+/* line 103, ../../sass/_weapp.scss */
+#phone-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+/* line 109, ../../sass/_weapp.scss */
+#phone-container #phone {
+  position: relative;
+  width: 400px;
+  height: 600px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+  margin: 1% 0;
+  background-color: #fff;
+}
+/* line 115, ../../sass/_weapp.scss */
+#phone-container #phone #phone-header {
+  height: 50px;
+  position: absolute;
+  top: 0;
+  width: 100%;
+  display: flex;
+  color: white;
+  font-size: 1.8rem;
+  font-weight: bold;
+  text-shadow: 1px 1px 1px #555;
+  justify-content: center;
+  align-items: center;
+  overflow: auto;
+}
+/* line 129, ../../sass/_weapp.scss */
+#phone-container #phone #phone-header.weapp-visible {
+  background: green;
+}
+/* line 133, ../../sass/_weapp.scss */
+#phone-container #phone #phone-header.weapp-invisible {
+  background: red;
+}
+/* line 138, ../../sass/_weapp.scss */
+#phone-container #phone #phone-header-image > img {
+  width: 100%;
+}
+/* line 142, ../../sass/_weapp.scss */
+#phone-container #phone #phone-content {
+  box-sizing: border-box;
+  height: 600px;
+  padding-top: 50px;
+  overflow-y: scroll;
+}
+/* line 147, ../../sass/_weapp.scss */
+#phone-container #phone #phone-content img {
+  width: 100%;
+}
+/* line 153, ../../sass/_weapp.scss */
+#phone-container #phone #phone-content .pg-details {
+  margin: 1% 2%;
+  border-bottom: 1px solid #ccc;
+}
+/* line 158, ../../sass/_weapp.scss */
+#phone-container #phone #phone-content #pg-phone-tabs {
+  margin: 0 2%;
+}
+
+/* line 167, ../../sass/_weapp.scss */
+#weapp-program-index .list-item {
+  margin: 0;
+  padding: 1% 0;
+  border-bottom: 1px solid #cccccc;
+}
+/* line 173, ../../sass/_weapp.scss */
+#weapp-program-index .weapp-program-group-container {
+  display: flex;
+}
+/* line 177, ../../sass/_weapp.scss */
+#weapp-program-index .weapp-program-group-container .pg-image-container {
+  margin-right: 2%;
+  width: 200px;
+}
+/* line 182, ../../sass/_weapp.scss */
+#weapp-program-index .weapp-program-group-container .pg-image-container img {
+  width: 200px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+}
+/* line 188, ../../sass/_weapp.scss */
+#weapp-program-index .weapp-program-group-container .pg-details-container {
+  display: flex;
+  flex-direction: column;
+}
+/* line 190, ../../sass/_weapp.scss */
+#weapp-program-index .weapp-program-group-container .pg-details-container .pg-attribute-container {
+  margin: 0.2rem 0;
+}
+/* line 197, ../../sass/_weapp.scss */
+#weapp-program-index .weapp-program-group-container .pg-details-container .pg-program-name, #weapp-program-index .weapp-program-group-container .pg-details-container .pg-attr-name {
+  font-weight: bold;
+}
+/* line 201, ../../sass/_weapp.scss */
+#weapp-program-index .weapp-program-group-container .pg-details-container .pg-attr-empty-value {
+  color: #D93F3C;
 }

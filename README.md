@@ -1,25 +1,10 @@
-<p align="center">
-    <a href="https://github.com/yiisoft" target="_blank">
-        <img src="https://avatars0.githubusercontent.com/u/993323" height="100px">
-    </a>
-    <h1 align="center">Yii 2 Advanced Project Template</h1>
-    <br>
-</p>
+# Minihiker Backend v2
 
-Yii 2 Advanced Project Template is a skeleton [Yii 2](http://www.yiiframework.com/) application best for
-developing complex Web applications with multiple tiers.
+An update to the structure of Minihiker's backend based on the [Yii 2](http://www.yiiframework.com/) 
+framework.
 
-The template includes three tiers: front end, back end, and console, each of which
-is a separate Yii application.
-
-The template is designed to work in a team development environment. It supports
-deploying the application in different environments.
-
-Documentation is at [docs/guide/README.md](docs/guide/README.md).
-
-[![Latest Stable Version](https://img.shields.io/packagist/v/yiisoft/yii2-app-advanced.svg)](https://packagist.org/packages/yiisoft/yii2-app-advanced)
-[![Total Downloads](https://img.shields.io/packagist/dt/yiisoft/yii2-app-advanced.svg)](https://packagist.org/packages/yiisoft/yii2-app-advanced)
-[![Build Status](https://travis-ci.com/yiisoft/yii2-app-advanced.svg?branch=master)](https://travis-ci.com/yiisoft/yii2-app-advanced)
+The application includes an API to be used by the backend itself and one to be used by clients
+through a Wechat Miniprogram.
 
 DIRECTORY STRUCTURE
 -------------------
@@ -27,6 +12,7 @@ DIRECTORY STRUCTURE
 ```
 common
     config/              contains shared configurations
+    controllers/         contains shared api controller code
     mail/                contains view files for e-mails
     models/              contains model classes used in both backend and frontend
     tests/               contains tests for common classes    
@@ -36,6 +22,14 @@ console
     migrations/          contains database migrations
     models/              contains console-specific model classes
     runtime/             contains files generated during runtime
+apiv1
+    assets/              contains application assets such as JavaScript and CSS
+    config/              contains backend configurations
+    controllers/         contains REST controller classes
+    models/              contains api-specific model classes
+    runtime/             contains files generated during runtime
+    tests/               contains tests for api application    
+    web/                 contains the entry script and Web resources
 backend
     assets/              contains application assets such as JavaScript and CSS
     config/              contains backend configurations
@@ -55,6 +49,14 @@ frontend
     views/               contains view files for the Web application
     web/                 contains the entry script and Web resources
     widgets/             contains frontend widgets
+wxapiv1
+    assets/              contains application assets such as JavaScript and CSS
+    config/              contains backend configurations
+    controllers/         contains REST controller classes
+    models/              contains api-specific model classes
+    runtime/             contains files generated during runtime
+    tests/               contains tests for wxapi application    
+    web/                 contains the entry script and Web resources
 vendor/                  contains dependent 3rd-party packages
 environments/            contains environment-based overrides
 ```
