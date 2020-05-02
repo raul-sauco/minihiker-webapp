@@ -15,5 +15,12 @@ $this->registerJsFile('@web/js/index.js', [
     ]]);
 ?>
 <div id="site-index">
-    <button id="post-auth" v-on:click="login">Post Auth</button>
+    <div id="login-container">
+        You are <span v-html="loginStatus"></span>
+        <button id="post-auth" v-on:click="login" v-if="!loggedIn">Login</button>
+    </div>
+    <div id="user-container">
+        <span v-if="userName">User is <strong v-html="userName"></strong></span>
+        <span v-else>No user <button v-on:click="createUser">Create User</button></span>
+    </div>
 </div>
