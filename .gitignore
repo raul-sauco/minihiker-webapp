@@ -48,3 +48,7 @@ phpunit.phar
 /backend/web/css
 /backend/web/img
 /backend/web/js
+
+# rsync files
+/publish.sh
+/excludes.txt
