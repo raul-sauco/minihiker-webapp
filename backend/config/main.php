@@ -1,4 +1,7 @@
 <?php
+$controllersList = 'program|client|family|location|program-price|wx-payment-log|' .
+    'wx-unified-payment-order|wx-payment-log|weapp-program';
+
 $params = array_merge(
     require __DIR__ . '/../../common/config/params.php',
     require __DIR__ . '/../../common/config/params-local.php',
@@ -38,14 +41,19 @@ return [
         'errorHandler' => [
             'errorAction' => 'site/error',
         ],
-        /*
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
+                "<controller:($controllersList)>/create" => '<controller>/create',
+                "<controller:($controllersList)>/<id:\d+>/<action:(update|delete)>" => '<controller>/<action>',
+                "<controller:($controllersList)>/<id:\d+>" => '<controller>/view',
+                "<controller:($controllersList)>s" => '<controller>/index',
+                'family/<id:\d+>/merge-search' => 'family/merge-search',
+                'family/<id:\d+>/merge-confirm' => 'family/merge-confirm',
+                'program-group/<id:\d+>/<action:(weapp-update|weapp-view|qas)>' => 'program-group/<action>'
             ],
         ],
-        */
     ],
     'params' => $params,
 ];
