@@ -10,6 +10,8 @@ use Yii;
  * @property int $id
  * @property string $name
  * @property string $name_en
+ *
+ * @property ProgramGroup[] $programGroups
  */
 class ProgramType extends \yii\db\ActiveRecord
 {
@@ -42,5 +44,13 @@ class ProgramType extends \yii\db\ActiveRecord
             'name' => Yii::t('app', 'Name'),
             'name_en' => Yii::t('app', 'Name En'),
         ];
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getProgramGroups()
+    {
+        return $this->hasMany(ProgramGroup::class, ['type_id' => 'id']);
     }
 }

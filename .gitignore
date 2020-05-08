@@ -50,5 +50,5 @@ phpunit.phar
 /backend/web/js
 
 # rsync files
-/publish.sh
+/publish
 /excludes.txt
