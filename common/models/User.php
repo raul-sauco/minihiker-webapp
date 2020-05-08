@@ -5,6 +5,9 @@ namespace common\models;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
+use yii\db\ActiveQuery;
+use yii\db\ActiveRecord;
+use yii\web\IdentityInterface;
 
 /**
  * This is the model class for table "user".
@@ -31,9 +34,13 @@ use yii\behaviors\TimestampBehavior;
  * @property integer $created_by
  * @property integer $updated_by
  * @property integer $created_at
+ * @property string $authKey
  * @property integer $updated_at
+ *
+ * @property ActiveQuery $programGroupViews
+ * @property ActiveQuery $programGroupsViewed
  */
-class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
+class User extends ActiveRecord implements IdentityInterface
 {
     /**
      * User type admin, application term for a super-user, this user can do
@@ -135,7 +142,7 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
      * Finds an identity by the given ID.
      *
      * @param string|integer $id the ID to be looked for
-     * @return yii\web\IdentityInterface|null the identity object that matches the given ID.
+     * @return IdentityInterface|null the identity object that matches the given ID.
      */
     public static function findIdentity($id)
     {
@@ -146,7 +153,7 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
      * Finds an identity by the given token.
      *
      * @param string $token the token to be looked for
-     * @return yii\web\IdentityInterface|null the identity object that matches the given token.
+     * @return IdentityInterface|null the identity object that matches the given token.
      */
     public static function findIdentityByAccessToken($token, $type = null)
     {
@@ -173,7 +180,7 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
      */
     public function validatePassword($password)
     {
-    	return \Yii::$app->getSecurity()->validatePassword($password, $this->password);
+    	return Yii::$app->getSecurity()->validatePassword($password, $this->password);
     }
     
     /**
@@ -211,15 +218,13 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
     	if (parent::beforeSave($insert)) {
     		if ($this->isNewRecord)
     		{
-    			$this->auth_key = \Yii::$app->security->generateRandomString();
-    			$this->access_token = \Yii::$app->security->generateRandomString();
-    			$this->password = \Yii::$app->security->generatePasswordHash($this->password);
-    		} else {
-    			if ($this->isAttributeChanged('password' , false))
-    			{
-    				$this->password = \Yii::$app->security->generatePasswordHash($this->password);
-    			}
-    		}
+    			$this->auth_key = Yii::$app->security->generateRandomString();
+    			$this->access_token = Yii::$app->security->generateRandomString();
+    			$this->password = Yii::$app->security->generatePasswordHash($this->password);
+    		} else if ($this->isAttributeChanged('password' , false))
+            {
+                $this->password = Yii::$app->security->generatePasswordHash($this->password);
+            }
     		return true;
     	}
     	return false;
@@ -271,20 +276,36 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
         // Get a handle to the auth manager
         $auth = Yii::$app->authManager;
         
-        if (intval($this->user_type) === self::TYPE_ADMIN) {
+        if ((int)$this->user_type === self::TYPE_ADMIN) {
 
-            Yii::trace('Assigning role admin to user ' . $this->id, __METHOD__);
+            Yii::debug('Assigning role admin to user ' . $this->id, __METHOD__);
             $auth->assign($auth->getRole('admin'), $this->id);
 
-        } else if (intval($this->user_type) === User::TYPE_USER) {
+        } else if ((int)$this->user_type === self::TYPE_USER) {
 
-            Yii::trace('Assigning role user to user ' . $this->id, __METHOD__);
+            Yii::debug('Assigning role user to user ' . $this->id, __METHOD__);
             $auth->assign($auth->getRole('user'), $this->id);
 
         } else {
 
-            Yii::trace('Not assigning any role to user ' . $this->id, __METHOD__);
+            Yii::debug('Not assigning any role to user ' . $this->id, __METHOD__);
 
         }
+    }
+
+    /**
+     * @return ActiveQuery
+     */
+    public function getProgramGroupViews()
+    {
+        return $this->hasMany(ProgramGroupView::class, ['user_id' => 'id']);
+    }
+
+    /**
+     * @return ActiveQuery
+     */
+    public function getProgramGroupsViewed()
+    {
+        return $this->hasMany(ProgramGroup::class, ['id' => 'program_group_id'])->viaTable('program_group_view', ['user_id' => 'id']);
     }
 }

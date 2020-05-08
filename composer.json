@@ -21,7 +21,8 @@
         "yiisoft/yii2-jui": "^2.0",
         "vova07/yii2-imperavi-widget": "*",
         "2amigos/yii2-file-upload-widget": "~1.0",
-        "kartik-v/yii2-widgets": "dev-master"
+        "kartik-v/yii2-widgets": "dev-master",
+        "ext-dom": "*"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.1.0",

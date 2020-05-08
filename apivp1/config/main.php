@@ -51,7 +51,7 @@ return [
             'enableStrictParsing' => true,
             'showScriptName' => false,
             'rules' => [
-                ['class' => 'yii\rest\UrlRule', 'controller' => 'event'],
+                ['class' => 'yii\rest\UrlRule', 'controller' => ['wxps' => 'program-search']],
             ],
         ],
         'user' => [
