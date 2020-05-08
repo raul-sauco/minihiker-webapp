@@ -4,8 +4,10 @@ namespace common\models;
 
 use common\helpers\ProgramHelper;
 use Yii;
+use yii\base\InvalidConfigException;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
+use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 use yii\helpers\Html;
 
@@ -45,6 +47,7 @@ use yii\helpers\Html;
  * @property string $xLParticipantCount
  * @property string $dates
  * @property string $longParticipantCount
+ * @property string|int $registrations
  * @property ProgramPrice[] $programPrices
  */
 class Program extends ActiveRecord
@@ -58,7 +61,7 @@ class Program extends ActiveRecord
     /**
      * {@inheritdoc}
      */
-    public static function tableName()
+    public static function tableName(): string
     {
         return 'program';
     }
@@ -66,7 +69,7 @@ class Program extends ActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             [['status', 'program_group_id', 'program_period_id', 'registration_open', 'client_limit', 'price', 'created_by', 'updated_by', 'created_at', 'updated_at'], 'integer'],
@@ -84,7 +87,7 @@ class Program extends ActiveRecord
      * @inheritdoc
      * {@inheritdoc}
      */
-    public function attributeLabels()
+    public function attributeLabels(): array
     {
         return [
             'id' => Yii::t('app', 'ID'),
@@ -108,7 +111,7 @@ class Program extends ActiveRecord
      * {@inheritDoc}
      * @see \yii\base\Component::behaviors()
      */
-    public function behaviors()
+    public function behaviors(): array
     {
         return [
             BlameableBehavior::class,
@@ -120,7 +123,7 @@ class Program extends ActiveRecord
      * {@inheritDoc}
      * @return bool
      */
-    public function beforeDelete()
+    public function beforeDelete(): bool
     {
         // Delete related ProgramUser records
         ProgramUser::deleteAll(['program_id' => $this->id]);
@@ -146,9 +149,9 @@ class Program extends ActiveRecord
      * Return a formatted and localized representation of the program dates.
      *
      * @return string The program dates
-     * @throws \yii\base\InvalidConfigException
+     * @throws InvalidConfigException
      */
-    public function getDates()
+    public function getDates(): string
     {
         return ProgramHelper::getDateString($this);
     }
@@ -159,9 +162,9 @@ class Program extends ActiveRecord
      * escape HTML entities.
      *
      * @return string The program's name
-     * @throws \yii\base\InvalidConfigException
+     * @throws InvalidConfigException
      */
-    public function getNamei18n()
+    public function getNamei18n(): string
     {
         // Add year if not null
         $name = Yii::$app->formatter->asDate($this->start_date, 'php:y') ?? '';
@@ -186,9 +189,9 @@ class Program extends ActiveRecord
 
     /**
      * @return string
-     * @throws \yii\base\InvalidConfigException
+     * @throws InvalidConfigException
      */
-    public function getXLParticipantCount()
+    public function getXLParticipantCount(): string
     {
         $f = Yii::t('app',
             '{c,plural,=0{} =1{1 family. } other{# families. }}',
@@ -203,9 +206,9 @@ class Program extends ActiveRecord
      * Example "17 Clients. 8 Adults. 9 Kids."
      *
      * @return string
-     * @throws \yii\base\InvalidConfigException
+     * @throws InvalidConfigException
      */
-    public function getLongParticipantCount()
+    public function getLongParticipantCount(): string
     {
         $count = $this->getParticipantCount();
 
@@ -222,9 +225,9 @@ class Program extends ActiveRecord
      * Get the participant count.
      *
      * @return string
-     * @throws \yii\base\InvalidConfigException
+     * @throws InvalidConfigException
      */
-    public function getParticipantCount()
+    public function getParticipantCount(): string
     {
         return Yii::t('app', '{c,plural,=0{no clients} =1{1 client} other{# clients}}. ',
             [
@@ -235,9 +238,9 @@ class Program extends ActiveRecord
     /**
      * Returns a detailed count of participants differenciating
      * between adults and kids.
-     * @throws \yii\base\InvalidConfigException
+     * @throws InvalidConfigException
      */
-    public function getDetailedParticipantCount()
+    public function getDetailedParticipantCount(): string
     {
         $kidCount = $this->getClients()->where(['family_role_id' => 1])->count();
         $adultCount = $this->getClients()->where(['!=', 'family_role_id', 1])->count();
@@ -250,110 +253,119 @@ class Program extends ActiveRecord
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * Return the current count of clients registered for this program
+     * @return int|string
+     * @throws InvalidConfigException
      */
-    public function getCreatedBy()
+    public function getRegistrations()
+    {
+        return $this->getClients()->count();
+    }
+
+    /**
+     * @return ActiveQuery
+     */
+    public function getCreatedBy(): ActiveQuery
     {
         return $this->hasOne(User::class, ['id' => 'created_by']);
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
-    public function getUpdatedBy()
+    public function getUpdatedBy(): ActiveQuery
     {
         return $this->hasOne(User::class, ['id' => 'updated_by']);
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
-    public function getExpenses()
+    public function getExpenses(): ActiveQuery
     {
         return $this->hasMany(Expense::class, ['program_id' => 'id']);
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
-    public function getPayments()
+    public function getPayments(): ActiveQuery
     {
         return $this->hasMany(Payment::class, ['program_id' => 'id']);
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
-    public function getProgramGroup()
+    public function getProgramGroup(): ActiveQuery
     {
         return $this->hasOne(ProgramGroup::class, ['id' => 'program_group_id']);
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
-    public function getProgramPeriod()
+    public function getProgramPeriod(): ActiveQuery
     {
         return $this->hasOne(ProgramPeriod::class, ['id' => 'program_period_id']);
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
-    public function getProgramClients()
+    public function getProgramClients(): ActiveQuery
     {
         return $this->hasMany(ProgramClient::class, ['program_id' => 'id']);
     }
 
     /**
-     * @return \yii\db\ActiveQuery
-     * @throws \yii\base\InvalidConfigException
+     * @return ActiveQuery
+     * @throws InvalidConfigException
      */
-    public function getClients()
+    public function getClients(): ActiveQuery
     {
         return $this->hasMany(Client::class, ['id' => 'client_id'])->viaTable('program_client', ['program_id' => 'id']);
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
-    public function getProgramFamilies()
+    public function getProgramFamilies(): ActiveQuery
     {
         return $this->hasMany(ProgramFamily::class, ['program_id' => 'id']);
     }
 
     /**
-     * @return \yii\db\ActiveQuery
-     * @throws \yii\base\InvalidConfigException
+     * @return ActiveQuery
+     * @throws InvalidConfigException
      */
-    public function getFamilies()
+    public function getFamilies(): ActiveQuery
     {
         return $this->hasMany(Family::class, ['id' => 'family_id'])->viaTable('program_family', ['program_id' => 'id']);
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
-    public function getProgramGuides()
+    public function getProgramGuides(): ActiveQuery
     {
         return $this->hasMany(ProgramGuide::class, ['program_id' => 'id']);
     }
 
     /**
-     * @return \yii\db\ActiveQuery
-     * @throws \yii\base\InvalidConfigException
+     * @return ActiveQuery
+     * @throws InvalidConfigException
      */
-    public function getGuides()
+    public function getGuides(): ActiveQuery
     {
         return $this->hasMany(User::class, ['id' => 'user_id'])->viaTable('program_guide', ['program_id' => 'id']);
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
-    public function getProgramPrices()
+    public function getProgramPrices(): ActiveQuery
     {
         return $this->hasMany(ProgramPrice::class, ['program_id' => 'id']);
     }
 }
-

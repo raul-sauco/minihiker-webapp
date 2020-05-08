@@ -15,7 +15,7 @@ use yii\rest\Controller;
  */
 abstract class BaseController extends Controller
 {
-    // Allow all methods by default
+    /** @var string[] REST methods that this controller will handle */
     protected $_verbs = ['GET','POST','PATCH','PUT','OPTIONS','DELETE'];
 
     /**

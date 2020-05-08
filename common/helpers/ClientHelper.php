@@ -1,16 +1,17 @@
 <?php
-namespace common\helpers;
 
+namespace common\helpers;
 
 use common\models\Client;
 use common\models\FamilyRole;
 use Yii;
+use yii\base\InvalidConfigException;
 
 /**
- * Helper functionality for Client model and ClientController
- * 
- * @author i - 2019
+ * Class ClientHelper
+ * Helper functionality for Client model and ClientController.
  *
+ * @package common\helpers
  */
 class ClientHelper
 {
@@ -20,7 +21,7 @@ class ClientHelper
      *
      * @return array
      */
-    public static function getClientRolesDropdown()
+    public static function getClientRolesDropdown(): array
     {
         $rolesArray = [];
 
@@ -40,7 +41,7 @@ class ClientHelper
      * @param Client $client
      * @return string
      */
-    public static function getRole($client)
+    public static function getRole($client): string
     {
         if (empty($client->family_role_id)) {
             return '';
@@ -103,5 +104,21 @@ class ClientHelper
         }
 
         return Yii::t('app', 'Not Set');
+    }
+
+    /**
+     * Return whether a client is signed up for any upcoming international programs.
+     *
+     * @param Client $client
+     * @return bool
+     * @throws InvalidConfigException
+     */
+    public static function hasInternationalProgram(Client $client): bool
+    {
+        return $client->getPrograms()
+                ->joinWith(['programGroup', 'programGroup.location'])
+                ->where(['location.international' => true])
+                ->andWhere(['>=', 'program.start_date', date('Y-m-d')])
+                ->count() > 0;
     }
 }

@@ -4,6 +4,7 @@ namespace apivp1\models;
 
 use apivp1\helpers\DomParserHelper;
 use apivp1\helpers\ProgramGroupHelper;
+use yii\db\ActiveQuery;
 
 /**
  * Class ProgramGroup
@@ -11,13 +12,28 @@ use apivp1\helpers\ProgramGroupHelper;
  */
 class ProgramGroup extends \common\models\ProgramGroup
 {
+    /**
+     * @return ActiveQuery
+     */
+    public function getLocation(): ActiveQuery
+    {
+        return $this->hasOne(Location::class, ['name_zh' => 'location_id']);
+    }
+
+    /**
+     * @return ActiveQuery
+     */
+    public function getPrograms(): ActiveQuery
+    {
+        return $this->hasMany(Program::class, ['program_group_id' => 'id']);
+    }
 
     /**
      * Remove fields that are not relevant to API consumers.
      *
      * @return array
      */
-    public function fields()
+    public function fields(): array
     {
         $fields = parent::fields();
         unset(
@@ -39,7 +55,7 @@ class ProgramGroup extends \common\models\ProgramGroup
      *
      * @return array
      */
-    public function extraFields()
+    public function extraFields(): array
     {
         return [
             'location',

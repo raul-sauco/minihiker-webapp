@@ -2,9 +2,11 @@
 
 namespace common\models;
 
+use common\helpers\ClientHelper;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
+use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 
 /**
@@ -56,6 +58,7 @@ use yii\db\ActiveRecord;
  * @property ProgramClient[] $programClients
  * @property Program[] $programs
  * @property string $name
+ * @property bool $hasInt
  * @property WxUnifiedPaymentOrder[] $wxUnifiedPaymentOrders
  */
 class Client extends ActiveRecord
@@ -71,7 +74,7 @@ class Client extends ActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             // [['birthdate', 'passport_issue_date', 'passport_expire_date'], 'safe'],
@@ -99,7 +102,7 @@ class Client extends ActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function attributeLabels()
+    public function attributeLabels(): array
     {
         return [
             'id' => Yii::t('app', 'ID'),
@@ -143,7 +146,7 @@ class Client extends ActiveRecord
      * {@inheritDoc}
      * @see \yii\base\Component::behaviors()
      */
-    public function behaviors() 
+    public function behaviors(): array
     {
         return [
             BlameableBehavior::class,
@@ -155,7 +158,7 @@ class Client extends ActiveRecord
      * @param bool $insert
      * @return bool
      */
-    public function beforeSave($insert)
+    public function beforeSave($insert): bool
     {
         if ($this->isAttributeChanged('family_role_id')) {
 
@@ -204,91 +207,102 @@ class Client extends ActiveRecord
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
-    public function getFamilyRole()
+    public function getFamilyRole(): ActiveQuery
     {
         return $this->hasOne(FamilyRole::class, ['id' => 'family_role_id']);
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
-    public function getCreatedBy()
+    public function getCreatedBy(): ActiveQuery
     {
         return $this->hasOne(User::class, ['id' => 'created_by']);
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
-    public function getUpdatedBy()
+    public function getUpdatedBy(): ActiveQuery
     {
         return $this->hasOne(User::class, ['id' => 'updated_by']);
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
-    public function getUser()
+    public function getUser(): ActiveQuery
     {
         return $this->hasOne(User::class, ['id' => 'user_id']);
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
-    public function getFamily()
+    public function getFamily(): ActiveQuery
     {
         return $this->hasOne(Family::class, ['id' => 'family_id']);
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
-    public function getFamilies()
+    public function getFamilies(): ActiveQuery
     {
         return $this->hasMany(Family::class, ['mother_id' => 'id']);
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
-    public function getFamilies0()
+    public function getFamilies0(): ActiveQuery
     {
         return $this->hasMany(Family::class, ['father_id' => 'id']);
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
-    public function getImportErrors()
+    public function getImportErrors(): ActiveQuery
     {
         return $this->hasMany(ImportError::class, ['client_id' => 'id']);
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
-    public function getProgramClients()
+    public function getProgramClients(): ActiveQuery
     {
         return $this->hasMany(ProgramClient::class, ['client_id' => 'id']);
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      * @throws \yii\base\InvalidConfigException
      */
-    public function getPrograms()
+    public function getPrograms(): ActiveQuery
     {
         return $this->hasMany(Program::class, ['id' => 'program_id'])->viaTable('program_client', ['client_id' => 'id']);
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
-    public function getWxUnifiedPaymentOrders()
+    public function getWxUnifiedPaymentOrders(): ActiveQuery
     {
         return $this->hasMany(WxUnifiedPaymentOrder::class, ['client_id' => 'id']);
+    }
+
+    /**
+     * Return whether the client has any upcoming international program.
+     *
+     * @return bool
+     * @throws \yii\base\InvalidConfigException
+     */
+    public function getHasInt(): bool
+    {
+        return ClientHelper::hasInternationalProgram($this);
     }
 }

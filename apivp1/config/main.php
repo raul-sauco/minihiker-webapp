@@ -51,9 +51,10 @@ return [
             'enableStrictParsing' => true,
             'showScriptName' => false,
             'rules' => [
+                ['class' => 'yii\rest\UrlRule', 'controller' => 'program-group'],
+                ['class' => 'yii\rest\UrlRule', 'controller' => 'program-type'],
                 ['class' => 'yii\rest\UrlRule', 'controller' => ['wxbp' => 'banner-program']],
                 ['class' => 'yii\rest\UrlRule', 'controller' => ['wxps' => 'program-search']],
-                ['class' => 'yii\rest\UrlRule', 'controller' => 'program-type'],
             ],
         ],
         'user' => [
