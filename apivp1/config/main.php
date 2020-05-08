@@ -9,6 +9,8 @@ $params = array_merge(
     require __DIR__ . '/params-local.php'
 );
 
+$routes = require __DIR__ . '/routes.php';
+
 return [
     'id' => 'app-apivp1',
     'basePath' => dirname(__DIR__),
@@ -50,12 +52,7 @@ return [
             'enablePrettyUrl' => true,
             'enableStrictParsing' => true,
             'showScriptName' => false,
-            'rules' => [
-                ['class' => 'yii\rest\UrlRule', 'controller' => 'program-group'],
-                ['class' => 'yii\rest\UrlRule', 'controller' => 'program-type'],
-                ['class' => 'yii\rest\UrlRule', 'controller' => ['wxbp' => 'banner-program']],
-                ['class' => 'yii\rest\UrlRule', 'controller' => ['wxps' => 'program-search']],
-            ],
+            'rules' => $routes,
         ],
         'user' => [
             'identityClass' => 'common\models\User',
