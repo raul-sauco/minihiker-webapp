@@ -22,9 +22,11 @@
         "vova07/yii2-imperavi-widget": "*",
         "2amigos/yii2-file-upload-widget": "~1.0",
         "kartik-v/yii2-widgets": "dev-master",
-        "ext-dom": "*"
+        "ext-dom": "*",
+        "ext-json": "*"
     },
     "require-dev": {
+        "roave/security-advisories": "dev-master",
         "yiisoft/yii2-debug": "~2.1.0",
         "yiisoft/yii2-gii": "~2.1.0",
         "yiisoft/yii2-faker": "~2.0.0",

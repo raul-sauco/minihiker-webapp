@@ -52,6 +52,7 @@ return [
             'showScriptName' => false,
             'rules' => [
                 ['class' => 'yii\rest\UrlRule', 'controller' => ['wxps' => 'program-search']],
+                ['class' => 'yii\rest\UrlRule', 'controller' => 'program-type'],
             ],
         ],
         'user' => [
