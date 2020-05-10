@@ -6,6 +6,7 @@ use apivp1\models\Client;
 use common\helpers\ProgramHelper;
 use Yii;
 use yii\base\InvalidConfigException;
+use yii\helpers\Url;
 use yii\web\ForbiddenHttpException;
 use yii\web\NotFoundHttpException;
 use yii\web\ServerErrorHttpException;
@@ -54,19 +55,71 @@ class ClientController extends ActiveBaseController
 
         }
 
-        if ($action === 'update') {
+        return parent::checkAccess($action, $model, $params);
+    }
 
-            if (!Yii::$app->user->can('updateClient', ['client_id' => $model->id])) {
-                return true;
+    /**
+     * Create a client from POST request.
+     *
+     * @return Client|array|null
+     * @throws ForbiddenHttpException
+     * @throws ServerErrorHttpException
+     * @throws InvalidConfigException
+     */
+    public function actionCreate ()
+    {
+        if (!Yii::$app->user->can('createClient')) {
+            throw new ForbiddenHttpException(Yii::t('app',
+                'You are not allowed to create a new client.'));
+        }
+
+        $model = new Client();
+
+        $model->load(Yii::$app->getRequest()->getBodyParams(), '');
+
+        if (!Yii::$app->user->can('user')) {
+
+            // Not an admin or user type, set the family
+            $model->setScenario(Client::SCENARIO_FAMILY_CREATE_MEMBER);
+
+            $client = Client::findOne(['user_id' => Yii::$app->user->id]);
+
+            if ($client === null) {
+                throw new ServerErrorHttpException(
+                    Yii::t('app', 'Failed to update the resource for an unknown reason.')
+                );
             }
 
-            throw new ForbiddenHttpException(Yii::t('app',
-                'You are not allowed to update client {client}',
-                ['client' => $model->id]));
+            if ($client->family->getClients()->count() > Yii::$app->params['maxFamilyMembersAllowed']) {
+                throw new ForbiddenHttpException(
+                    Yii::t('app', 'You have exceeded the limit of family members allowed.')
+                );
+            }
+
+            $model->family_id = $client->family_id;
 
         }
 
-        return parent::checkAccess($action, $model, $params);
+        if (!$model->save()) {
+
+            if ($model->hasErrors()) {
+                Yii::$app->response->setStatusCode(422);
+                return $model->errors;
+            }
+
+            throw new ServerErrorHttpException(
+                'Server error'
+            );
+
+        }
+
+        // Model was save, prepare the response
+        $response = Yii::$app->getResponse();
+        $response->setStatusCode(201);
+        $response->getHeaders()->set(
+            'Location', Url::toRoute(['view', 'id' => $model->id], true));
+
+        return $model;
     }
 
 
@@ -80,6 +133,12 @@ class ClientController extends ActiveBaseController
      */
     public function actionUpdate ($id): Client
     {
+        if (!Yii::$app->user->can('updateClient', ['client_id' => $id])) {
+            throw new ForbiddenHttpException(Yii::t('app',
+                'You are not allowed to update client {client}',
+                ['client' => $id]));
+        }
+
         if (($model = Client::findOne($id)) === null) {
             throw new NotFoundHttpException(
                 Yii::t('app', 'The resource requested does not exist on this server.')
