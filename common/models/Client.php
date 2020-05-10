@@ -177,7 +177,18 @@ class Client extends ActiveRecord
 
         return parent::beforeSave($insert);
     }
-    
+
+    /**
+     * @return bool
+     * @throws \Throwable
+     * @throws \yii\db\StaleObjectException
+     */
+    public function beforeDelete()
+    {
+        return ClientHelper::prepareForDeletion($this) &&
+            parent::beforeDelete();
+    }
+
     /**
     * Tries to find a valid name in all the possible fields and return it.
     * @return string The first valid name found in the order Chinese name -> Nickname -> English name.

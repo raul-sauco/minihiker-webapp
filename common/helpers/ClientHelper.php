@@ -6,6 +6,7 @@ use common\models\Client;
 use common\models\FamilyRole;
 use Yii;
 use yii\base\InvalidConfigException;
+use yii\db\StaleObjectException;
 
 /**
  * Class ClientHelper
@@ -120,5 +121,63 @@ class ClientHelper
                 ->where(['location.international' => true])
                 ->andWhere(['>=', 'program.start_date', date('Y-m-d')])
                 ->count() > 0;
+    }
+
+    /**
+     * Prepare a Client model to be deleted by updating related information
+     * in the database.
+     *
+     * This method performs the following actions:
+     * - Set given client's WxUnifiedPaymentOrder client_id attribute to null
+     * - Set given client's ImportError client_id attribute to null
+     * - Delete related ProgramClient records
+     *
+     * @param Client $client
+     * @return bool true if all actions are performed without a problem, false otherwise
+     * @throws StaleObjectException|\Throwable
+     */
+    public static function prepareForDeletion(Client $client): bool
+    {
+        // Set wx-unified-payment orders client ID attribute
+        foreach ($client->wxUnifiedPaymentOrders as $order) {
+
+            $order->client_id = null;
+            if (!$order->save()) {
+                Yii::error(
+                    "Error setting client id ($client->id) to null " .
+                    "on WxUnifiedPaymentOrder $order->id", __METHOD__
+                );
+                return false;
+            }
+
+        }
+
+        // Set import-errors client ID to null
+        foreach ($client->importErrors as $importError) {
+
+            $importError->client_id = null;
+            if (!$importError->save()) {
+                Yii::error(
+                    "Error setting client id ($client->id) to null " .
+                    "on ImportError $importError->id", __METHOD__
+                );
+                return false;
+            }
+
+        }
+
+        // Delete program client records
+        foreach ($client->programClients as $programClient) {
+
+            if (!$programClient->delete()) {
+                Yii::error(
+                    "Error deleting ProgramClient p: $programClient->program_id; " .
+                    "c: $programClient->client_id", __METHOD__);
+                return false;
+            }
+
+        }
+
+        return true;
     }
 }

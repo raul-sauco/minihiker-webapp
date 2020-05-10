@@ -127,6 +127,7 @@ class RbacController extends Controller
         $deleteClient->description = 'Delete a client';
         $auth->add($deleteClient);
         $auth->addChild($adminRole, $deleteClient);
+        $auth->addChild($userRole, $deleteClient);
 
         // START // Add userIsThisClientRule
         echo "Adding user is this client rule\n";
@@ -161,6 +162,7 @@ class RbacController extends Controller
         // Let clients see and update their familiars details
         $auth->addChild($userAndClientAreFamily, $viewClient);
         $auth->addChild($userAndClientAreFamily, $updateClient);
+        $auth->addChild($userAndClientAreFamily, $deleteClient);
 
         $auth->addChild($clientRole, $userAndClientAreFamily);
 

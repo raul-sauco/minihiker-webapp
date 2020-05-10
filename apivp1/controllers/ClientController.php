@@ -4,8 +4,10 @@ namespace apivp1\controllers;
 
 use apivp1\models\Client;
 use common\helpers\ProgramHelper;
+use Exception;
 use Yii;
 use yii\base\InvalidConfigException;
+use yii\db\StaleObjectException;
 use yii\helpers\Url;
 use yii\web\ForbiddenHttpException;
 use yii\web\NotFoundHttpException;
@@ -28,8 +30,8 @@ class ClientController extends ActiveBaseController
     {
         $actions = parent::actions();
 
-        // disable the "delete" and "create" actions
-        unset($actions['delete'], $actions['update'], $actions['create']);
+        // Use the actions from this file
+        unset($actions['update'], $actions['create'], $actions['delete']);
 
         return $actions;
     }
@@ -164,5 +166,42 @@ class ClientController extends ActiveBaseController
         ProgramHelper::markClientProgramAsUpdated($model);
 
         return $model;
+    }
+
+    /**
+     * @param $id
+     * @return Client|null
+     * @throws ForbiddenHttpException
+     * @throws NotFoundHttpException
+     * @throws StaleObjectException
+     * @throws \Throwable
+     */
+    public function actionDelete ($id): ?Client
+    {
+        if (!Yii::$app->user->can('deleteClient', ['client_id' => $id])) {
+            throw new ForbiddenHttpException(Yii::t('app',
+                'You are not allowed to delete client {client}',
+                ['client' => $id]));
+        }
+
+        if (($model = Client::findOne($id)) === null) {
+            throw new NotFoundHttpException(
+                Yii::t('app', 'The resource requested does not exist on this server.')
+            );
+        }
+
+        try {
+            if ($model->delete() === false) {
+                throw new Exception('Client::delete returned false');
+            }
+        } catch (Exception $e) {
+            Yii::warning(["Error deleting client $model->id", $e], __METHOD__);
+            throw new ServerErrorHttpException(
+                Yii::t('app', 'Server error deleting Client')
+            );
+        }
+
+        Yii::$app->response->setStatusCode(204);
+        return null;
     }
 }
