@@ -2,7 +2,8 @@
 
 namespace apivp1\controllers;
 
-use apivp1\models\Family;
+use apivp1\models\Client;
+use common\helpers\ProgramHelper;
 use Yii;
 use yii\base\InvalidConfigException;
 use yii\web\ForbiddenHttpException;
@@ -10,14 +11,12 @@ use yii\web\NotFoundHttpException;
 use yii\web\ServerErrorHttpException;
 
 /**
- * Class FamilyController
+ * Class ClientController
  * @package apivp1\controllers
  */
-class FamilyController extends ActiveBaseController
+class ClientController extends ActiveBaseController
 {
-    public $modelClass = Family::class;
-
-    protected $_verbs = ['GET', 'OPTIONS','PUT','PATCH'];
+    public $modelClass = Client::class;
 
     /**
      * Unable actions that modify the data.
@@ -45,39 +44,43 @@ class FamilyController extends ActiveBaseController
     {
         if ($action === 'view') {
 
-            if (Yii::$app->user->can('viewFamily', ['family_id' => $model->id])) {
+            if (Yii::$app->user->can('viewClient', ['client_id' => $model->id])) {
                 return true;
             }
 
             throw new ForbiddenHttpException(Yii::t('app',
-                'You are not allowed to view family {family}',
-                ['family' => $model->id]));
+                'You are not allowed to view client {client}',
+                ['client' => $model->id]));
+
+        }
+
+        if ($action === 'update') {
+
+            if (!Yii::$app->user->can('updateClient', ['client_id' => $model->id])) {
+                return true;
+            }
+
+            throw new ForbiddenHttpException(Yii::t('app',
+                'You are not allowed to update client {client}',
+                ['client' => $model->id]));
 
         }
 
         return parent::checkAccess($action, $model, $params);
     }
 
+
     /**
-     * Customize the update action to set correct scenario when clients update their own data.
-     *
      * @param $id
-     * @return Family
+     * @return Client|null
+     * @throws ForbiddenHttpException
      * @throws NotFoundHttpException
      * @throws ServerErrorHttpException
      * @throws InvalidConfigException
-     * @throws ForbiddenHttpException
      */
-    public function actionUpdate($id): Family
+    public function actionUpdate ($id): Client
     {
-
-        if (!Yii::$app->user->can('updateFamily', ['family_id' => $id])) {
-            throw new ForbiddenHttpException(Yii::t('app',
-                'You are not allowed to update family {family}',
-                ['family' => $id]));
-        }
-
-        if (($model = Family::findOne($id)) === null) {
+        if (($model = Client::findOne($id)) === null) {
             throw new NotFoundHttpException(
                 Yii::t('app', 'The resource requested does not exist on this server.')
             );
@@ -85,8 +88,8 @@ class FamilyController extends ActiveBaseController
 
         if (!Yii::$app->user->can('user')) {
 
-            // The current user is not MH staff
-            $model->setScenario(Family::SCENARIO_UPDATE_SELF_ACCOUNT);
+            // The user application is a client
+            $model->setScenario(Client::SCENARIO_FAMILY_UPDATE_MEMBER);
 
         }
 
@@ -97,6 +100,9 @@ class FamilyController extends ActiveBaseController
                 Yii::t('app', 'Failed to update the resource for an unknown reason.')
             );
         }
+
+        // Update the 'updated_at' attribute on related programs
+        ProgramHelper::markClientProgramAsUpdated($model);
 
         return $model;
     }

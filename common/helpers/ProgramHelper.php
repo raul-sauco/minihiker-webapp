@@ -1,9 +1,11 @@
 <?php
 namespace common\helpers;
 
+use common\models\Client;
 use common\models\ProgramUser;
 use common\models\User;
 use Yii;
+use yii\behaviors\TimestampBehavior;
 
 /**
  * Helper functionality for Program model.
@@ -263,5 +265,24 @@ class ProgramHelper
 
         return '';
 
+    }
+
+    /**
+     * Refresh the updated_at timestamp in the programs this client participates in
+     * to reflect that there has been a change in the information.
+     *
+     * @param Client $client
+     */
+    public static function markClientProgramAsUpdated ($client): void
+    {
+        foreach ($client->programs as $program) {
+
+            // Only update "current" programs
+            if (strtotime($program->end_date) > strtotime('-1 month')) {
+                /* @var $program TimestampBehavior  silence warning */
+                $program->touch('updated_at');
+            }
+
+        }
     }
 }
