@@ -8,4 +8,5 @@ return [
     ['class' => 'yii\rest\UrlRule', 'controller' => ['wxbp' => 'banner-program']],
     ['class' => 'yii\rest\UrlRule', 'controller' => ['wxps' => 'program-search']],
     ['class' => 'yii\rest\UrlRule', 'controller' => 'wx-payment', 'pluralize' => false],
+    ['class' => 'yii\rest\UrlRule', 'controller' => 'wx-payment-notify', 'pluralize' => false],
 ];

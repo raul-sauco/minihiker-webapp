@@ -12,19 +12,21 @@ use yii\helpers\ArrayHelper;
  * This is the model class for table "wx_payment_log".
  *
  * @property int $id
- * @property array $order
- * @property array $user
- * @property string $message
- * @property string $get
- * @property string $post
- * @property string $headers
- * @property string $raw
- * @property string $method
- * @property string $notes
- * @property int $created_by
- * @property int $updated_by
- * @property int $created_at
- * @property int $updated_at
+ * @property string|null $order
+ * @property string|null $user
+ * @property string|null $message
+ * @property string|null $get
+ * @property string|null $post
+ * @property string|null $headers
+ * @property string|null $raw
+ * @property string|null $method
+ * @property string|null $notes
+ * @property string|null $notes2
+ * @property string|null $notes3
+ * @property int|null $created_by
+ * @property int|null $updated_by
+ * @property int|null $created_at
+ * @property int|null $updated_at
  */
 class WxPaymentLog extends ActiveRecord
 {
@@ -43,7 +45,7 @@ class WxPaymentLog extends ActiveRecord
     {
         return [
             [['order', 'user'], 'safe'],
-            [['get', 'post', 'headers', 'raw', 'notes'], 'string'],
+            [['get', 'post', 'headers', 'raw', 'notes', 'notes2', 'notes3'], 'string'],
             [['created_by', 'updated_by', 'created_at', 'updated_at'], 'integer'],
             [['message', 'method'], 'string', 'max' => 256],
         ];
@@ -65,6 +67,8 @@ class WxPaymentLog extends ActiveRecord
             'raw' => Yii::t('app', 'Raw'),
             'method' => Yii::t('app', 'Method'),
             'notes' => Yii::t('app', 'Notes'),
+            'notes2' => Yii::t('app', 'Notes2'),
+            'notes3' => Yii::t('app', 'Notes3'),
             'created_by' => Yii::t('app', 'Created By'),
             'updated_by' => Yii::t('app', 'Updated By'),
             'created_at' => Yii::t('app', 'Created At'),
