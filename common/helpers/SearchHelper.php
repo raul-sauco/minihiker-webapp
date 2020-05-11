@@ -1,20 +1,20 @@
 <?php
+
 namespace common\helpers;
 
 use common\models\Program;
 use common\models\ProgramGroup;
 use common\models\SearchResult;
 use Yii;
-use yii\helpers\Url;
+use yii\base\InvalidConfigException;
 use yii\bootstrap\Html;
-use yii\helpers\BaseInflector;
 use yii\helpers\ArrayHelper;
+use yii\helpers\BaseInflector;
+use yii\helpers\Url;
 
 /**
- * Search helper class.
- * 
- * @author i
- *
+ * Class SearchHelper
+ * @package common\helpers
  */
 class SearchHelper
 {
@@ -22,37 +22,37 @@ class SearchHelper
     private $results = [];
     private $query;
     private $wrapClass = 'search-query-string';
-    
-    public function search ($query = null)
+
+    /**
+     * @param null $query
+     * @return array|null
+     */
+    public function search ($query = null): ?array
     {
-        if ($query == null) {
-            
+        if (empty($query)) {
             return null;
-            
-        } else {
-            
-            $this->query = $query;
-            
-            $this->searchFamilies();
-            
-            $this->searchClients();
-            
-            $this->searchPrograms();
-            
-            $this->searchLocations();
-            
-            $this->orderResults();
-            
-            return $this->results;
-            
         }
+
+        $this->query = $query;
+
+        $this->searchFamilies();
+
+        $this->searchClients();
+
+        $this->searchPrograms();
+
+        $this->searchLocations();
+
+        $this->orderResults();
+
+        return $this->results;
     }
     
     /**
      * Find all the families that match the query 
      * and add them to the result set.
      */
-    protected function searchFamilies()
+    protected function searchFamilies(): void
     {
         $table = 'Family';
         
@@ -67,12 +67,12 @@ class SearchHelper
         
         $this->getResults($table, $attributes);
     }
-    
+
     /**
      * Find all the clients that match the query
      * and add them to the result set.
      */
-    protected function searchClients()
+    protected function searchClients(): void
     {
         $table = 'Client';
         
@@ -91,12 +91,13 @@ class SearchHelper
         
         $this->getResults($table, $attributes);
     }
-    
+
     /**
      * Find all the programs that match the query
      * and add them to the result set.
+     * @throws InvalidConfigException
      */
-    protected function searchPrograms()
+    protected function searchPrograms(): void
     {
         $models = [];
 
@@ -157,7 +158,7 @@ class SearchHelper
      * Find all the locations that match the query
      * and add them to the result set.
      */
-    protected function searchLocations()
+    protected function searchLocations(): void
     {
         $table = 'Location';
         
@@ -177,7 +178,7 @@ class SearchHelper
      */
     protected function getResults ($table, $attributes) 
     {
-        Yii::trace("Searching table $table with query $this->query", 
+        Yii::debug("Searching table $table with query $this->query",
             __METHOD__);
         
         $tableName = 'common\\models\\' . $table;
@@ -210,7 +211,7 @@ class SearchHelper
      * @param yii\db\ActiveRecord $model the ActiveRecord instance.
      * @param array $attributes The attributes to display.
      */
-    protected function addToResults ($table, $model, $attributes)
+    protected function addToResults ($table, $model, $attributes): void
     {
         $result = new SearchResult();
         
@@ -235,8 +236,9 @@ class SearchHelper
      * Add a program's data to the current result set.
      *
      * @param Program $program The model to get the data from.
+     * @throws InvalidConfigException
      */
-    protected function addProgramToResults ($program)
+    protected function addProgramToResults ($program): void
     {
         $result = new SearchResult();
 
@@ -269,13 +271,13 @@ class SearchHelper
         $rank = 0;
         
         // Assign points for type
-        if ($table == 'Location') {
+        if ($table === 'Location') {
             $rank += 5;
-        } elseif ($table == 'Program') {
+        } elseif ($table === 'Program') {
             $rank += 5;
-        } elseif ($table == 'Client') {
+        } elseif ($table === 'Client') {
             $rank += 5;
-        } elseif ($table == 'Family') {
+        } elseif ($table === 'Family') {
             $rank += 5;
         }
         
@@ -295,9 +297,12 @@ class SearchHelper
     /**
      * Order the search results based on their rank.
      */
-    protected function orderResults()
+    protected function orderResults(): void
     {
-        return ArrayHelper::multisort($this->results, 'searchRank', SORT_DESC);
+        ArrayHelper::multisort(
+            $this->results,
+            'searchRank',
+            SORT_DESC);
     }
     
     /**
@@ -308,36 +313,33 @@ class SearchHelper
      * @param array/string $attribute The attribute to look into.
      * @return string The value of the result's header field.
      */
-    protected function getHeader ($model, $table, $attribute)
+    protected function getHeader ($model, $table, $attribute): ?string
     {
-        if ($table == 'Program') {
+        if ($table === 'Program') {
             
             // Return getName() instead of the attribute
             return $this->wrapQuery($model->getNamei18n());
             
-        } else {
-            
-            if (!empty($attribute)) {
-                
-                return $this->wrapQuery($attribute);
-                
-            } else {
-                
-                return Yii::t('app', $table) . ' ' .
-                    ($table == 'Location' ? $model->name_zh : $model->id);
-                    
-            }
-            
         }
+
+        if (!empty($attribute)) {
+
+            return $this->wrapQuery($attribute);
+
+        }
+
+        return Yii::t('app', $table) . ' ' .
+            ($table === 'Location' ? $model->name_zh : $model->id);
     }
-    
+
     /**
      * Generate the sub-header field.
-     * 
+     *
      * @param yii\db\ActiveRecord $model The ActiveRecord instance.
      * @return string result->subHeader field.
+     * @throws InvalidConfigException
      */
-    protected function getSubHeader ($model)
+    protected function getSubHeader ($model): string
     {        
         $createdAt = Yii::$app->formatter->asDatetime($model->created_at);
         
@@ -366,10 +368,9 @@ class SearchHelper
     {
         
         $route = BaseInflector::camel2id($table) . '/view';
-        
-        $link = Url::to([$route , 'id' => $table == 'Location' ? $model->name_zh : $model->id]);
-        
-        return $link;
+
+        return Url::to([$route ,
+            'id' => $table === 'Location' ? $model->name_zh : $model->id]);
         
     }
     
@@ -400,10 +401,11 @@ class SearchHelper
     /**
      * Generate the SearchResult body tag.
      *
-     * @param $program The model to get data from
+     * @param Program $program The model to get data from
      * @return string The HTML to be displayed on the SearchResult body
+     * @throws InvalidConfigException
      */
-    protected function getProgramBody ($program)
+    protected function getProgramBody (Program $program): string
     {
         $body = '';
 
@@ -501,7 +503,7 @@ class SearchHelper
      * @param array/string $attr The attribute to look into.
      * @return string
      */
-    protected function addAttributeTags ($model, $attr) 
+    protected function addAttributeTags ($model, $attr): string
     {            
         $html = Html::beginTag('span', ['class' => "search-result-$attr"]);
         
@@ -517,13 +519,16 @@ class SearchHelper
         
         return $html;        
     }
-    
+
     /**
      * Wraps the query string on <span class="class">...</span> tags.
+     * @param $subject
+     * @param null $class
+     * @return string|string[]|null
      */
     protected function wrapQuery ($subject, $class = null)
     {
-        $class = $class == null ? $this->wrapClass : $class;
+        $class = $class ?? $this->wrapClass;
         
         $pattern = '~' . preg_quote($this->query, '~') . '~i';
         
