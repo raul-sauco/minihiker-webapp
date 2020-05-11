@@ -9,6 +9,8 @@ $params = array_merge(
     require __DIR__ . '/params-local.php'
 );
 
+$routes = require __DIR__ . '/routes.php';
+
 return [
     'id' => 'app-api',
     'basePath' => dirname(__DIR__),
@@ -50,9 +52,7 @@ return [
             'enablePrettyUrl' => true,
             'enableStrictParsing' => true,
             'showScriptName' => false,
-            'rules' => [
-                ['class' => 'yii\rest\UrlRule', 'controller' => 'event'],
-            ],
+            'rules' => $routes,
         ],
         'user' => [
             'identityClass' => 'common\models\User',
