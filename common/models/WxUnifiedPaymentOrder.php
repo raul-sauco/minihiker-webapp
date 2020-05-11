@@ -5,6 +5,9 @@ namespace common\models;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
+use yii\db\ActiveQuery;
+use yii\db\ActiveRecord;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "wx_unified_payment_order".
@@ -56,12 +59,29 @@ use yii\behaviors\TimestampBehavior;
  * @property ProgramPrice $price
  * @property User $updatedBy
  */
-class WxUnifiedPaymentOrder extends \yii\db\ActiveRecord
+class WxUnifiedPaymentOrder extends ActiveRecord
 {
+    // Order has been created and sent to WX backend, waiting prepay id
+    public const STATUS_CREATED = 0;
+
+    // WX backend returned an error, order has been cancelled
+    public const STATUS_PREPAY_ERROR = 1;
+
+    // WX backend returned success, pre-order has been created
+    // Waiting for user to confirm payment on Mini-app
+    public const STATUS_WAITING_CONFIRMATION = 2;
+
+    // WX backend notified of an error confirming payment
+    // Order has been cancelled while waiting for confirmation
+    public const STATUS_CONFIRMATION_ERROR = 3;
+
+    // WX backend has confirmed successful payment
+    public const STATUS_CONFIRMATION_SUCCESS = 4;
+
     /**
      * {@inheritdoc}
      */
-    public static function tableName()
+    public static function tableName(): string
     {
         return 'wx_unified_payment_order';
     }
@@ -69,7 +89,7 @@ class WxUnifiedPaymentOrder extends \yii\db\ActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             [['status', 'appid', 'mch_id', 'nonce_str', 'body', 'out_trade_no', 'total_fee', 'spbill_create_ip', 'notify_url', 'trade_type', 'openid'], 'required'],
@@ -95,7 +115,7 @@ class WxUnifiedPaymentOrder extends \yii\db\ActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function attributeLabels()
+    public function attributeLabels(): array
     {
         return [
             'id' => Yii::t('app', 'ID'),
@@ -145,50 +165,53 @@ class WxUnifiedPaymentOrder extends \yii\db\ActiveRecord
     * {@inheritDoc}
     * @see \yii\base\Component::behaviors()
     */
-    public function behaviors()
+    public function behaviors(): array
     {
-        return [
-            BlameableBehavior::class,
-            TimestampBehavior::class,
-        ];
+        return ArrayHelper::merge(
+            parent::behaviors(),
+            [
+                BlameableBehavior::class,
+                TimestampBehavior::class
+            ]
+        );
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
-    public function getClient()
+    public function getClient(): ActiveQuery
     {
         return $this->hasOne(Client::class, ['id' => 'client_id']);
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
-    public function getCreatedBy()
+    public function getCreatedBy(): ActiveQuery
     {
         return $this->hasOne(User::class, ['id' => 'created_by']);
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
-    public function getFamily()
+    public function getFamily(): ActiveQuery
     {
         return $this->hasOne(Family::class, ['id' => 'family_id']);
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
-    public function getPrice()
+    public function getPrice(): ActiveQuery
     {
         return $this->hasOne(ProgramPrice::class, ['id' => 'price_id']);
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
-    public function getUpdatedBy()
+    public function getUpdatedBy(): ActiveQuery
     {
         return $this->hasOne(User::class, ['id' => 'updated_by']);
     }

@@ -5,6 +5,8 @@ namespace common\models;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
+use yii\db\ActiveRecord;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "wx_payment_log".
@@ -24,12 +26,12 @@ use yii\behaviors\TimestampBehavior;
  * @property int $created_at
  * @property int $updated_at
  */
-class WxPaymentLog extends \yii\db\ActiveRecord
+class WxPaymentLog extends ActiveRecord
 {
     /**
      * {@inheritdoc}
      */
-    public static function tableName()
+    public static function tableName(): string
     {
         return 'wx_payment_log';
     }
@@ -37,7 +39,7 @@ class WxPaymentLog extends \yii\db\ActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             [['order', 'user'], 'safe'],
@@ -50,7 +52,7 @@ class WxPaymentLog extends \yii\db\ActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function attributeLabels()
+    public function attributeLabels(): array
     {
         return [
             'id' => Yii::t('app', 'ID'),
@@ -74,12 +76,15 @@ class WxPaymentLog extends \yii\db\ActiveRecord
     * {@inheritDoc}
     * @see \yii\base\Component::behaviors()
     */
-    public function behaviors()
+    public function behaviors(): array
     {
-        return [
-            BlameableBehavior::className(),
-            TimestampBehavior::className(),
-        ];
+        return ArrayHelper::merge(
+            parent::behaviors(),
+            [
+                BlameableBehavior::class,
+                TimestampBehavior::class
+            ]
+        );
     }
 
 }
