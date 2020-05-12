@@ -23,6 +23,14 @@ class ProgramGroup extends \common\models\ProgramGroup
     /**
      * @return ActiveQuery
      */
+    public function getProgramGroupViews(): ActiveQuery
+    {
+        return $this->hasMany(ProgramGroupView::class, ['program_group_id' => 'id']);
+    }
+
+    /**
+     * @return ActiveQuery
+     */
     public function getPrograms(): ActiveQuery
     {
         return $this->hasMany(Program::class, ['program_group_id' => 'id']);
