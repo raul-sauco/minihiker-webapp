@@ -96,6 +96,35 @@ class RbacController extends Controller
         $auth->add($deleteProgram);
         $auth->addChild($adminRole, $deleteProgram);
 
+        /* *************** QA **************** */
+        echo "Adding Q/A related permissions\n";
+        
+        $createQa = $auth->createPermission('createQa');
+        $createQa->description = 'Create a Q/A';
+        $auth->add($createQa);
+        $auth->addChild($clientRole, $createQa);
+        $auth->addChild($userRole, $createQa);
+
+        $viewQa = $auth->createPermission('viewQa');
+        $viewQa->description = 'View a single qa details';
+        $auth->add($viewQa);
+        $auth->addChild($userRole, $viewQa);
+        
+        $listQas = $auth->createPermission('listQas');
+        $listQas->description = 'List Q/As';
+        $auth->add($listQas);
+        $auth->addChild($clientRole, $listQas);
+        $auth->addChild($userRole, $listQas);
+
+        $updateQa = $auth->createPermission('updateQa');
+        $updateQa->description = 'Update a qa';
+        $auth->add($updateQa);
+        $auth->addChild($userRole, $updateQa);
+
+        $deleteQa = $auth->createPermission('deleteQa');
+        $deleteQa->description = 'Delete a qa';
+        $auth->add($deleteQa);
+        $auth->addChild($userRole, $deleteQa);
 
         /* ************* Client ************** */
         echo "Adding client related permissions\n";

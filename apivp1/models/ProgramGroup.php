@@ -29,6 +29,14 @@ class ProgramGroup extends \common\models\ProgramGroup
     }
 
     /**
+     * @return ActiveQuery
+     */
+    public function getQas(): ActiveQuery
+    {
+        return $this->hasMany(Qa::class, ['program_group_id' => 'id']);
+    }
+
+    /**
      * Remove fields that are not relevant to API consumers.
      *
      * @return array

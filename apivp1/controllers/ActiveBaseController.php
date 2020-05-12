@@ -71,6 +71,8 @@ abstract class ActiveBaseController extends ActiveController
                     ['action' => $action, 'resource' => $className])
             );
         }
+
+        return true;
     }
 
     /**
