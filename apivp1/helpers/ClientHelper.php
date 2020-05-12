@@ -90,7 +90,7 @@ class ClientHelper extends \common\helpers\ClientHelper
 
         }
 
-        $user->password = StringHelper::random_str(16);
+        $user->password = StringHelper::randomStr(16);
         $user->user_type = User::TYPE_CLIENT;
 
         if (!$user->save()) {

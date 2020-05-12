@@ -21,7 +21,7 @@ class StringHelper
      * @return string
      * @throws \yii\base\Exception
      */
-    public static function random_str(
+    public static function randomStr(
         $length,
         $keyspace = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'): string
     {
