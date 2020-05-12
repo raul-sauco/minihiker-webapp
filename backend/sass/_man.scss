@@ -1,0 +1,57 @@
+.site-manual {
+	
+	h1,h2,h3,h4,h5 {
+		color: blue;
+		margin-top: -40px;
+		padding-top: 55px;
+	}
+	
+	h1 {
+		font-size: $font-size-biggest;
+	}
+	
+	h2 {
+		font-size: $font-size-biggest * 0.85;
+	}
+	
+	h3 {
+		font-size: $font-size-biggest * 0.7;
+	}
+	
+	#site-manual-sidebar {
+	
+		  @include background(#eee);
+		  @include border-radius(4px);
+		  
+		  padding: 1em;
+	
+		ol {
+		  list-style-type: none;
+		  counter-reset: item;
+		  margin: 0;
+		  padding: 0;
+		}
+		
+		ol > li {
+		  display: table;
+		  counter-increment: item;
+		  margin-bottom: 0.6em;
+		}
+		
+		ol > li:before {
+		  content: counters(item, ".") ". ";
+		  display: table-cell;
+		  padding-right: 0.6em;    
+		}
+		
+		li ol > li {
+		  margin: 0;
+		}
+		
+		li ol > li:before {
+		  content: counters(item, ".") " ";
+		}
+	
+	}
+	
+}

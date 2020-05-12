@@ -1,0 +1,207 @@
+@import "vars";
+
+.program-group-weapp-data {
+
+  h1 {
+    font-size: 2rem;
+  }
+
+  h2 {
+    font-size: 1.8rem;
+  }
+
+  h3 {
+    font-size: 1.6rem;
+  }
+
+  h4 {
+    font-size: 1.4rem;
+  }
+
+  h5 {
+    font-size: 1.2rem;
+  }
+
+  h6 {
+    font-size: 1rem;
+  }
+}
+
+.weapp-pg-name {
+  font-size: 2rem;
+}
+
+.weapp-pg-theme {
+  font-size: 1.7rem;
+}
+
+.weapp-pg-visible {
+  font-size: 1.5rem;
+}
+
+.weapp-cover-image-container {
+  text-align: left;
+}
+
+.weapp-age-range, .weapp-description-container {
+  margin-top: 1rem;
+}
+
+.weapp-pg-instances-container {
+  display: flex;
+  overflow: auto;
+  margin-bottom: 1rem;
+
+  > a > div.weapp-pg-instance-container {
+    color: #333;
+    margin: 6px;
+    padding: 0.5rem;
+
+    box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+
+    > h3, div {
+      white-space: nowrap;
+    }
+
+    > h3 {
+      margin: 0 0 0.5rem 0;
+    }
+  }
+}
+
+.weapp-program-instance-name {
+  font-size: 1.4rem;
+  font-weight: bold;
+}
+
+img#pg-weapp-cover-image {
+  margin-bottom: 1rem;
+  max-width: 100%;
+}
+
+#cover-image-selection-modal .modal-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  .pg-images-preview {
+    margin-bottom: 1rem;
+    max-width: 100%;
+  }
+}
+
+#imageuploadform-file-fileupload .files tr td:first-child {
+  max-width: 300px;
+  & .preview > a {
+    max-width: 100%;
+    & > img {
+      max-width: 100%;
+    }
+  }
+}
+
+#phone-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  #phone {
+    position: relative;
+    width: 400px;
+    height: 600px;
+    @include material-card();
+
+    #phone-header {
+      height: 50px;
+      position: absolute;
+      top: 0;
+      width: 100%;
+      display: flex;
+      color: white;
+      font-size: 1.8rem;
+      font-weight: bold;
+      text-shadow: 1px 1px 1px #555;
+      justify-content: center;
+      align-items: center;
+      overflow: auto;
+
+      &.weapp-visible {
+        background: green;
+      }
+
+      &.weapp-invisible {
+        background: red;
+      }
+    }
+
+    #phone-header-image > img {
+      width: 100%;
+    }
+
+    #phone-content {
+      box-sizing: border-box;
+      height: 600px;
+      padding-top: 50px;
+
+      img {
+        width: 100%;
+      }
+
+      overflow-y: scroll;
+
+      .pg-details {
+        margin: 1% 2%;
+        border-bottom: 1px solid #ccc;
+      }
+
+      #pg-phone-tabs {
+        margin: 0 2%;
+      }
+    }
+  }
+}
+
+#weapp-program-index {
+
+  .list-item {
+    margin: 0;
+    padding: 1% 0;
+    border-bottom: 1px solid #cccccc;
+  }
+
+  .weapp-program-group-container {
+
+    display: flex;
+
+    .pg-image-container {
+
+      margin-right: 2%;
+      width: 200px;
+
+      img {
+        width: 200px;
+        box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+      }
+    }
+
+    .pg-details-container {
+
+      .pg-attribute-container {
+        margin: 0.2rem 0;
+      }
+
+      display: flex;
+      flex-direction: column;
+
+      .pg-program-name, .pg-attr-name {
+        font-weight: bold;
+      }
+
+      .pg-attr-empty-value {
+        color: $color-urgent-problem;
+      }
+    }
+
+  }
+}

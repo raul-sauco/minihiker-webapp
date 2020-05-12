@@ -10,9 +10,9 @@ use yii\bootstrap\Nav;
 use yii\bootstrap\NavBar;
 use yii\helpers\Url;
 use yii\widgets\Breadcrumbs;
-use backend\assets\AppAsset;
+use backend\assets\BackendAsset;
 
-AppAsset::register($this);
+BackendAsset::register($this);
 $user = Yii::$app->user;
 $this->beginPage()
 ?>
@@ -37,6 +37,9 @@ $this->beginPage()
         'options' => [
             'class' => 'navbar-inverse navbar-fixed-top',
         ],
+        'innerContainerOptions' => [
+            'class' => 'container-fluid'
+        ]
     ]);
     echo Nav::widget([
         'options' => [
@@ -97,7 +100,7 @@ $this->beginPage()
     NavBar::end();
     ?>
 
-    <div class="container">
+    <div class="container-fluid">
         <?= Breadcrumbs::widget([
             'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
         ]) ?>
@@ -106,7 +109,7 @@ $this->beginPage()
 </div>
 
 <footer class="footer">
-    <div class="container">
+    <div class="container-fluid">
     
         <p class="pull-left">&copy; <?= Yii::t('app', 'Mini Hiker')?> <?= date('Y') ?></p>
 

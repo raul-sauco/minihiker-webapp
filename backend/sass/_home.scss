@@ -1,0 +1,72 @@
+/* Styles for the /site route */
+
+.site-index {
+	
+	text-align: center;
+	
+	img {	
+		max-width: 100%;
+	}
+	
+	#search-form-container {	
+		max-width: 100%;
+		margin: 1em auto;
+	}
+	
+	p {	
+		font-size: 1.7em;
+	}
+	
+	@media (min-width: $screen-sm-min) {
+	
+		#search-form-container {		
+			max-width: 80%;
+			margin: 1.2em auto;
+		}
+	
+		p {	
+			font-size: 2em;
+		}	
+	
+	}
+	
+	@media (min-width: $screen-md-min) {
+	
+		#search-form-container {		
+			max-width: 70%;
+			margin: 1.5em auto;	
+		}
+	
+		p {	
+			font-size: 2.5em;
+		}	
+	
+	}
+	
+	@media (min-width: $screen-lg-min) {
+	
+		#search-form-container {		
+			max-width: 60%;
+			margin: 1.8em auto;	
+		}
+	
+		p {	
+			font-size: 3.2em;
+		}	
+	
+	}
+	
+	@media (min-width: $screen-xl-min) {
+	
+		#search-form-container {		
+			max-width: 60%;	
+			margin: 2em auto;	
+		}
+	
+		p {	
+			font-size: 4em;
+		}	
+	
+	}
+	
+}

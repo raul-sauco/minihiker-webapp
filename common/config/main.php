@@ -3,6 +3,11 @@ return [
     'aliases' => [
         '@bower' => '@vendor/bower-asset',
         '@npm'   => '@vendor/npm-asset',
+        '@staticUrl' => (empty($_SERVER['HTTP_HOST']) || $_SERVER['HTTP_HOST'] === 'localhost') ?
+            'http://static.mh' : 'https://static.minihiker.com',
+        '@imgUrl' => '@staticUrl/img',
+        '@cssUrl' => '@staticUrl/css',
+        '@jsUrl' => '@staticUrl/js',
     ],
     'vendorPath' => dirname(__DIR__, 2) . '/vendor',
     'components' => [

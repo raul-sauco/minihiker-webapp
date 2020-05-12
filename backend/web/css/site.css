@@ -19,6 +19,10 @@ body {
   padding: 70px 15px 20px;
 }
 
+.wrap > .container-fluid {
+  padding-top: 70px;
+}
+
 /* line 17, ../../sass/_yii.scss */
 .footer {
   height: 60px;

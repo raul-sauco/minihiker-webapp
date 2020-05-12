@@ -42,6 +42,7 @@ phpunit.phar
 /frontend/web/img
 /frontend/web/js/jhtapi.js
 
+/backend/.sass-cache
 /backend/web/index.php
 /backend/web/index-test.php
 /backend/web/robots.txt

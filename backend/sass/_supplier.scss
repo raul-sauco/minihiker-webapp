@@ -1,0 +1,32 @@
+.supplier-form header {
+  margin-bottom: 0.7em;
+}
+
+.supplier-index-name {
+  font-weight: bold;
+}
+
+.supplier-index-address {
+  color: $muted-text;
+}
+
+.supplier-index-contact-name {
+  font-weight: bold;
+}
+
+.supplier-index-contact-role {
+  color: $muted-text;
+  &:after {
+    content: ") ";
+  };
+  &:before {
+    content: " (";
+  }
+}
+
+.supplier-index-contact-phone {
+  span.glyphicon {
+    margin-right: 0.3em;
+  }
+  margin-right: 0.7em;
+}

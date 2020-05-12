@@ -1,13 +1,14 @@
 <?php
 
+use common\helpers\ClientHelper;
+use common\helpers\FamilyHelper;
 use common\models\Client;
+use common\models\Program;
 use yii\data\ActiveDataProvider;
 use yii\grid\GridView;
 use yii\helpers\Html;
 use yii\widgets\DetailView;
 use yii\widgets\Pjax;
-use common\helpers\ClientHelper;
-use common\models\Program;
 
 /* @var $this yii\web\View */
 /* @var $model common\models\Client */
@@ -44,7 +45,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'attributes' => [
             [
                 'label' => Yii::t('app', 'Serial　Number'),
-                'value' => \common\helpers\FamilyHelper::getFormattedSerial($model->family),
+                'value' => FamilyHelper::getFormattedSerial($model->family),
 
             ],
             'name_zh',
@@ -66,7 +67,7 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'attribute' => 'is_male',
                 'label' => Yii::t('app', 'Sex'),
-                'value' => function ($data) {
+                'value' => static function ($data) {
                     return $data->is_male?Yii::t('app', 'Male'):Yii::t('app', 'Female');
                 }
             ],
@@ -95,7 +96,7 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'attribute' => 'family_id',
                 'label' => Yii::t('app', 'Family'),
-                'value' => function ($data) {
+                'value' => static function ($data) {
                     return empty($data->family_id)?null:
                         Html::a($data->family->name , ['family/view', 'id' => $data->family_id]);
                 },
@@ -103,7 +104,7 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             [
                 'label' => Yii::t('app', 'Family Role'),
-                'value' => function($model) {
+                'value' => static function($model) {
                     return ClientHelper::getRole($model);
                 }
             ],
@@ -142,6 +143,10 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'attribute' => 'phone_number',
                 'visible' => !empty($model->phone_number),
+            ],
+            [
+                'attribute' => 'phone_number_2',
+                'visible' => !empty($model->phone_number_2),
             ],
             [
                 'attribute' => 'email',
@@ -187,7 +192,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 // 'id',
                 [
                     'label' => Yii::t('app', 'Program'),
-                    'value' => function (Program $data) {
+                    'value' => static function (Program $data) {
                         return Html::a($data->getNamei18n(),
                             ['program/view', 'id' => $data->id]);
                     },
@@ -195,7 +200,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 ],
                 [
                     'label' => Yii::t('app', 'Total participants'),
-                    'value' => function (Program $data){
+                    'value' => static function (Program $data){
                         return $data->getXLParticipantCount();
                     }
                 ],

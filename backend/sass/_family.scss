@@ -1,0 +1,42 @@
+.search-family .search-box {
+  margin-bottom: 2%;
+}
+
+
+.family-search-item-details {
+  display: flex;
+  justify-content: space-between;
+
+  .family-search-item-name {
+    font-weight: bold;
+  }
+}
+
+.family-search-item-details,
+.family-search-item-membership-date,
+.family-search-item-address,
+.family-search-item-remarks,
+.family-search-item-members {
+  margin-bottom: 0.7rem;
+}
+
+.family-search-item-actions {
+  a {
+    width: 100%;
+  }
+}
+
+.orginal-family-container {
+  background-color: lighten($color-all-ready, 35%);
+}
+
+.duplicate-family-container {
+  background-color: lighten($color-requires-attention, 25%);
+}
+
+.family-merge-confirm {
+  #family-confirm-merge-button {
+    margin-top: 1rem;
+    width: 100%;
+  }
+}

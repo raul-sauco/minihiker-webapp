@@ -1,0 +1,59 @@
+/*
+ * Program-group QAs styles
+ */
+@import "vars";
+
+.program-group-qas-index {
+
+  .program-group-qa-container {
+    @include material-card();
+    font-size: 1.5rem;
+    padding: 0.5rem;
+    position: relative;
+
+    display: flex;
+
+    .qa-asked-by-info {
+      font-size: 1.4rem;
+      color: $muted-text;
+    }
+
+    .qa-avatar-container {
+      margin-right: 1rem;
+      > img {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        box-shadow: 1px 1px 2px #000;
+      }
+    }
+
+    .qa-text-container {
+      flex: 1;
+    }
+
+    .qa-question-container {
+      font-weight: bold;
+    }
+
+    .qa-answer-textarea {
+      width: 100%;
+      border: none;
+      &:before {
+        content: 'A:';
+      }
+    }
+
+    .loading-spinner {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+    }
+
+  }
+
+  .qa-unanswered {
+    @include highlight-error();
+  }
+
+}

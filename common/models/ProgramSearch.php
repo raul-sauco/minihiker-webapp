@@ -13,7 +13,7 @@ class ProgramSearch extends Program
     /**
      * @inheritdoc
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             [['id',], 'integer'],
@@ -37,7 +37,7 @@ class ProgramSearch extends Program
      *
      * @return ActiveDataProvider
      */
-    public function search($params)
+    public function search($params): ActiveDataProvider
     {
         $query = Program::find()->joinWith(['programGroup']);
 
