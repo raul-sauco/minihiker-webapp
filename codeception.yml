@@ -3,6 +3,8 @@ include:
     - common
     - frontend
     - backend
+    - api
+    - apivp1
 paths:
     log: console/runtime/logs
 settings:
