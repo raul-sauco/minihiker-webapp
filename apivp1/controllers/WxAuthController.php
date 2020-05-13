@@ -1,6 +1,6 @@
 <?php
 
-namespace app\controllers;
+namespace apivp1\controllers;
 
 use apivp1\helpers\ClientHelper;
 use apivp1\models\Client;
