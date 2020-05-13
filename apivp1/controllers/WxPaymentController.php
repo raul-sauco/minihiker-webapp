@@ -2,10 +2,11 @@
 
 namespace apivp1\controllers;
 
+use apivp1\helpers\WxPaymentHelper;
 use apivp1\models\Client;
 use apivp1\models\ProgramPrice;
 use apivp1\models\WxUnifiedPaymentOrder;
-use apivp1\helpers\WxPaymentHelper;
+use common\controllers\BaseController;
 use common\models\WxPaymentLog;
 use SimpleXMLElement;
 use Yii;

@@ -3,6 +3,7 @@
 namespace api\controllers;
 
 use api\helpers\BlueimpHelper;
+use common\controllers\BaseController;
 use common\models\ProgramGroup;
 use common\models\ProgramGroupImage;
 use common\models\Image;

@@ -4,6 +4,7 @@ namespace apivp1\controllers;
 
 use apivp1\helpers\ProgramViewHelper;
 use apivp1\models\ProgramGroup;
+use common\controllers\BaseController;
 use Yii;
 use yii\web\NotFoundHttpException;
 
@@ -14,16 +15,6 @@ use yii\web\NotFoundHttpException;
 class ProgramGroupController extends BaseController
 {
     protected $_verbs = ['GET','OPTIONS'];
-
-    /**
-     * @return array
-     */
-    public function behaviors(): array
-    {
-        $behaviors = parent::behaviors();
-        $behaviors['authenticator']['except'] = ['options'];
-        return $behaviors;
-    }
 
     /**
      * Handle program-group/{id} route.

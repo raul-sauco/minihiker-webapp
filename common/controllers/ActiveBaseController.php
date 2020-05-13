@@ -1,11 +1,12 @@
 <?php
 
-namespace api\controllers;
+namespace common\controllers;
 
 use Yii;
 use yii\filters\auth\HttpBearerAuth;
 use yii\filters\Cors;
-use yii\rest\Controller;
+use yii\rest\ActiveController;
+use yii\web\ForbiddenHttpException;
 
 /**
  * Class BaseController
@@ -13,7 +14,7 @@ use yii\rest\Controller;
  * @package apivp1\controllers
  * @author Raul Sauco
  */
-abstract class BaseController extends Controller
+abstract class ActiveBaseController extends ActiveController
 {
     // Allow all methods by default
     protected $_verbs = ['GET','POST','PATCH','PUT','OPTIONS','DELETE'];
@@ -49,6 +50,29 @@ abstract class BaseController extends Controller
         $behaviors['authenticator']['except'] = ['options'];
 
         return $behaviors;
+    }
+
+    /**
+     * @param string $action
+     * @param null $model
+     * @param array $params
+     * @return bool
+     * @throws ForbiddenHttpException
+     */
+    public function checkAccess($action, $model = null, $params = [])
+    {
+        $className = str_replace('Controller', '',
+            substr(strrchr(get_class($this), '\\'), 1));
+
+        $permissionName = $action === 'index' ? "list$className" . 's' : $action . $className;
+        if (!Yii::$app->user->can($permissionName)) {
+            throw new ForbiddenHttpException(
+                Yii::t('app',
+                    'You are not allowed to {action} {resource}.',
+                    ['action' => $action, 'resource' => $className])
+            );
+        }
+        return true;
     }
 
     /**

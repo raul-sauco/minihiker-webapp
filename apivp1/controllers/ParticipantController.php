@@ -4,6 +4,7 @@ namespace apivp1\controllers;
 
 use apivp1\models\Client;
 use apivp1\models\Program;
+use common\controllers\BaseController;
 use common\models\ProgramClient;
 use Yii;
 use yii\base\InvalidConfigException;

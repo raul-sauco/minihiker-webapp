@@ -1,6 +1,6 @@
 <?php
 
-namespace apivp1\controllers;
+namespace common\controllers;
 
 use Yii;
 use yii\filters\auth\HttpBearerAuth;
@@ -10,12 +10,12 @@ use yii\rest\Controller;
 /**
  * Class BaseController
  *
- * @package apivp1\controllers
+ * @package common\controllers
  * @author Raul Sauco
  */
 abstract class BaseController extends Controller
 {
-    /** @var string[] REST methods that this controller will handle */
+    // Allow all methods by default
     protected $_verbs = ['GET','POST','PATCH','PUT','OPTIONS','DELETE'];
 
     /**

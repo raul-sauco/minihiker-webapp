@@ -2,11 +2,11 @@
 
 namespace apivp1\controllers;
 
+use apivp1\helpers\ProgramGroupHelper;
 use apivp1\models\ProgramGroup;
 use apivp1\models\User;
 use common\controllers\ActiveBaseController;
 use Yii;
-use yii\base\InvalidConfigException;
 use yii\data\ActiveDataProvider;
 use yii\web\ForbiddenHttpException;
 
@@ -17,7 +17,7 @@ use yii\web\ForbiddenHttpException;
  *
  * @package app\controllers
  */
-class WxProgramVisitHistoryController extends ActiveBaseController
+class WxProgramRecommendationsController extends ActiveBaseController
 {
     public $modelClass = ProgramGroup::class;
 
@@ -30,8 +30,7 @@ class WxProgramVisitHistoryController extends ActiveBaseController
     {
         $actions = parent::actions();
         unset($actions['delete'], $actions['create'], $actions['update']);
-        $actions['index']['prepareDataProvider'] =
-            [$this, 'prepareDataProvider'];
+        $actions['index']['prepareDataProvider'] = [$this, 'prepareDataProvider'];
         return $actions;
     }
 
@@ -54,34 +53,24 @@ class WxProgramVisitHistoryController extends ActiveBaseController
      * Prepare the data that will be returned by the index action.
      *
      * Find the application user and return a data provider containing
-     * ProgramGroups that the user has visited.
+     * ProgramGroups that the user may be interested on.
      *
      * @return ActiveDataProvider
      * @throws ForbiddenHttpException
-     * @throws InvalidConfigException
      */
-    public function prepareDataProvider()
+    public function prepareDataProvider(): ActiveDataProvider
     {
-        // Yii::$app->user->identity returns \common\models\User
-        $user = User::findOne(Yii::$app->user->id);
-
-        if ($user === null) {
+        // User::findOne returns an apivp1\models\User instead of common
+        if (($user = User::findOne(Yii::$app->user->id)) === null) {
             throw new ForbiddenHttpException(
                 Yii::t('app',
-                    'You do not have a client account, ' .
-                    'we cannot find linked programs.')
+                    'You do not have a client account, we cannot find linked programs.'
+                )
             );
         }
 
         return new ActiveDataProvider([
-            'query' => $user->getProgramGroupsViewed()
-                ->joinWith('programGroupViews')
-                ->where(['weapp_visible' => 1])
-                //->orderBy(['program_group_view.timestamp' => SORT_DESC])
-                ->distinct(),
-            'pagination' => [
-                'params' => Yii::$app->request->get()
-            ]
+            'query' => ProgramGroupHelper::getRecommendedQuery($user)
         ]);
     }
 }

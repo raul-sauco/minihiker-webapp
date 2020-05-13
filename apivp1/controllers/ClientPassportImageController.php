@@ -3,6 +3,7 @@
 namespace apivp1\controllers;
 
 use apivp1\models\Client;
+use common\controllers\BaseController;
 use common\helpers\StringHelper;
 use common\models\User;
 use Yii;

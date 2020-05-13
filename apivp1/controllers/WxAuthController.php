@@ -2,9 +2,9 @@
 
 namespace app\controllers;
 
-use apivp1\controllers\BaseController;
 use apivp1\helpers\ClientHelper;
 use apivp1\models\Client;
+use common\controllers\BaseController;
 use Yii;
 use yii\web\ServerErrorHttpException;
 

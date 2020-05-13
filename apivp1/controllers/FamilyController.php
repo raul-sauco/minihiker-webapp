@@ -3,6 +3,7 @@
 namespace apivp1\controllers;
 
 use apivp1\models\Family;
+use common\controllers\ActiveBaseController;
 use Yii;
 use yii\base\InvalidConfigException;
 use yii\web\ForbiddenHttpException;

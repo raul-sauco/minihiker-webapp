@@ -4,6 +4,7 @@ namespace apivp1\controllers;
 
 use apivp1\models\ProgramType;
 use apivp1\search\ProgramTypeSearch;
+use common\controllers\ActiveBaseController;
 use Yii;
 use yii\data\ActiveDataProvider;
 

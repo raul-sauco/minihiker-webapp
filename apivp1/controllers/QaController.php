@@ -4,6 +4,7 @@ namespace apivp1\controllers;
 
 use apivp1\models\ProgramGroup;
 use apivp1\models\Qa;
+use common\controllers\ActiveBaseController;
 use Yii;
 use yii\data\ActiveDataProvider;
 use yii\web\BadRequestHttpException;

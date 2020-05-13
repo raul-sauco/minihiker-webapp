@@ -4,6 +4,7 @@ namespace apivp1\controllers;
 
 use apivp1\models\Client;
 use apivp1\models\WxUnifiedPaymentOrder;
+use common\controllers\ActiveBaseController;
 use Yii;
 use yii\data\ActiveDataProvider;
 use yii\web\ForbiddenHttpException;

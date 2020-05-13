@@ -26,6 +26,7 @@ return [
     ['class' => UrlRule::class, 'controller' => ['wxbp' => 'banner-program']],
     ['class' => UrlRule::class, 'controller' => ['wxcpi' => 'client-passport-image']],
     ['class' => UrlRule::class, 'controller' => ['wxps' => 'program-search']],
+    ['class' => UrlRule::class, 'controller' => ['wxrp' => 'wx-program-recommendations']],
     ['class' => UrlRule::class, 'controller' => ['wxvh' => 'wx-program-visit-history']],
     ['class' => UrlRule::class, 'controller' => 'wx-payment', 'pluralize' => false],
     ['class' => UrlRule::class, 'controller' => 'wx-payment-notify', 'pluralize' => false],
