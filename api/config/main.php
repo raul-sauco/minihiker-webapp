@@ -12,7 +12,7 @@ $params = array_merge(
 $routes = require __DIR__ . '/routes.php';
 
 return [
-    'id' => 'app-api',
+    'id' => 'minihiker-apiv2',
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
     'controllerNamespace' => 'api\controllers',
