@@ -25,7 +25,9 @@
         "ext-curl": "*",
         "ext-dom": "*",
         "ext-json": "*",
-        "ext-simplexml": "*"
+        "ext-simplexml": "*",
+        "npm-asset/vue": "^2.6",
+        "npm-asset/commander": "~2.17.1"
     },
     "require-dev": {
         "roave/security-advisories": "dev-master",

@@ -3,7 +3,8 @@ return [
     'aliases' => [
         '@bower' => '@vendor/bower-asset',
         '@npm'   => '@vendor/npm-asset',
-        '@staticUrl' => (empty($_SERVER['HTTP_HOST']) || $_SERVER['HTTP_HOST'] === 'localhost') ?
+        '@staticUrl' => (empty($_SERVER['HTTP_HOST']) ||
+            $_SERVER['HTTP_HOST'] === 'backend.mh') ?
             'http://static.mh' : 'https://static.minihiker.com',
         '@imgUrl' => '@staticUrl/img',
         '@cssUrl' => '@staticUrl/css',

@@ -1,0 +1,25 @@
+#excel-import-container{
+  table#excel-import-table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+  tr.excel-import-row  {
+    > td.error {
+      color: #a94442;
+      background-color: #f2dede;
+      box-shadow: inset 0 0 1px #f2dede;
+    }
+    > td.loading {
+      box-shadow: inset 0 0 1px #0a73bb;
+      background-color: lighten(#0a73bb, 57%);
+      color: #0a73bb;
+    }
+    > td.row-status {
+      text-align: center;
+    }
+    > td.row-ready {
+      color: green;
+    }
+  }
+}

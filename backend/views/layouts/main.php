@@ -160,6 +160,9 @@ $this->registerJsVar(
             'class' => 'loading-overlay loading-overlay-small'
         ])
 );
+
+// Add the global Mh JS object
+$this->render('jsvars');
 ?>
 
 <?php
