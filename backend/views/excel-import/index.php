@@ -27,12 +27,21 @@ $this->registerJsFile('@staticUrl/js/excel-import.js', [
             <tbody>
             <tr v-for="row in sheet" class="excel-import-row">
                 <td class="row-status"
-                    v-html="getRowStatusHtml(row)"
-                >
+                    v-if="row.status === 'can-upload'">
+                    <button class="btn btn-success btn-xs">
+                        <span class="glyphicon glyphicon-upload">
+                        </span>
+                    </button>
+                <td v-else
+                    class="row-status"
+                    v-bind:class="row.status"
+                    v-html="getRowStatusHtml(row)">
+                </td>
                 </td>
                 <td v-for="cell in row.cells"
                     v-html="cell.value"
-                    v-bind:class="{ error: cell.hasError, loading: cell.loading }"
+                    v-bind:class="cell.status"
+                    v-on:click="showProgramInfo(row)"
                 >
                 </td>
             </tr>

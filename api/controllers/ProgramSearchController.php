@@ -4,9 +4,8 @@ namespace api\controllers;
 
 use api\search\ProgramSearch;
 use common\controllers\BaseController;
-use common\models\Program;
 use Yii;
-use yii\db\ActiveRecord;
+use yii\data\ActiveDataProvider;
 use yii\web\BadRequestHttpException;
 use yii\web\ForbiddenHttpException;
 
@@ -17,11 +16,11 @@ use yii\web\ForbiddenHttpException;
 class ProgramSearchController extends BaseController
 {
     /**
-     * @return array|Program|ActiveRecord|null
+     * @return ActiveDataProvider
      * @throws ForbiddenHttpException
      * @throws BadRequestHttpException
      */
-    public function actionIndex()
+    public function actionIndex(): ActiveDataProvider
     {
         if (!Yii::$app->user->can('user')) {
             throw new ForbiddenHttpException(
@@ -37,6 +36,6 @@ class ProgramSearchController extends BaseController
                 Yii::t('app', 'Missing required parameters')
             );
         }
-        return ProgramSearch::searchOne(Yii::$app->request->get());
+        return ProgramSearch::search(Yii::$app->request->get());
     }
 }

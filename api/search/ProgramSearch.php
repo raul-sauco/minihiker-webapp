@@ -3,7 +3,7 @@
 namespace api\search;
 
 use api\models\Program;
-use Yii;
+use yii\data\ActiveDataProvider;
 
 /**
  * Class ProgramSearch
@@ -12,21 +12,19 @@ use Yii;
 class ProgramSearch
 {
     /**
-     * Given the search parameters, try to find one program
-     * that fits them.
+     * Given the search parameters, find programs that
+     * fit the parameters.
      *
      * @param $params
-     * @return array|Program|\yii\db\ActiveRecord|null
+     * @return ActiveDataProvider
      */
-    public static function searchOne($params)
+    public static function search($params): ActiveDataProvider
     {
         $query = Program::find()
             ->where(['>=', 'start_date', $params['start-date']])
             ->andWhere(['<=', 'end_date', $params['end-date']]);
-
-        Yii::debug(
-            'Search one query returned ' .
-            $query->count() . ' results', __METHOD__);
-        return $query->one();
+        return new ActiveDataProvider([
+            'query' => $query
+        ]);
     }
 }

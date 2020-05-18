@@ -1,3 +1,4 @@
+@import "vars";
 #excel-import-container{
   table#excel-import-table {
     display: block;
@@ -15,11 +16,35 @@
       background-color: lighten(#0a73bb, 57%);
       color: #0a73bb;
     }
+    > td.can-upload {
+      color: $color-almost-done;
+      box-shadow: inset 0 0 1px $color-almost-done;
+      background-color: lighten($color-almost-done, 40%);
+    }
+    > td.needs-action {
+      color: $color-requires-attention;
+      box-shadow: inset 0 0 1px $color-requires-attention;
+      background-color: lighten($color-requires-attention, 40%);
+    }
     > td.row-status {
       text-align: center;
+      padding: 0;
+      vertical-align: middle;
+    }
+    > td.row-status.can-upload {
+      padding: 0;
     }
     > td.row-ready {
-      color: green;
+      color: $color-all-ready;
+    }
+    > td.row-error {
+      color: $color-urgent-problem;
+    }
+    > td.row-info {
+      color: $muted-text;
+    }
+    > td.row-needs-action {
+      color: $color-requires-attention;
     }
   }
 }
