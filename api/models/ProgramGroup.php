@@ -30,6 +30,14 @@ class ProgramGroup extends \common\models\ProgramGroup
     }
 
     /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getType()
+    {
+        return $this->hasOne(ProgramType::class, ['id' => 'type_id']);
+    }
+
+    /**
      * @return array
      */
     public function fields(): array
@@ -56,7 +64,8 @@ class ProgramGroup extends \common\models\ProgramGroup
     {
         return [
             'location',
-            'programs'
+            'programs',
+            'type'
         ];
     }
 }

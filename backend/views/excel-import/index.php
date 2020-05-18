@@ -21,7 +21,7 @@ $this->registerJsFile('@staticUrl/js/excel-import.js', [
         <label for="file">Select file</label>
         <input name="file" type="file" @change="handleFile">
     </form>
-    <div id="excel-table" v-else>
+    <div id="excel-table" v-else v-bind:class="{ blur: modal.visible }">
         <table id="excel-import-table"
                class="table table-striped table-bordered">
             <tbody>
@@ -41,11 +41,19 @@ $this->registerJsFile('@staticUrl/js/excel-import.js', [
                 <td v-for="cell in row.cells"
                     v-html="cell.value"
                     v-bind:class="cell.status"
-                    v-on:click="showProgramInfo(row)"
+                    v-on:click="showCellDetails(cell, row)"
                 >
                 </td>
             </tr>
             </tbody>
         </table>
+    </div>
+    <div id="v-modal" v-if="modal.visible">
+        <div class="v-modal-mask"
+            v-on:click="dismissModal()"></div>
+        <div class="v-modal-dialog">
+            <div class="v-modal-title" v-html="modal.title"></div>
+            <div class="v-modal-content" v-html="modal.content"></div>
+        </div>
     </div>
 </div>
