@@ -1,11 +1,27 @@
 @import "vars";
 #excel-import-container{
-  table#excel-import-table {
+  .form-container {
+    background-color: #fff;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 100px;
+    z-index: 999; /* Over the modal */
+  }
+  .excel-import-actions {
+    margin-bottom: 20px;
+  }
+  table#excel-import-table, table#example-table {
     display: block;
     overflow-x: auto;
     white-space: nowrap;
   }
-  tr.excel-import-row  {
+  tr.excel-import-row, tr.example-row {
     > td {
       vertical-align: middle;
     }
@@ -28,7 +44,7 @@
     > td.needs-action {
       color: $color-requires-attention;
       box-shadow: inset 0 0 1px $color-requires-attention;
-      background-color: lighten($color-requires-attention, 40%);
+      background-color: lighten($color-requires-attention, 30%);
       cursor: pointer;
     }
     > td.ready {
@@ -84,8 +100,7 @@
     padding: 10px;
     border-radius: 20px;
     max-height: 80%;
-    overflow-x: auto;
-    z-index: 999;
+    z-index: 990;
     min-width: 40%;
     max-width: 90%;
     .v-modal-title {
@@ -95,6 +110,8 @@
     }
     .v-modal-content {
       padding: 10px;
+      overflow-y: auto;
+      max-height: 80%;
     }
   }
 }
