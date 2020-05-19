@@ -28,7 +28,8 @@ $this->registerJsFile('@staticUrl/js/excel-import.js', [
             <tr v-for="row in sheet" class="excel-import-row">
                 <td class="row-status"
                     v-if="row.status === 'can-upload'">
-                    <button class="btn btn-success btn-xs">
+                    <button class="btn btn-success btn-xs"
+                            v-on:click="uploadRow(row)">
                         <span class="glyphicon glyphicon-upload">
                         </span>
                     </button>
@@ -39,7 +40,7 @@ $this->registerJsFile('@staticUrl/js/excel-import.js', [
                 </td>
                 </td>
                 <td v-for="cell in row.cells"
-                    v-html="cell.value"
+                    v-html="row.index === 1 ? cell.col + '-' + cell.value : cell.value"
                     v-bind:class="cell.status"
                     v-on:click="showCellDetails(cell, row)"
                 >
