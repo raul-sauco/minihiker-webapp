@@ -3,8 +3,10 @@
 namespace common\models;
 
 use Yii;
-use yii\behaviors\TimestampBehavior;
 use yii\behaviors\BlameableBehavior;
+use yii\behaviors\TimestampBehavior;
+use yii\db\ActiveQuery;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "program_family".
@@ -22,9 +24,10 @@ use yii\behaviors\BlameableBehavior;
  * @property int $updated_at
  *
  * @property Program $program
+ * @property ActiveQuery $payments
  * @property Family $family
  */
-class ProgramFamily extends \yii\db\ActiveRecord
+class ProgramFamily extends ActiveRecord
 {
     /**
      * @inheritdoc
@@ -83,7 +86,7 @@ class ProgramFamily extends \yii\db\ActiveRecord
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
     public function getProgram()
     {
@@ -91,7 +94,7 @@ class ProgramFamily extends \yii\db\ActiveRecord
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
     public function getFamily()
     {
@@ -99,7 +102,7 @@ class ProgramFamily extends \yii\db\ActiveRecord
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
     public function getPayments()
     {

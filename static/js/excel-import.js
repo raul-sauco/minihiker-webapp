@@ -353,6 +353,16 @@ const app = new Vue({
       return newRow;
     },
     /**
+     * Mark a row as ready
+     * @param row
+     */
+    markRowAsReady: function (row) {
+      row.status = 'ready';
+      row.cells.forEach(cell => {
+        cell.status = 'none';
+      });
+    },
+    /**
      * Get the html content that we should display in the
      * status cell of a row
      * @param row
@@ -561,10 +571,52 @@ const app = new Vue({
     uploadRow: function (row) {
       if (Mh.debug) { console.debug(`Uploading row ${row.index}`, row); }
       row.status = 'loading';
-      setTimeout(() => {
-        row.status = 'ready';
-        console.debug(`Row ${row.index} is ready`);
-      }, 3000);
+      // TODO create family if missing
+      // if (!row.familyId) { throw new Error('Missing row family'); }
+      // TODO create client if missing
+      if (!row.clientId) { throw new Error('Missing now client'); }
+      if (!row.programId) { throw new Error('Missing row program'); }
+      const url = this.url + 'program-families';
+      const data = {
+        program_id: row.programId,
+        family_id: row.client.family_id,
+        cost: +row.cells[4].value,
+        final_cost: +row.cells[3].value,
+        status: 7,
+        remarks: '表格上传数据'
+      };
+      axios.post(url, data, this.requestHeaders).then(res => {
+        console.log('Created new ProramFamily', res.data);
+        const pcurl = this.url + 'program-clients';
+        const pcdata = {
+          program_id: row.programId,
+          client_id: row.client.id,
+          status: 7,
+          remarks: '表格上传数据'
+        };
+        // Post to create a program-group
+        axios.post(pcurl, pcdata, this.requestHeaders).then(res => {
+          console.log('Created new ProgramClient', res.data);
+          const paymenturl = this.url + 'payments';
+          const paymentdata = {
+            family_id: row.client.family_id,
+            amount: +row.cells[3].value,
+            date: '2020-05-20',   // todo fix this
+            program_id: row.programId,
+            remarks: '表格上传数据'
+          };
+          axios.post(paymenturl, paymentdata, this.requestHeaders).then(res => {
+            console.log('Created new Payment', res.data);
+            this.markRowAsReady(row);
+          }).catch(err => {
+            console.error('Error creating payment', err);
+          });
+        }).catch(err => {
+          console.error('Failed to create ProgramClient', err);
+        });
+      }).catch(err => {
+        console.error('Failed to create ProgramFamily', err);
+      });
     }
   }
 });
