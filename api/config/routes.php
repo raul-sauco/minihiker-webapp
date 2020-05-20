@@ -9,6 +9,15 @@ return [
     ['class' => UrlRule::class, 'controller' => 'family'],
     ['class' => UrlRule::class, 'controller' => 'payment'],
     ['class' => UrlRule::class, 'controller' => 'program-client'],
-    ['class' => UrlRule::class, 'controller' => 'program-family'],
+    ['class' => UrlRule::class, 'controller' => 'program-family',
+        'extraPatterns' => [
+            'GET,HEAD {program-id}/{family-id}' => 'view',
+            'OPTIONS {program-id}/{family-id}' => 'options'
+        ],
+        'tokens' => [
+            '{program-id}' => '<program_id:\\d[\\d,]*>',
+            '{family-id}' => '<family_id:\\d[\\d,]*>'
+        ]
+    ],
     ['class' => UrlRule::class, 'controller' => 'program-search', 'pluralize' => false],
 ];

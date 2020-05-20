@@ -574,46 +574,36 @@ const app = new Vue({
       }
       if (!row.client) { throw new Error('Missing row client'); }
       if (!row.programId) { throw new Error('Missing row program'); }
-      const url = this.url + 'program-families';
-      const data = {
+      const programFamily = await this.uploadProgramFamily(row);
+      if (!programFamily) { throw new Error('Missing programFamily'); }
+
+      // TODO change promises to await below this line
+      const pcurl = this.url + 'program-clients';
+      const pcdata = {
         program_id: row.programId,
-        family_id: row.client.family_id,
-        cost: +row.cells[4].value,
-        final_cost: +row.cells[3].value,
+        client_id: row.client.id,
         status: 7,
         remarks: '表格上传数据'
       };
-      axios.post(url, data, this.requestHeaders).then(res => {
-        console.log('Created new ProramFamily', res.data);
-        const pcurl = this.url + 'program-clients';
-        const pcdata = {
+      // Post to create a program-group
+      axios.post(pcurl, pcdata, this.requestHeaders).then(res => {
+        console.log('Created new ProgramClient', res.data);
+        const paymenturl = this.url + 'payments';
+        const paymentdata = {
+          family_id: row.client.family_id,
+          amount: +row.cells[3].value,
+          date: '2020-05-20',   // todo fix this
           program_id: row.programId,
-          client_id: row.client.id,
-          status: 7,
           remarks: '表格上传数据'
         };
-        // Post to create a program-group
-        axios.post(pcurl, pcdata, this.requestHeaders).then(res => {
-          console.log('Created new ProgramClient', res.data);
-          const paymenturl = this.url + 'payments';
-          const paymentdata = {
-            family_id: row.client.family_id,
-            amount: +row.cells[3].value,
-            date: '2020-05-20',   // todo fix this
-            program_id: row.programId,
-            remarks: '表格上传数据'
-          };
-          axios.post(paymenturl, paymentdata, this.requestHeaders).then(res => {
-            console.log('Created new Payment', res.data);
-            this.markRowAsReady(row);
-          }).catch(err => {
-            console.error('Error creating payment', err);
-          });
+        axios.post(paymenturl, paymentdata, this.requestHeaders).then(res => {
+          console.log('Created new Payment', res.data);
+          this.markRowAsReady(row);
         }).catch(err => {
-          console.error('Failed to create ProgramClient', err);
+          console.error('Error creating payment', err);
         });
       }).catch(err => {
-        console.error('Failed to create ProgramFamily', err);
+        console.error('Failed to create ProgramClient', err);
       });
     },
     /**
@@ -624,7 +614,7 @@ const app = new Vue({
      */
     uploadClient: async function (row) {
       if (!row.family) {
-        row.family = await this.createFamily(row);
+        row.family = await this.uploadFamily(row);
       }
       const url = this.url + 'clients';
       const data = {
@@ -657,7 +647,7 @@ const app = new Vue({
      * @param row
      * @returns {Promise<void>}
      */
-    createFamily: async function (row) {
+    uploadFamily: async function (row) {
       // Find the client's name to create family name
       const index = this.clientType.kid.cells[0];
       const name = row.cells[index].value;
@@ -682,6 +672,34 @@ const app = new Vue({
         console.error(msg, err);
         throw new Error(msg);
       });
-    }
+    },
+    /**
+     * Check if the program family instance exists in the server and
+     * create it if it does not
+     * @param row
+     * @returns {Promise<void>}
+     */
+    uploadProgramFamily: async function (row) {
+      const url = this.url + 'program-families';
+      const data = {
+        program_id: row.programId,
+        family_id: row.client.family_id,
+        cost: +row.cells[4].value,
+        final_cost: +row.cells[3].value,
+        status: 7,
+        remarks: '表格上传数据'
+      };
+      const geturl = `${url}/${data.program_id}/${data.family_id}`;
+      let res = await axios.get(geturl, this.requestHeaders);
+      if (res.data) {
+        return res.data;
+      }
+      // The program family does not exist, upload it
+      res = await axios.post(url, data, this.requestHeaders);
+      if (!res.data) {
+        throw new Error(`Error uploading program family for row ${row.index}`);
+      }
+      return res.data;
+    },
   },  // End of Vue methods
 });
