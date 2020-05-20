@@ -112,6 +112,14 @@
       padding: 10px;
       overflow-y: auto;
       max-height: 80%;
+      .program-select-container {
+        margin: 10px 0;
+        padding: 10px 0;
+        border-bottom: 1px solid #666666;
+        button.btn {
+          margin: 10px 0;
+        }
+      }
     }
   }
 }

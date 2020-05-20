@@ -16,7 +16,9 @@ const app = new Vue({
     modal: {
       visible: false,
       title: null,
-      content: null
+      content: null,
+      client: null,
+      row: null
     },
     clientType: {
       kid: {
@@ -168,16 +170,11 @@ const app = new Vue({
         `&start-date=${row.cells[1].value}` +
         `&end-date=${row.cells[2].value}` +
         '&expand=programGroup.type';
-      axios.get(url, {
-        headers: {
-          'content-type': 'application/json',
-          'Authorization': `Bearer ${this.g.accesstoken}`
-        }
-      }).then(res => {
+      axios.get(url, this.requestHeaders).then(res => {
         if (!res.data || !res.data.length) {
           this.markProgramMatchNotFound(row);
         } else if (res.data.length === 1) {
-          this.markProgramMatchFound(row, res.data);
+          this.markProgramMatchFound(row, res.data[0]);
         } else {
           this.markProgramMatchFoundMultiple(row, res.data);
         }
@@ -221,12 +218,7 @@ const app = new Vue({
           this.markClientNotFound(row, type);
         });
       } else {
-        if (Mh.debug) {
-          console.debug(
-            `No ID value for row ${row.index} type ${type.name}`
-          );
-        }
-        // If there is no ID, mark the rows as inactive
+        // If there is no ID, mark the cells as inactive
         type.cells.forEach(cell => {
           row.cells[cell].status = 'inactive';
         });
@@ -250,11 +242,11 @@ const app = new Vue({
      * Update the UI to reflect that we found a
      * program for this row
      * @param row
-     * @param programData JSON program data
+     * @param program 
      */
-    markProgramMatchFound: function (row, programData) {
-      row.programId = programData[0].id
-      row.program = programData[0];
+    markProgramMatchFound: function (row, program) {
+      row.programId = program.id
+      row.program = program;
       this.markCanUploadRow(row);
       [0,1,2].forEach(cell => {
         this.sheet[row.index].cells[cell].status = 'ready';
@@ -267,10 +259,12 @@ const app = new Vue({
      * @param programData
      */
     markProgramMatchFoundMultiple: function (row, programData) {
-      console.debug('Mark row as found multiple', row);
-      this.sheet[row.index].status = 'needs-action';
+      row.status = 'needs-action';
+      row.programId = null;
+      row.program = null;
+      row.programs = programData;
       [0,1,2].forEach(cell => {
-        this.sheet[row.index].cells[cell].status = 'needs-action';
+        row.cells[cell].status = 'needs-action';
       });
     },
     /**
@@ -309,6 +303,10 @@ const app = new Vue({
       type.cells.forEach(cell => {
         row.cells[cell].status = 'can-upload';
       });
+      // If we didn't find the participant, mark row client null
+      if (type.name === 'client') {
+        row.client = null;
+      }
     },
     /**
      * Update the UI to reflect that we did not find
@@ -316,16 +314,15 @@ const app = new Vue({
      * @param row
      */
     markProgramMatchNotFound: function (row, programData) {
-      this.sheet[row.index].programId = null;
-      this.sheet[row.index].program = null;
-      this.sheet[row.index].programs = programData;
-      console.debug('Mark row as not found program', row);
-      this.sheet[row.index].status = 'error';
+      row.programId = null;
+      row.program = null;
+      row.programs = programData;
+      row.status = 'error';
       [0,1,2].forEach(cell => {
-        this.sheet[row.index].cells[cell].status = 'error';
+        row.cells[cell].status = 'error';
       });
       [3,4,5].forEach(cell => {
-        this.sheet[row.index].cells[cell].status = 'none';
+        row.cells[cell].status = 'none';
       });
       // TODO
     },
@@ -388,19 +385,16 @@ const app = new Vue({
      * @param row
      */
     showCellDetails: function (cell, row) {
-      console.log(cell);
-      console.log(row);
       const c = cell.col;
       if (c === 0 || c === 1 || c === 2) {
         if (Mh.debug) { console.debug('Showing program cell info'); }
         this.showProgramInfo(row);
       } else if (this.clientType.kid.cells.includes(c)) {
-        if (Mh.debug) { console.debug('Showing participant cell info'); }
         this.showClientInfo(row, this.clientType.kid);
       } else if (this.clientType.parent1.cells.includes(c)) {
-        if (Mh.debug) { console.debug('Showing parent1 cell info'); }
         this.showClientInfo(row, this.clientType.parent1);
       } else {
+        // TODO add missing types
         console.warn('Unrecognized cell type', cell);
       }
     },
@@ -412,32 +406,46 @@ const app = new Vue({
     showProgramInfo: function(row) {
       if (row.program && row.programId) {
         this.showProgramInModal(row.program);
+      } else if (row.programs && row.programs.length > 0) {
+        this.showSelectProgramModal(row);
       } else {
         this.showNoProgramFoundModal();
       }
     },
     /**
      * Display one program information in the app modal
-     * @param p
+     * @param row
      */
-    showProgramInModal: function (p) {
+    showProgramInModal: function (program) {
       if (Mh.debug) {
         console.debug(
-          `Showing information for program ${p.id}`
+          `Showing information for program ${program.id}`
         );
       }
-      const link = `${this.g.baseurl}program/${p.id}`;
-      const content =
-        `<div>链接: <a href="${link}" target="_blank">${p.id}</a></div>` +
-        `<div>项目: ${p.programGroup.name}</div>` +
-        `<div>地点: ${p.programGroup.location_id}</div>` +
-        `<div>类型: ${p.programGroup.type.name}</div>` +
-        `<div>开始时间: ${p.start_date}</div>` +
-        `<div>结束日期: ${p.end_date}</div>`;
       this.modal = {
         visible: true,
         title: '项目细节',
-        content
+        content: 'program-info',
+        programs: [program]
+      };
+    },
+    /**
+     * Show all the matches found in the modal and let the user
+     * manually select one
+     * @param row
+     */
+    showSelectProgramModal: function (row) {
+      if (Mh.debug) {
+        console.debug(
+          `Showing select program modal for row ${row.index}`
+        );
+      }
+      this.modal = {
+        visible: true,
+        title: '选择项目',
+        content: 'select-program',
+        row: row,
+        programs: row.programs
       };
     },
     /**
@@ -448,8 +456,21 @@ const app = new Vue({
       this.modal = {
         visible: true,
         title: '未找到项目',
-        content: '给定Excel工作表中的数据，我们找不到任何合适的项目'
+        content: 'program-not-found'
       };
+    },
+    /**
+     * Select one of the programs that were possible matches as the
+     * correct one and mark the row
+     * @param row
+     * @param program
+     */
+    selectProgram: function (row, program) {
+      if (Mh.debug) {
+        console.debug(`Selected program ${program.id} for row ${row.index}`);
+      }
+      this.markProgramMatchFound(row, program);
+      this.dismissModal();
     },
     /**
      * Evaluate what info to display for this cell in the
@@ -468,25 +489,19 @@ const app = new Vue({
     },
     /**
      * Show one client's information in the app modal
-     * @param c
+     * @param client
      */
-    showClientInModal: function (c) {
+    showClientInModal: function (client) {
       if (Mh.debug) {
         console.debug(
-          `Showing information for client ${c.id}`
+          `Showing information for client ${client.id}`
         );
       }
-      const link = `${this.g.baseurl}client/${c.id}`;
-      const familyLink = `${this.g.baseurl}family/${c.family_id}`;
-      const content =
-        `<div>链接: <a href="${link}" target="_blank">${c.id}</a></div>` +
-        `<div>名称: ${c.name_zh}</div>` +
-        `<div>身份证号码: ${c.id_card_number}</div>` +
-        `<div>家庭: <a href="${familyLink}" target="_blank">${c.familyName}</a></div>`;
       this.modal = {
         visible: true,
         title: '客户细节',
-        content
+        content: 'client-info',
+        client: client
       };
     },
     /**
@@ -497,47 +512,16 @@ const app = new Vue({
       this.modal = {
         visible: true,
         title: '未找到客户',
-        content: '给定Excel工作表中的数据，我们找不到任何合适的客户'
+        content: 'client-not-found'
       };
     },
     /**
      * Display help information in the app modal
      */
     showHelpModal: function () {
-      const content = '<table class="table table-bordered table-striped" id="example-table">' +
-        '<tr class="example-row"><td class="loading row-status">' +
-        this.spinner + '</td>' +
-        `<td class="loading">该行正在加载，需要稍等</td></tr>` +
-        '<tr class="example-row"><td class="can-upload row-status">' +
-          '<button class="btn btn-sm btn-success">' +
-            '<span class="glyphicon glyphicon-upload"></span>' +
-          '</button></td>' +
-          `<td class="ready">该行已准备好上载</td></tr>` +
-        '<tr class="example-row"><td class="needs-action row-status">' +
-        '<span class="glyphicon glyphicon-warning-sign"></span></td>' +
-        `<td class="needs-action">此行包含需要您执行一些操作才能上载的单元格</td></tr>` +
-        '<tr class="example-row"><td class="error row-status">' +
-          '<span class="glyphicon glyphicon-remove"></span></td>' +
-        `<td class="error">该行包含需要从服务器端手动修复的错误</td></tr>` +
-        '<tr class="example-row"><td class="info-row row-status">' +
-        '<span class="glyphicon glyphicon-info-sign"></span></td>' +
-        `<td class="none">该行是信息行，不包含任何数据</td></tr>` +
-        '<tr class="example-row">' +
-        `<td colspan="2" class="loading">该单元正在加载，需要稍等</td></tr>` +
-        '<tr class="example-row"><td colspan="2" class="ready">' +
-        '该单元格包含服务器上已经存在的数据，我们不需要上传，您可以单击该单元格以' +
-        '查看有关我们找到的数据的更多信息。</td></tr>' +
-        '<tr class="example-row"><td colspan="2" class="needs-action">' +
-        '此单元格包含需要您执行一些操作才能上传的数据</td></tr>' +
-        '<tr class="example-row"><td colspan="2" class="error">' +
-        '该单元格有错误，不允许将数据发送到服务器，您可以单击该单元格以查看更多信息</td></tr>' +
-        '<tr class="example-row"><td colspan="2" class="can-upload">' +
-        '该单元格包含将上传到服务器的数据</td></tr>' +
-        '<tr class="example-row"><td colspan="2">' +
-        '这些单元格不包含任何可上传的数据</td></tr>' +'</table>';
       this.modal = {
         title: '帮助页面',
-        content,
+        content: 'help',
         visible: true
       };
     },
@@ -549,7 +533,10 @@ const app = new Vue({
       this.modal = {
         visible: false,
         title: null,
-        content: null
+        content: null,
+        client: null,
+        row: null,
+        programs: null
       };
     },
     /**
@@ -560,7 +547,7 @@ const app = new Vue({
       if (Mh.debug) { console.debug('Uploading all rows'); }
       this.modal = {
         title: '在构建中',
-        content: '工作正在进行中',
+        content: 'work-in-progress',
         visible: true
       };
     },
