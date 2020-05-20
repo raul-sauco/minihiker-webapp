@@ -263,7 +263,7 @@ const app = new Vue({
       row.programId = null;
       row.program = null;
       row.programs = programData;
-      [0,1,2].forEach(cell => {
+      [0,1,2,3,4,5].forEach(cell => {
         row.cells[cell].status = 'needs-action';
       });
     },
@@ -331,23 +331,12 @@ const app = new Vue({
      * @param row
      */
     markRowAsInfo: function (row) {
-      const newRow = {
-        index: row.index,
-        status: 'info-row',
-        cells: []
-      }
+      row.status = 'info-row';
       // Iterate over the old row cells to create the new one
       row.cells.forEach( cell => {
-        newRow.cells.push({
-          row: cell.rowIndex,
-          col: cell.col,
-          value: cell.value,
-          hasError: false,
-          loading: false,
-          errorMessage: null
-        });
+        cell.status = 'inactive'
       });
-      return newRow;
+      return row;
     },
     /**
      * Mark a row as ready
@@ -385,17 +374,26 @@ const app = new Vue({
      * @param row
      */
     showCellDetails: function (cell, row) {
-      const c = cell.col;
-      if (c === 0 || c === 1 || c === 2) {
-        if (Mh.debug) { console.debug('Showing program cell info'); }
-        this.showProgramInfo(row);
-      } else if (this.clientType.kid.cells.includes(c)) {
-        this.showClientInfo(row, this.clientType.kid);
-      } else if (this.clientType.parent1.cells.includes(c)) {
-        this.showClientInfo(row, this.clientType.parent1);
-      } else {
-        // TODO add missing types
-        console.warn('Unrecognized cell type', cell);
+      if (cell.status !== 'inactive' && cell.status !== 'none' && cell.status !== 'info') {
+        const c = cell.col;
+        if (c === 0 || c === 1 || c === 2) {
+          if (Mh.debug) { console.debug('Showing program cell info'); }
+          this.showProgramInfo(row);
+        } else if (this.clientType.kid.cells.includes(c)) {
+          this.showClientInfo(row, this.clientType.kid);
+        } else if (this.clientType.parent1.cells.includes(c)) {
+          this.showClientInfo(row, this.clientType.parent1);
+        } else if (this.clientType.parent2.cells.includes(c)) {
+          this.showClientInfo(row, this.clientType.parent2);
+        } else if (this.clientType.parent3.cells.includes(c)) {
+          this.showClientInfo(row, this.clientType.parent3);
+        } else if (this.clientType.parent4.cells.includes(c)) {
+          this.showClientInfo(row, this.clientType.parent4);
+        } else {
+          console.warn('Unrecognized cell type', cell);
+        }
+      } else if (Mh.debug) {
+        console.debug(`No details for ${cell.status} cell ${cell.col}:${cell.row}`);
       }
     },
     /**
@@ -545,23 +543,36 @@ const app = new Vue({
      */
     uploadAllRows: function () {
       if (Mh.debug) { console.debug('Uploading all rows'); }
-      this.modal = {
-        title: '在构建中',
-        content: 'work-in-progress',
-        visible: true
-      };
+      this.sheet.forEach(row => {
+        if (row.status === 'can-upload') {
+          this.uploadRow(row).then(() => {
+            if (Mh.debug) {
+              console.debug(`Uploaded row ${row.index}`);
+            }
+          });
+        }
+      });
     },
     /**
      * Upload one row of data to the server
      * @param row
      */
-    uploadRow: function (row) {
-      if (Mh.debug) { console.debug(`Uploading row ${row.index}`, row); }
+    uploadRow: async function (row) {
+      if (Mh.debug) { console.debug(`Uploading row ${row.index}`); }
+      if (row.status !== 'can-upload') {
+        this.modal = {
+          visible: true,
+          title: '行尚未准备好上载',
+          content: 'row-not-ready-to-upload',
+          row
+        };
+        throw new Error (`Row ${row.index} is not ready to upload`);
+      }
       row.status = 'loading';
-      // TODO create family if missing
-      // if (!row.familyId) { throw new Error('Missing row family'); }
-      // TODO create client if missing
-      if (!row.clientId) { throw new Error('Missing now client'); }
+      if (row.client === null) {
+        row.client = await this.uploadClient(row);
+      }
+      if (!row.client) { throw new Error('Missing row client'); }
       if (!row.programId) { throw new Error('Missing row program'); }
       const url = this.url + 'program-families';
       const data = {
@@ -604,6 +615,73 @@ const app = new Vue({
       }).catch(err => {
         console.error('Failed to create ProgramFamily', err);
       });
+    },
+    /**
+     * Create a new client entry in the server for the
+     * current row parameter
+     * @param row
+     * @returns {Promise<void>}
+     */
+    uploadClient: async function (row) {
+      if (!row.family) {
+        row.family = await this.createFamily(row);
+      }
+      const url = this.url + 'clients';
+      const data = {
+        name: row.cells[6].value,
+        family_id: row.family.id,
+        is_male: row.cells[7].value.trim() === '男',
+        family_role_id: 1,
+        id_card_number: row.cells[10].value,
+        passport_number: row.cells[11].value || null
+      };
+      return axios.post(url,data,this.requestHeaders).then(res => {
+        if (res.status === 201) {
+          if (Mh.debug) {
+            console.debug(`Created new Client with id ${res.data.id} for row ${row.index}`, res);
+          }
+          return res.data;
+        } else {
+          const msg = `Error creating Client for row ${row.index}`;
+          console.error(msg, err);
+          throw new Error(msg);
+        }
+      }).catch(err => {
+        const msg = `Error creating Client for row ${row.index}`;
+        console.error(msg, err);
+        throw new Error(msg);
+      });
+    },
+    /**
+     * Try to create a new family with the row data
+     * @param row
+     * @returns {Promise<void>}
+     */
+    createFamily: async function (row) {
+      // Find the client's name to create family name
+      const index = this.clientType.kid.cells[0];
+      const name = row.cells[index].value;
+      if (!name) {
+        throw new Error(`Could not determine family name for row ${row.index}`);
+      }
+      const url = this.url + 'families';
+      const data = {name: name.substr(0,12)};
+      return axios.post(url,data,this.requestHeaders).then(res => {
+        if (res.status === 201) {
+          if (Mh.debug) {
+            console.debug(`Created new Family with id ${res.data.id} for row ${row.index}`, res);
+          }
+          return res.data;
+        } else {
+          const msg = `Error creating Family for row ${row.index}`;
+          console.error(msg, res);
+          throw new Error(msg);
+        }
+      }).catch(err => {
+        const msg = `Error creating Family for row ${row.index}`;
+        console.error(msg, err);
+        throw new Error(msg);
+      });
     }
-  }
+  },  // End of Vue methods
 });

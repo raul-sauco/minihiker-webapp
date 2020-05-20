@@ -99,23 +99,6 @@ class Family extends ActiveRecord
             TimestampBehavior::class,
         ];
     }
-    
-    /**
-     *
-     * {@inheritdoc}
-     * @see \yii\db\BaseActiveRecord::beforeSave()
-     */
-    public function beforeSave($insert)
-    {
-        // Generate Serial numbers for new records
-        if ($insert && empty($this->serial_number)) {
-            
-            $this->serial_number = FamilyHelper::generateSerialNumber($this->category);
-            
-        }
-        
-        return parent::beforeSave($insert);
-    }
 
     /**
      * @return \yii\db\ActiveQuery
