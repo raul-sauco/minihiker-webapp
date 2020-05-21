@@ -7,22 +7,17 @@
         <tbody>
         <tr v-for="row in sheet" class="excel-import-row">
             <td class="row-status"
-                v-if="row.status === 'can-upload'">
-                <button class="btn btn-success btn-xs"
-                        @click="uploadRow(row)">
-                        <span class="glyphicon glyphicon-upload">
-                        </span>
-                </button>
-            </td>
-            </td>
-            <td v-else
-                class="row-status"
                 :class="row.status"
-                v-html="getRowStatusHtml(row)"
                 @click="handleRowStatusCellClick(row)">
+                <div v-if="row.status === 'loading'"
+                    v-html="spinner">
+                </div>
+                <span v-else class="glyphicon"
+                      :class="getGlyphiconClass(row)"
+                ></span>
             </td>
             <td v-for="cell in row.cells"
-                v-html="row.index === 1 ? cell.col + '-' + cell.value : cell.value"
+                v-html="cell.value"
                 :class="cell.status"
                 @click="showCellDetails(cell, row)">
             </td>

@@ -360,23 +360,23 @@ const app = new Vue({
       });
     },
     /**
-     * Get the html content that we should display in the
-     * status cell of a row
+     * Get the glyphicon class for the status cell
      * @param row
      * @returns {string}
      */
-    getRowStatusHtml: function (row) {
-      if (row.status === 'loading') {
-        return this.spinner;
-      } else if (row.status === 'info-row') {
-        return '<span class="glyphicon glyphicon-info-sign"></span>'
-      } else if (row.status === 'error' || row.status === 'upload-error') {
-        return '<span class="glyphicon glyphicon-remove"></span>';
-      } else if (row.status === 'needs-action') {
-        return '<span class="glyphicon glyphicon-warning-sign"></span>'
-      } else if (row.status === 'ready') {
-        return '<span class="glyphicon glyphicon-ok"></span>'
+    getGlyphiconClass: function (row) {
+      const gly = {
+        'can-upload': 'upload',
+        'info-row': 'info-sign',
+        'error': 'remove',
+        'upload-error': 'remove',
+        'needs-action': 'warning-sign',
+        'ready': 'ok'
+      };
+      if (!gly[row.status]) {
+        return '';
       }
+      return 'glyphicon-' + gly[row.status];
     },
     /**
      * Display more information about the current state of the
