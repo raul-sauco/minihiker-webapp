@@ -8,7 +8,16 @@ return [
     ['class' => UrlRule::class, 'controller' => 'client-search', 'pluralize' => false],
     ['class' => UrlRule::class, 'controller' => 'family'],
     ['class' => UrlRule::class, 'controller' => 'payment'],
-    ['class' => UrlRule::class, 'controller' => 'program-client'],
+    ['class' => UrlRule::class, 'controller' => 'program-client',
+        'extraPatterns' => [
+            'GET,HEAD {program-id}/{client-id}' => 'view',
+            'OPTIONS {program-id}/{client-id}' => 'options'
+        ],
+        'tokens' => [
+            '{program-id}' => '<program_id:\\d[\\d,]*>',
+            '{client-id}' => '<client_id:\\d[\\d,]*>'
+        ]
+    ],
     ['class' => UrlRule::class, 'controller' => 'program-family',
         'extraPatterns' => [
             'GET,HEAD {program-id}/{family-id}' => 'view',

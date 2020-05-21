@@ -572,38 +572,27 @@ const app = new Vue({
       if (row.client === null) {
         row.client = await this.uploadClient(row);
       }
-      if (!row.client) { throw new Error('Missing row client'); }
-      if (!row.programId) { throw new Error('Missing row program'); }
+      if (!row.client) { throw new Error('Missing row Client'); }
+      if (!row.programId) { throw new Error('Missing row Program'); }
       const programFamily = await this.uploadProgramFamily(row);
-      if (!programFamily) { throw new Error('Missing programFamily'); }
+      if (!programFamily) { throw new Error('Missing ProgramFamily'); }
+      const programClient = await this.uploadProgramClient(row);
+      if (!programClient) { throw new Error('Missing ProgramClient'); }
 
       // TODO change promises to await below this line
-      const pcurl = this.url + 'program-clients';
-      const pcdata = {
+      const paymenturl = this.url + 'payments';
+      const paymentdata = {
+        family_id: row.client.family_id,
+        amount: +row.cells[3].value,
+        date: '2020-05-20',   // todo fix this
         program_id: row.programId,
-        client_id: row.client.id,
-        status: 7,
         remarks: '表格上传数据'
       };
-      // Post to create a program-group
-      axios.post(pcurl, pcdata, this.requestHeaders).then(res => {
-        console.log('Created new ProgramClient', res.data);
-        const paymenturl = this.url + 'payments';
-        const paymentdata = {
-          family_id: row.client.family_id,
-          amount: +row.cells[3].value,
-          date: '2020-05-20',   // todo fix this
-          program_id: row.programId,
-          remarks: '表格上传数据'
-        };
-        axios.post(paymenturl, paymentdata, this.requestHeaders).then(res => {
-          console.log('Created new Payment', res.data);
-          this.markRowAsReady(row);
-        }).catch(err => {
-          console.error('Error creating payment', err);
-        });
+      axios.post(paymenturl, paymentdata, this.requestHeaders).then(res => {
+        console.log('Created new Payment', res.data);
+        this.markRowAsReady(row);
       }).catch(err => {
-        console.error('Failed to create ProgramClient', err);
+        console.error('Error creating payment', err);
       });
     },
     /**
@@ -698,6 +687,32 @@ const app = new Vue({
       res = await axios.post(url, data, this.requestHeaders);
       if (!res.data) {
         throw new Error(`Error uploading program family for row ${row.index}`);
+      }
+      return res.data;
+    },
+    /**
+     * Check if the program client instance exists in the server
+     * and create it if it does not
+     * @param row
+     * @returns {Promise<void>}
+     */
+    uploadProgramClient: async function (row) {
+      const url = this.url + 'program-clients';
+      const data = {
+        program_id: row.programId,
+        client_id: row.client.id,
+        status: 7,
+        remarks: '表格上传数据'
+      };
+      const geturl = `${url}/${data.program_id}/${data.client_id}`;
+      let res = await axios.get(geturl, this.requestHeaders);
+      if (res.data) {
+        return res.data;
+      }
+      // No program-client found, post data to create a new one
+      res = await axios.post(url, data, this.requestHeaders);
+      if (!res.daat) {
+        throw new Error(`Error uploading program client for row ${row.index}`);
       }
       return res.data;
     },
