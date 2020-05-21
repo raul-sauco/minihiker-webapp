@@ -14,10 +14,12 @@
                         </span>
                 </button>
             </td>
+            </td>
             <td v-else
                 class="row-status"
                 :class="row.status"
-                v-html="getRowStatusHtml(row)">
+                v-html="getRowStatusHtml(row)"
+                @click="handleRowStatusCellClick(row)">
             </td>
             <td v-for="cell in row.cells"
                 v-html="row.index === 1 ? cell.col + '-' + cell.value : cell.value"

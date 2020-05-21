@@ -37,9 +37,9 @@
                     </button>
                 </div>
             </template>
-            <template v-if="modal.content === 'upload-errors'">
-                <div class="upload-error" v-for="error in modal.row.errors">
-                    <div>{{ error }}</div>
+            <template v-if="modal.content === 'upload-error'">
+                <div class="upload-error alert alert-danger">
+                    {{ modal.row.error }}
                 </div>
             </template>
             <template v-if="modal.content === 'work-in-progress'">

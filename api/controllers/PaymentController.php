@@ -6,6 +6,7 @@ use api\models\Payment;
 use common\controllers\ActiveBaseController;
 use Yii;
 use yii\web\ForbiddenHttpException;
+use yii\web\ServerErrorHttpException;
 
 /**
  * Class PaymentController
@@ -24,6 +25,7 @@ class PaymentController extends ActiveBaseController
     public function checkAccess($action, $model = null, $params = []): bool
     {
         if ($action === 'create') {
+            throw new ServerErrorHttpException('Test Error');
             return Yii::$app->user->can('user');
         }
         return parent::checkAccess($action, $model, $params);

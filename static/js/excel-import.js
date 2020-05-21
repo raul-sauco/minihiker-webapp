@@ -253,7 +253,7 @@ const app = new Vue({
       });
     },
     /**
-     * TODO; display a select with all the programs found and let
+     * Display a select with all the programs found and let
      * the user click on one to select it
      * @param row
      * @param programData
@@ -349,6 +349,17 @@ const app = new Vue({
       });
     },
     /**
+     * Mark the row as having encountered some error
+     * during upload
+     * @param row
+     */
+    markRowHasUploadError: function (row) {
+      row.status = 'upload-error';
+      row.cells.forEach(cell => {
+        cell.status = 'none';
+      });
+    },
+    /**
      * Get the html content that we should display in the
      * status cell of a row
      * @param row
@@ -359,7 +370,7 @@ const app = new Vue({
         return this.spinner;
       } else if (row.status === 'info-row') {
         return '<span class="glyphicon glyphicon-info-sign"></span>'
-      } else if (row.status === 'error') {
+      } else if (row.status === 'error' || row.status === 'upload-error') {
         return '<span class="glyphicon glyphicon-remove"></span>';
       } else if (row.status === 'needs-action') {
         return '<span class="glyphicon glyphicon-warning-sign"></span>'
@@ -394,6 +405,32 @@ const app = new Vue({
         }
       } else if (Mh.debug) {
         console.debug(`No details for ${cell.status} cell ${cell.col}:${cell.row}`);
+      }
+    },
+    /**
+     * Handle a click on the row status cell
+     * @param row
+     */
+    handleRowStatusCellClick: function (row) {
+      if (row.status === 'can-upload') {
+        this.uploadRow(row);
+      } else if (row.status === 'upload-error') {
+        this.showUploadErrorsInModal(row);
+      } else if (Mh.debug) {
+        console.debug(`Clicked inactive status-cell in row ${row.index}`);
+      }
+    },
+    /**
+     * Display more information about a row upload errors in the
+     * application modal
+     * @param row
+     */
+    showUploadErrorsInModal: function (row) {
+      this.modal = {
+        visible: true,
+        title: '服务器错误',
+        content: 'upload-error',
+        row
       }
     },
     /**
@@ -578,22 +615,13 @@ const app = new Vue({
       if (!programFamily) { throw new Error('Missing ProgramFamily'); }
       const programClient = await this.uploadProgramClient(row);
       if (!programClient) { throw new Error('Missing ProgramClient'); }
-
-      // TODO change promises to await below this line
-      const paymenturl = this.url + 'payments';
-      const paymentdata = {
-        family_id: row.client.family_id,
-        amount: +row.cells[3].value,
-        date: '2020-05-20',   // todo fix this
-        program_id: row.programId,
-        remarks: '表格上传数据'
-      };
-      axios.post(paymenturl, paymentdata, this.requestHeaders).then(res => {
-        console.log('Created new Payment', res.data);
-        this.markRowAsReady(row);
-      }).catch(err => {
-        console.error('Error creating payment', err);
-      });
+      const payment = await this.uploadPayment(row);
+      if (!payment) {
+        this.markRowHasUploadError(row);
+        throw new Error(`Payment upload error`);
+      }
+      row.payment = payment;
+      this.markRowAsReady(row);
     },
     /**
      * Create a new client entry in the server for the
@@ -715,6 +743,33 @@ const app = new Vue({
         throw new Error(`Error uploading program client for row ${row.index}`);
       }
       return res.data;
+    },
+    /**
+     * Upload a new payment to the server
+     * @param row
+     * @returns {Promise<*>}
+     */
+    uploadPayment: async function (row) {
+      const url = this.url + 'payments';
+      const data = {
+        family_id: row.client.family_id,
+        amount: +row.cells[3].value,
+        date: new Date().toJSON().substr(0,10),
+        program_id: row.programId,
+        remarks: '表格上传数据'
+      };
+      return axios.post(url, data, this.requestHeaders).then(res => {
+        if (Mh.debug) {
+          console.debug(`Uploaded new payment for row ${row.index}`, res);
+        }
+        return res.data;
+      }).catch(err => {
+        if (Mh.debug) {
+          console.error(`Payment upload failed`, err);
+        }
+        row.error = err.message;
+        return null;
+      });
     },
   },  // End of Vue methods
 });
