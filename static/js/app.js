@@ -7,7 +7,7 @@
  * @param role
  * @returns {number}
  */
-Mh.methods.getFamilyRoleId = function (role) {
+Mh.methods.getFamilyRoleId = (role) => {
   const roles = {
     1: '孩子',
     2: '父亲 爸爸',
@@ -27,6 +27,29 @@ Mh.methods.getFamilyRoleId = function (role) {
   return id;
 }
 
+/**
+ * Format a string as a datestring ready to be sent to
+ * the backend
+ * @param date
+ * @returns {string|*}
+ */
+Mh.methods.formatDate = (date) => {
+  if (!date) {
+    return null;
+  }
+  if (date.match(/^\d{4}-([0]\d|1[0-2])-([0-2]\d|3[01])$/)) {
+    return date;
+  }
+  const year = date.substring(0, 4);
+  const month = date.substring(4, 6);
+  const day = date.substring(6, 8);
+  const result = `${year}-${month}-${day}`;
+  if (!result.match(/^\d{4}-([0]\d|1[0-2])-([0-2]\d|3[01])$/)) {
+    console.error(`Failed to convert date ${date}`);
+    return null;
+  }
+  return result;
+}
 /**
  * Toggles the relation between a Program and a Client.
  *

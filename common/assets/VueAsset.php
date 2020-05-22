@@ -1,6 +1,7 @@
 <?php
 namespace common\assets;
 
+use backend\assets\BackendAsset;
 use yii\web\AssetBundle;
 
 class VueAsset extends AssetBundle
@@ -10,6 +11,7 @@ class VueAsset extends AssetBundle
     ];
 
     public $depends = [
+        BackendAsset::class,
         AxiosAsset::class,
         LodashAsset::class,
         // VuexAsset::class

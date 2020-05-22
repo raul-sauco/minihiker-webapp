@@ -5,6 +5,7 @@ const app = new Vue({
     url: Mh.globalData.apiurl,
     spinner: Mh.globalData.spinner20,
     g: Mh.globalData,
+    formatDate: Mh.methods.formatDate,
     requestHeaders: {
       headers: {
         'content-type': 'application/json',
@@ -167,10 +168,12 @@ const app = new Vue({
      * @param row
      */
     fetchRowProgram: function (row) {
+      const startDate = this.formatDate(row.cells[1].value);
+      const endDate = this.formatDate(row.cells[2].value);
       const url = this.url + 'program-search?' +
         `name=${row.cells[0].value}` +
-        `&start-date=${row.cells[1].value}` +
-        `&end-date=${row.cells[2].value}` +
+        `&start-date=${startDate}` +
+        `&end-date=${endDate}` +
         '&expand=programGroup.type';
       axios.get(url, this.requestHeaders).then(res => {
         if (!res.data || !res.data.length) {
@@ -708,7 +711,7 @@ const app = new Vue({
         family_role_id: 1,
         id_card_number: row.cells[10].value,
         passport_number: row.cells[11].value || null,
-        passport_expire_date: row.cells[12].value || null
+        passport_expire_date: this.formatDate(row.cells[12].value)
       };
       try {
         const res = await axios.post(url,data,this.requestHeaders);
@@ -762,7 +765,7 @@ const app = new Vue({
         family_role_id: Mh.methods.getFamilyRoleId(cells[indexes[3]].value),
         id_card_number: cells[indexes[4]].value,
         passport_number: cells[indexes[5]].value || null,
-        passport_expire_date: cells[indexes[6]].value || null,
+        passport_expire_date: this.formatDate(cells[indexes[6]].value)
       };
       const url = this.url + 'clients';
       try {
