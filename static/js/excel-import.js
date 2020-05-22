@@ -11,7 +11,7 @@ const app = new Vue({
         'Authorization': `Bearer ${Mh.globalData.accesstoken}`
       }
     },
-    columns: 36,
+    columns: 41,
     sheet: null,
     modal: {
       visible: false,
@@ -33,18 +33,18 @@ const app = new Vue({
       },
       parent2: {
         name: 'parent2',
-        cells: [20,21,22,23,24,25],
-        idCell: 23
+        cells: [20,21,22,23,24,25,26],
+        idCell: 24
       },
       parent3: {
         name: 'parent3',
-        cells: [26,27,28,29,30],
-        idCell: 29  // todo this is passport, change to id
+        cells: [27,28,29,30,31,32,33],
+        idCell: 31
       },
       parent4: {
         name: 'parent4',
-        cells: [31,32,33,34,35],
-        idCell: 34  // todo this is passport, change to id
+        cells: [34,35,36,37,38,39,40],
+        idCell: 38
       }
     }
   },
@@ -126,6 +126,8 @@ const app = new Vue({
       const row = {
         index: rowIndex,
         status: 'loading',
+        client: null,
+        familyId: null,
         cells
       };
       if (empty) {
@@ -191,17 +193,17 @@ const app = new Vue({
     fetchRowClients: function (row) {
       // Fetch participant
       this.fetchRowClient(row, this.clientType.kid);
-      this.fetchRowClient(row, this.clientType.parent1);
-      this.fetchRowClient(row, this.clientType.parent2);
-      this.fetchRowClient(row, this.clientType.parent3);
-      this.fetchRowClient(row, this.clientType.parent4);
+      // Fetch parents
+      [1,2,3,4].forEach(i => {
+        this.fetchRowClient(row, this.clientType[`parent${i}`])
+      });
     },
     /**
      * Try to find one client in the server given it's ID
      * @param row
      * @param type the type of client to fetch for
      */
-    fetchRowClient: function (row, type) {
+    fetchRowClient: async function (row, type) {
       const id = row.cells[type.idCell].value;
       // Only fetch for cells that have an ID value
       if (id) {
@@ -281,11 +283,16 @@ const app = new Vue({
             `Found row ${row.index} participant, id: ${clientData.id}`
           );
         }
+        row.familyId = clientData.family_id;
         row.clientId = clientData.id
         row.client = clientData;
         this.markCanUploadRow(row);
       } else {
         row[type.name] = clientData;
+        // Only set family ID if not set by client already
+        if (!row.familyId) {
+          row.familyId = clientData.family_id;
+        }
       }
 
       // Update cell status
@@ -324,7 +331,6 @@ const app = new Vue({
       [3,4,5].forEach(cell => {
         row.cells[cell].status = 'none';
       });
-      // TODO
     },
     /**
      * Mark a row as an info row
@@ -602,22 +608,77 @@ const app = new Vue({
         throw new Error (`Row ${row.index} is not ready to upload`);
       }
       row.status = 'loading';
+      // If we didn't find an existing client, upload it
       if (row.client === null) {
         row.client = await this.uploadClient(row);
       }
-      if (!row.client) { throw new Error('Missing row Client'); }
-      if (!row.programId) { throw new Error('Missing row Program'); }
+      if (!row.client) {
+        const msg = '无法上传行客户端数据';
+        row.error = msg;
+        this.markRowHasUploadError(row);
+        throw new Error(msg);
+      }
+      if (!row.programId) {
+        const msg = '缺少行项目ID';
+        row.error = msg;
+        this.markRowHasUploadError(row);
+        throw new Error(msg);
+      }
       const programFamily = await this.uploadProgramFamily(row);
-      if (!programFamily) { throw new Error('Missing ProgramFamily'); }
+      if (!programFamily) {
+        const msg = '无法上载项目-家庭数据';
+        row.error = msg;
+        this.markRowHasUploadError(row);
+        throw new Error(msg);
+      }
       const programClient = await this.uploadProgramClient(row);
-      if (!programClient) { throw new Error('Missing ProgramClient'); }
+      if (!programClient) {
+        const msg = '无法上载项目-客户数据';
+        row.error = msg;
+        this.markRowHasUploadError(row);
+        throw new Error(msg);
+      }
       const payment = await this.uploadPayment(row);
       if (!payment) {
         this.markRowHasUploadError(row);
         throw new Error(`Payment upload error`);
       }
       row.payment = payment;
+      try {
+        const success = await this.uploadParents(row);
+      } catch (error) {
+        console.error(error);
+      }
       this.markRowAsReady(row);
+    },
+    /**
+     * Try to create a new family with the row data
+     * @param row
+     * @returns {Promise<void>} family JSON
+     */
+    uploadFamily: async function (row) {
+      // Find the client's name to create family name
+      const index = this.clientType.kid.cells[0];
+      const name = row.cells[index].value + '家庭';
+      if (!name) {
+        throw new Error(`Could not determine family name for row ${row.index}`);
+      }
+      const url = this.url + 'families';
+      const data = {name: name.substr(0,12)};
+      let res;
+      try {
+        res = await axios.post(url,data,this.requestHeaders);
+        if (Mh.debug) {
+          console.debug(
+            `Created new Family with id ${res.data.id} for row ${row.index}`,
+            res);
+        }
+        return res.data;
+      } catch (error) {
+        const msg = `Error ${error.response.status} creating Family for row ${row.index}`;
+        console.error(msg, error);
+        throw new Error(msg);
+      }
     },
     /**
      * Create a new client entry in the server for the
@@ -626,65 +687,121 @@ const app = new Vue({
      * @returns {Promise<void>}
      */
     uploadClient: async function (row) {
-      if (!row.family) {
-        row.family = await this.uploadFamily(row);
+      if (!row.familyId) {
+        try {
+          const family = await this.uploadFamily(row);
+          if (family && family.id) {
+            row.familyId = family.id;
+          } else {
+            console.error(
+              `Error obtaining row ${row.index} family id`, family);
+          }
+        } catch (error) {
+          throw new Error(`Failed to create family for row ${row.index}`);
+        }
       }
       const url = this.url + 'clients';
       const data = {
-        name: row.cells[6].value,
-        family_id: row.family.id,
+        name_zh: row.cells[6].value,
+        family_id: row.familyId,
         is_male: row.cells[7].value.trim() === '男',
         family_role_id: 1,
         id_card_number: row.cells[10].value,
-        passport_number: row.cells[11].value || null
+        passport_number: row.cells[11].value || null,
+        passport_expire_date: row.cells[12].value || null
       };
-      return axios.post(url,data,this.requestHeaders).then(res => {
-        if (res.status === 201) {
-          if (Mh.debug) {
-            console.debug(`Created new Client with id ${res.data.id} for row ${row.index}`, res);
-          }
-          return res.data;
-        } else {
-          const msg = `Error creating Client for row ${row.index}`;
-          console.error(msg, err);
-          throw new Error(msg);
+      try {
+        const res = await axios.post(url,data,this.requestHeaders);
+        if (Mh.debug) {
+          console.debug(
+            `Created new Client with id ${res.data.id} for row ${row.index}`,
+            res.data);
         }
-      }).catch(err => {
-        const msg = `Error creating Client for row ${row.index}`;
-        console.error(msg, err);
+        return res.data;
+      } catch (error) {
+        const msg = `Error ${error.response.status} creating Client ` +
+        `for row ${row.index}`;
+        console.error(msg, error);
         throw new Error(msg);
-      });
+      }
     },
     /**
-     * Try to create a new family with the row data
+     * Upload parent information to the server
      * @param row
-     * @returns {Promise<void>}
      */
-    uploadFamily: async function (row) {
-      // Find the client's name to create family name
-      const index = this.clientType.kid.cells[0];
-      const name = row.cells[index].value;
-      if (!name) {
-        throw new Error(`Could not determine family name for row ${row.index}`);
-      }
-      const url = this.url + 'families';
-      const data = {name: name.substr(0,12)};
-      return axios.post(url,data,this.requestHeaders).then(res => {
-        if (res.status === 201) {
-          if (Mh.debug) {
-            console.debug(`Created new Family with id ${res.data.id} for row ${row.index}`, res);
+    uploadParents: async function (row) {
+      let success = true;
+      [1,2,3,4].forEach(async i => {
+        const index = `parent${i}`;
+        const idCell = this.clientType[index].idCell;
+        const id = row.cells[idCell].value;
+        if (id && !row[index]) {
+          try {
+            const parent = await this.uploadOneParent(row, index);
+          } catch (error) {
+            success = false;
           }
-          return res.data;
-        } else {
-          const msg = `Error creating Family for row ${row.index}`;
-          console.error(msg, res);
-          throw new Error(msg);
         }
-      }).catch(err => {
-        const msg = `Error creating Family for row ${row.index}`;
-        console.error(msg, err);
-        throw new Error(msg);
       });
+      return success;
+    },
+    /**
+     *
+     * @param row
+     * @param index
+     * @returns {Promise<*>}
+     */
+    uploadOneParent: async function (row, index) {
+      const cells = row.cells;
+      const indexes = this.clientType[index].cells;
+      const data = {
+        family_id: row.familyId,
+        name_zh: cells[indexes[0]].value.substr(0,12),
+        phone: cells[indexes[1]].value || null,
+        wechat: cells[indexes[2]].value || null,
+        family_role_id: await this.getFamilyRoleId(cells[indexes[3]].value),
+        id_card_number: cells[indexes[4]].value,
+        passport_number: cells[indexes[5]].value || null,
+        passport_expire_date: cells[indexes[6]].value || null,
+      };
+      const url = this.url + 'clients';
+      try {
+        const res = await axios.post(url, data, this.requestHeaders);
+        row[index] = res.data;
+        if (Mh.debug) {
+          console.debug(`Uploaded new ${index} for row ${row.index}`, res.data);
+        }
+        return res.data;
+      } catch (error) {
+        const message = `Error ${error.response.status} ` +
+          `uploading ${index} for row ${row.index}`;
+        console.error(message, error);
+        throw new Error(message);
+      }
+    },
+    /**
+     * Return the id for the textual family role
+     * @param role
+     * @returns {number}
+     */
+    getFamilyRoleId: async function (role) {
+      const roles = {
+        1: '孩子',
+        2: '父亲 爸爸',
+        3: '母亲  妈妈',
+        4: '爷爷',
+        5: '奶奶',
+        6: '姥姥',
+        7: '姥爷'
+      };
+      // If not found return role 'other'
+      let id = 8;
+      Object.keys(roles).forEach(i => {
+        if (roles[i].includes(role)) {
+          id = i;
+        }
+      });
+      return id;
     },
     /**
      * Check if the program family instance exists in the server and
@@ -696,7 +813,7 @@ const app = new Vue({
       const url = this.url + 'program-families';
       const data = {
         program_id: row.programId,
-        family_id: row.client.family_id,
+        family_id: row.familyId,
         cost: +row.cells[4].value,
         final_cost: +row.cells[3].value,
         status: 7,
@@ -780,14 +897,14 @@ const app = new Vue({
     uploadPayment: async function (row) {
       const url = this.url + 'payments';
       const data = {
-        family_id: row.client.family_id,
+        family_id: row.familyId,
         amount: +row.cells[3].value,
         date: new Date().toJSON().substr(0,10),
         program_id: row.programId,
         remarks: '表格上传数据'
       };
       try {
-        const res = axios.post(url, data, this.requestHeaders);
+        const res = await axios.post(url, data, this.requestHeaders);
         if (Mh.debug) {
           console.debug(`Uploaded new payment for row ${row.index}`, res.data);
         }
