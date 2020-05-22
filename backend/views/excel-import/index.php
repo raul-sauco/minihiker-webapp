@@ -3,7 +3,7 @@
 use common\assets\VueAsset;
 use common\assets\XlsxAsset;use yii\bootstrap\Html;
 
-/* @var $this \yii\web\View */
+$this->title = Yii::t('app', 'Spreadsheet upload');
 
 $this->registerJsFile('@staticUrl/js/excel-import.js', [
     'depends' => [

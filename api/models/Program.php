@@ -2,8 +2,6 @@
 
 namespace api\models;
 
-use Yii;
-use yii\base\InvalidConfigException;
 use yii\db\ActiveQuery;
 
 /**
@@ -20,6 +18,14 @@ class Program extends \common\models\Program
     public function getProgramGroup(): ActiveQuery
     {
         return $this->hasOne(ProgramGroup::class, ['id' => 'program_group_id']);
+    }
+
+    /**
+     * @return ActiveQuery
+     */
+    public function getProgramPeriod(): ActiveQuery
+    {
+        return $this->hasOne(ProgramPeriod::class, ['id' => 'program_period_id']);
     }
 
     /**
@@ -43,7 +49,8 @@ class Program extends \common\models\Program
     public function extraFields(): array
     {
         return [
-            'programGroup'
+            'programGroup',
+            'programPeriod'
         ];
     }
 }

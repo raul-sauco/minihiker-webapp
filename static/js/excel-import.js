@@ -174,7 +174,7 @@ const app = new Vue({
         `name=${row.cells[0].value}` +
         `&start-date=${startDate}` +
         `&end-date=${endDate}` +
-        '&expand=programGroup.type';
+        '&expand=programGroup.type,programPeriod';
       axios.get(url, this.requestHeaders).then(res => {
         if (!res.data || !res.data.length) {
           this.markProgramMatchNotFound(row);
