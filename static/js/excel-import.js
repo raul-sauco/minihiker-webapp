@@ -385,10 +385,11 @@ const app = new Vue({
      * @param row
      */
     showCellDetails: function (cell, row) {
-      if (cell.status !== 'inactive' && cell.status !== 'none' && cell.status !== 'info') {
+      if (cell.status !== 'inactive' &&
+          cell.status !== 'none' &&
+          cell.status !== 'info') {
         const c = cell.col;
         if (c === 0 || c === 1 || c === 2) {
-          if (Mh.debug) { console.debug('Showing program cell info'); }
           this.showProgramInfo(row);
         } else if (this.clientType.kid.cells.includes(c)) {
           this.showClientInfo(row, this.clientType.kid);
@@ -449,14 +450,9 @@ const app = new Vue({
     },
     /**
      * Display one program information in the app modal
-     * @param row
+     * @param program
      */
     showProgramInModal: function (program) {
-      if (Mh.debug) {
-        console.debug(
-          `Showing information for program ${program.id}`
-        );
-      }
       this.modal = {
         visible: true,
         title: '项目细节',
@@ -704,19 +700,35 @@ const app = new Vue({
         cost: +row.cells[4].value,
         final_cost: +row.cells[3].value,
         status: 7,
-        remarks: '表格上传数据'
+        remarks: row.cells[5].value
       };
       const geturl = `${url}/${data.program_id}/${data.family_id}`;
-      let res = await axios.get(geturl, this.requestHeaders);
-      if (res.data) {
+      let res;
+      try {
+        res = await axios.get(geturl, this.requestHeaders);
+      } catch (error) {
+        if (error.response.status === 404) {
+          if (Mh.debug) {
+            console.debug(
+              `No ProgramFamily found for ${data.program_id}:${data.family_id}`
+            );
+          }
+        } else {
+          console.error(`Error ${error.response.status} trying to read ` +
+            `ProgramFamily for row ${row.index}`);
+        }
+      }
+      if (res && res.data) {
         return res.data;
       }
       // The program family does not exist, upload it
-      res = await axios.post(url, data, this.requestHeaders);
-      if (!res.data) {
-        throw new Error(`Error uploading program family for row ${row.index}`);
+      try {
+        res = await axios.post(url, data, this.requestHeaders);
+        return res.data;
+      } catch (error) {
+        console.error(
+          `Error posting program family data for row ${row.index}`, error);
       }
-      return res.data;
     },
     /**
      * Check if the program client instance exists in the server
@@ -733,16 +745,32 @@ const app = new Vue({
         remarks: '表格上传数据'
       };
       const geturl = `${url}/${data.program_id}/${data.client_id}`;
-      let res = await axios.get(geturl, this.requestHeaders);
-      if (res.data) {
+      let res;
+      try {
+        res = await axios.get(geturl, this.requestHeaders);
+      } catch (error) {
+        if (error.response.status === 404) {
+          if (Mh.debug) {
+            console.debug(
+              `No ProgramClient found for ${data.program_id}:${data.client_id}`
+            );
+          } else {
+            console.error(`Error ${error.response.status} trying to read ` +
+              `ProgramClient for row ${row.index}`);
+          }
+        }
+      }
+      if (res && res.data) {
         return res.data;
       }
       // No program-client found, post data to create a new one
-      res = await axios.post(url, data, this.requestHeaders);
-      if (!res.daat) {
-        throw new Error(`Error uploading program client for row ${row.index}`);
+      try {
+        res = await axios.post(url, data, this.requestHeaders);
+        return res.data;
+      } catch (error) {
+        console.error(
+          `Error posting program family data for row ${row.index}`, error);
       }
-      return res.data;
     },
     /**
      * Upload a new payment to the server
@@ -758,18 +786,19 @@ const app = new Vue({
         program_id: row.programId,
         remarks: '表格上传数据'
       };
-      return axios.post(url, data, this.requestHeaders).then(res => {
+      try {
+        const res = axios.post(url, data, this.requestHeaders);
         if (Mh.debug) {
-          console.debug(`Uploaded new payment for row ${row.index}`, res);
+          console.debug(`Uploaded new payment for row ${row.index}`, res.data);
         }
         return res.data;
-      }).catch(err => {
-        if (Mh.debug) {
-          console.error(`Payment upload failed`, err);
-        }
-        row.error = err.message;
+      } catch (error) {
+        row.error = error.response.message;
+        console.error(
+          `Payment upload failed with status ${error.response.status}` +
+          ` for row ${row.index}`, error);
         return null;
-      });
+      }
     },
   },  // End of Vue methods
 });
