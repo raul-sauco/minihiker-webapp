@@ -759,7 +759,7 @@ const app = new Vue({
         name_zh: cells[indexes[0]].value.substr(0,12),
         phone: cells[indexes[1]].value || null,
         wechat: cells[indexes[2]].value || null,
-        family_role_id: await this.getFamilyRoleId(cells[indexes[3]].value),
+        family_role_id: Mh.methods.getFamilyRoleId(cells[indexes[3]].value),
         id_card_number: cells[indexes[4]].value,
         passport_number: cells[indexes[5]].value || null,
         passport_expire_date: cells[indexes[6]].value || null,
@@ -778,30 +778,6 @@ const app = new Vue({
         console.error(message, error);
         throw new Error(message);
       }
-    },
-    /**
-     * Return the id for the textual family role
-     * @param role
-     * @returns {number}
-     */
-    getFamilyRoleId: async function (role) {
-      const roles = {
-        1: '孩子',
-        2: '父亲 爸爸',
-        3: '母亲  妈妈',
-        4: '爷爷',
-        5: '奶奶',
-        6: '姥姥',
-        7: '姥爷'
-      };
-      // If not found return role 'other'
-      let id = 8;
-      Object.keys(roles).forEach(i => {
-        if (roles[i].includes(role)) {
-          id = i;
-        }
-      });
-      return id;
     },
     /**
      * Check if the program family instance exists in the server and

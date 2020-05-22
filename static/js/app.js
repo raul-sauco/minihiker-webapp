@@ -3,6 +3,31 @@
  */
 
 /**
+ * Return the role ID for the textual family role
+ * @param role
+ * @returns {number}
+ */
+Mh.methods.getFamilyRoleId = function (role) {
+  const roles = {
+    1: '孩子',
+    2: '父亲 爸爸',
+    3: '母亲  妈妈',
+    4: '爷爷',
+    5: '奶奶',
+    6: '姥姥',
+    7: '姥爷'
+  };
+  // If not found return role 'other'
+  let id = 8;
+  Object.keys(roles).forEach(i => {
+    if (roles[i].includes(role)) {
+      id = i;
+    }
+  });
+  return id;
+}
+
+/**
  * Toggles the relation between a Program and a Client.
  *
  * @param button The button that the user clicked to trigger the event.
