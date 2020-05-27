@@ -207,16 +207,28 @@ const app = new Vue({
      * @param type the type of client to fetch for
      */
     fetchRowClient: async function (row, type) {
+      const name = row.cells[type.cells[0]].value;
       const id = row.cells[type.idCell].value;
-      // Only fetch for cells that have an ID value
-      if (id) {
-        const url = this.url + 'client-search?expand=familyName&' +
-          `id=${id}`;
+      const passportIndex = type.idCell + 1;
+      const passport = row.cells[passportIndex].value;
+      // Only fetch for cells that have a name value
+      if (name || id || passport) {
+        let url = `${this.url}client-search?expand=familyName&name=${name}`;
+        if (id) {
+          url += `&id=${id}`;
+        }
+        if (passport) {
+          url += `&passport=${passport}`;
+        }
         axios.get(url, this.requestHeaders).then(res => {
           if (!res.data || !res.data.length) {
             this.markClientNotFound(row, type);
           } else if (res.data.length === 1) {
             this.markClientMatchFound(row, res.data[0], type);
+          } else {
+            // TODO deal with multiple clients
+            console.warn(`Error; got ${res.data.length} clients from server`, res.data);
+            this.markClientMatchFoundMultiple(row, res.data, type);
           }
         }).catch(err => {
           console.error(err);
@@ -280,12 +292,6 @@ const app = new Vue({
      */
     markClientMatchFound: function (row, clientData, type) {
       if (type.name === 'client') {
-        // We found ourselves the participant
-        if (Mh.debug) {
-          console.debug(
-            `Found row ${row.index} participant, id: ${clientData.id}`
-          );
-        }
         row.familyId = clientData.family_id;
         row.clientId = clientData.id
         row.client = clientData;
@@ -302,6 +308,23 @@ const app = new Vue({
       type.cells.forEach(cell => {
         row.cells[cell].status = 'ready';
       });
+    },
+    /**
+     * Mark a row's client type as not autoresolved, it needs
+     * the user to make a decision.
+     * @param row
+     * @param data
+     * @param type
+     */
+    markClientMatchFoundMultiple: function(row, data, type) {
+      row.status = 'needs-action';
+      if (!row.clients) {
+        row.clients = {};
+      }
+      type.cells.forEach(cell => {
+        row.cells[cell].status = 'needs-action';
+      });
+      row.clients[type.name] = data;
     },
     /**
      * Mark the given client's cells in the row as not found
@@ -519,10 +542,10 @@ const app = new Vue({
      * @param type
      */
     showClientInfo: function (row, type) {
-      // Check if we found info for this client on the server
-      const clientData = row[type.name];
-      if (clientData) {
-        this.showClientInModal(clientData);
+      if (row[type.name]) {
+        this.showClientInModal(row[type.name]);
+      } else if (row.clients && row.clients[type.name]) {
+        this.showSelectClientModal(row, type);
       } else {
         this.showNoClientFoundModal();
       }
@@ -545,6 +568,26 @@ const app = new Vue({
       };
     },
     /**
+     * Show all the client matches found for the given type in the
+     * modal and let the user select one.
+     * @param row
+     * @param type
+     */
+    showSelectClientModal: function (row, type) {
+      if (Mh.debug) {
+        console.debug(
+          `Showing select client modal for row ${row.index} client type ${type.name}`
+        );
+      }
+      this.modal = {
+        visible: true,
+        title: '选择客户',
+        content: 'select-client',
+        row: row,
+        type: type
+      }
+    },
+    /**
      * Display a modal to inform that we did not find
      * any clients that matched the parameters
      */
@@ -554,6 +597,23 @@ const app = new Vue({
         title: '未找到客户',
         content: 'client-not-found'
       };
+    },
+    /**
+     * Mark one client as selected out of a few possibilities offered
+     * to the user. If the selected client is the participant,
+     * try to update the row status.
+     * @param row
+     * @param type
+     * @param client
+     */
+    selectClient(row, type, client) {
+      if (Mh.debug) {
+        console.debug(`User selected client ${client.id} "${client.name_zh}"` +
+          `for type ${type.name} and row ${row.index}`);
+      }
+      // Delegate to mark client found function
+      this.markClientMatchFound(row, client, type);
+      this.dismissModal();
     },
     /**
      * Display help information in the app modal

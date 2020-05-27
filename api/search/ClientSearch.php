@@ -16,14 +16,23 @@ class ClientSearch
      */
     public static function search($params): ActiveDataProvider
     {
-        if (empty($params['id'])) {
-            throw new BadRequestHttpException(
-                Yii::t('app', 'Missing required parameters')
-            );
+        if (empty($params['id']) &&
+            empty($params['passport']) &&
+            empty($params['name'])) {
+                throw new BadRequestHttpException(
+                    Yii::t('app', 'Missing required parameters')
+                );
         }
 
-        $query = Client::find()
-            ->where(['id_card_number' => $params['id']]);
+        $query = Client::find();
+
+        if (!empty($params['id'])) {
+            $query->where(['id_card_number' => $params['id']]);
+        } elseif (!empty($params['passport'])) {
+            $query->where(['passport_number' => $params['passport']]);
+        } else {
+            $query->where(['like', 'name_zh', $params['name']]);
+        }
 
         return new ActiveDataProvider([
             'query' => $query

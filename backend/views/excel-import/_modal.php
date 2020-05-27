@@ -6,8 +6,19 @@
     <div class="v-modal-dialog">
         <div class="v-modal-title" v-html="modal.title"></div>
         <div class="v-modal-content">
-            <template v-if="modal.content === 'client-info'">
+            <template v-if="modal.content === 'client-info'"
+                      :set="client = modal.client">
                 <?= $this->render('_client-info-template') ?>
+            </template>
+            <template v-if="modal.content === 'select-client'">
+                <div class="client-select-container"
+                     v-for="client in modal.row.clients[modal.type.name]">
+                    <?= $this->render('_client-info-template') ?>
+                    <button class="btn btn-success"
+                            @click="selectClient(modal.row, modal.type, client)">
+                        使用这个客户
+                    </button>
+                </div>
             </template>
             <template v-if="modal.content === 'client-not-found'">
                 给定Excel工作表中的数据，我们找不到任何合适的客户
