@@ -2,6 +2,7 @@
 
 namespace api\search;
 
+use api\helpers\ClientHelper;
 use api\models\Client;
 use Yii;
 use yii\data\ActiveDataProvider;
@@ -32,6 +33,10 @@ class ClientSearch
             $query->where(['passport_number' => $params['passport']]);
         } else {
             $query->where(['like', 'name_zh', $params['name']]);
+        }
+
+        if (!empty($params['role'])) {
+            ClientHelper::assignRoleIfNull($query, $params['role']);
         }
 
         return new ActiveDataProvider([

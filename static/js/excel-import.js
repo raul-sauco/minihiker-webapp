@@ -220,6 +220,13 @@ const app = new Vue({
         if (passport) {
           url += `&passport=${passport}`;
         }
+        if (type.name === 'client') {
+          if (row.cells[type.cells[2]].value) {
+            url += '&role=' + Mh.methods.getFamilyRoleId(row.cells[type.cells[2]].value);
+          }
+        } else if (row.cells[type.cells[3]].value) {
+          url += '&role=' + Mh.methods.getFamilyRoleId(row.cells[type.cells[3]].value);
+        }
         axios.get(url, this.requestHeaders).then(res => {
           if (!res.data || !res.data.length) {
             this.markClientNotFound(row, type);
@@ -825,11 +832,13 @@ const app = new Vue({
         name_zh: cells[indexes[0]].value.substr(0,12),
         phone: cells[indexes[1]].value || null,
         wechat: cells[indexes[2]].value || null,
-        family_role_id: Mh.methods.getFamilyRoleId(cells[indexes[3]].value),
         id_card_number: cells[indexes[4]].value,
         passport_number: cells[indexes[5]].value || null,
         passport_expire_date: this.formatDate(cells[indexes[6]].value)
       };
+      if (cells[indexes[3]].value) {
+        data.family_role_id = Mh.methods.getFamilyRoleId(cells[indexes[3]].value);
+      }
       const url = this.url + 'clients';
       try {
         const res = await axios.post(url, data, this.requestHeaders);
