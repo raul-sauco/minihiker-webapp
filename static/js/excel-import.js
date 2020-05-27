@@ -233,8 +233,9 @@ const app = new Vue({
           } else if (res.data.length === 1) {
             this.markClientMatchFound(row, res.data[0], type);
           } else {
-            // TODO deal with multiple clients
-            console.warn(`Error; got ${res.data.length} clients from server`, res.data);
+            if (Mh.debug) {
+              console.debug(`Found ${res.data.length} clients for row ${row.index}`);
+            }
             this.markClientMatchFoundMultiple(row, res.data, type);
           }
         }).catch(err => {
@@ -303,6 +304,7 @@ const app = new Vue({
         row.clientId = clientData.id
         row.client = clientData;
         this.markCanUploadRow(row);
+        this.checkContactData(row);
       } else {
         row[type.name] = clientData;
         // Only set family ID if not set by client already
@@ -741,7 +743,7 @@ const app = new Vue({
       if (row.cells[15].value) {
         data.wechat = row.cells[15].value.substr(0, 64);
       }
-      remarks = row.cells[5].value;
+      const remarks = row.cells[5].value;
       if (remarks.includes('会员')) {
         if (remarks.includes('非会员')) {
           data.category = '非会员';
@@ -982,5 +984,62 @@ const app = new Vue({
         return null;
       }
     },
+    /**
+     * Check that the family contact information for the given
+     * row is accurate and it matches the information on the
+     * spreadsheet. If changes are found; update the server
+     * values and store the old values in the remarks field.
+     * @param row
+     * @returns {Promise<void>}
+     */
+    checkContactData: async function (row) {
+      // Create a date string to inform on when the change happened
+      const now = new Date();
+      const date = now.getFullYear() + '年' + (now.getMonth() + 1) + '月' + now.getDate() + '日';
+      // Fetch the family from the server to check current values
+      const url = this.url + 'families/' + row.client.family_id;
+      const familyRequest = await axios.get(url, this.requestHeaders);
+      // Check server values vs spreadsheet row values
+      const family = familyRequest.data;
+      const data = {};
+      let remarks = family.remarks;
+      if (row.cells[14].value && row.cells[14].value !== family.phone) {
+        data.phone = row.cells[14].value;
+        remarks += '\n\n更新了电话号码';
+        if (family.phone) {
+          remarks += '从' + family.phone;
+        }
+        remarks += '到' + data.phone + '在' + date;
+      }
+      if (row.cells[15].value && row.cells[15].value !== family.wechat) {
+        data.wechat = row.cells[15].value;
+        remarks += '\n\n更新了微信';
+        if (family.wechat) {
+          remarks += '从' + family.wechat;
+        }
+        remarks += '到' + data.wechat + '在' + date;
+      }
+      let category = null;
+      if (row.cells[5].value.includes('会员')) {
+        if (row.cells[5].value.includes('非会员')) {
+          category = '非会员';
+        } else {
+          category = '会员';
+        }
+      }
+      if (category && family.category !== category) {
+        data.category = category;
+        remarks += '\n\n更新了会员情况';
+        if (family.category) {
+          remarks += '从' + family.category;
+        }
+        remarks += '到' + data.category + '在' + date;
+      }
+      // If some of the values didn't match, data will have properties
+      if (!_.isEmpty(data)) {
+        data.remarks = remarks;
+        const res = await axios.patch(url, data, this.requestHeaders);
+      }
+    }
   },  // End of Vue methods
 });
