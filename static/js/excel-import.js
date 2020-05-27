@@ -707,12 +707,15 @@ const app = new Vue({
       const data = {
         name_zh: row.cells[6].value,
         family_id: row.familyId,
-        is_male: row.cells[7].value.trim() === '男',
+        // is_male: row.cells[7].value.trim() === '男',
         family_role_id: 1,
         id_card_number: row.cells[10].value,
         passport_number: row.cells[11].value || null,
         passport_expire_date: this.formatDate(row.cells[12].value)
       };
+      if (row.cells[7] && row.cells[7].value) {
+        data.is_male = row.cells[7].value.trim() === '男';
+      }
       try {
         const res = await axios.post(url,data,this.requestHeaders);
         if (Mh.debug) {

@@ -27,6 +27,17 @@ class ProgramSearch
             ->where(['>=', 'start_date', $params['start-date']])
             ->andWhere(['<=', 'end_date', $params['end-date']]);
 
+        if ($query->count() > 1) {
+            $backupQuery = clone $query;
+            $query->andWhere([
+                'like', 'pg.name', $params['name']
+            ]);
+            if ($query->count() < 1) {
+                // Roll back, maybe there was no indication of the program-type in the name
+                $query = $backupQuery;
+            }
+        }
+
         // Try to filter by type
         if ($query->count() > 1) {
             if (strpos($params['name'], '亲子') !== false) {
@@ -38,9 +49,14 @@ class ProgramSearch
 
         // Filter by vacation-type
         if ($query->count() > 1) {
+            $backupQuery = clone $query;
             $query->andWhere([
                 'pg.type_id' => self::getMatchingTypeIds($params['name'])
             ]);
+            if ($query->count() < 1) {
+                // Roll back, maybe there was no indication of the program-type in the name
+                $query = $backupQuery;
+            }
         }
 
         // Filter by location
