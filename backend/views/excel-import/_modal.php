@@ -6,9 +6,11 @@
     <div class="v-modal-dialog">
         <div class="v-modal-title" v-html="modal.title"></div>
         <div class="v-modal-content">
-            <template v-if="modal.content === 'client-info'"
-                      :set="client = modal.client">
-                <?= $this->render('_client-info-template') ?>
+            <template v-if="modal.content === 'client-info'">
+                <div class="client-container"
+                     v-for="client in [modal.client]">
+                    <?= $this->render('_client-info-template') ?>
+                </div>
             </template>
             <template v-if="modal.content === 'select-client'">
                 <div class="client-select-container"

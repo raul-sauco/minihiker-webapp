@@ -734,7 +734,21 @@ const app = new Vue({
         throw new Error(`Could not determine family name for row ${row.index}`);
       }
       const url = this.url + 'families';
-      const data = {name: name.substr(0,12)};
+      const data = {name: name.trim().substr(0,12)};
+      if (row.cells[14].value) {
+        data.phone = row.cells[14].value.substr(0,18);
+      }
+      if (row.cells[15].value) {
+        data.wechat = row.cells[15].value.substr(0, 64);
+      }
+      remarks = row.cells[5].value;
+      if (remarks.includes('会员')) {
+        if (remarks.includes('非会员')) {
+          data.category = '非会员';
+        } else {
+          data.category = '会员';
+        }
+      }
       let res;
       try {
         res = await axios.post(url,data,this.requestHeaders);
