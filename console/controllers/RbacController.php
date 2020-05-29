@@ -244,6 +244,33 @@ class RbacController extends Controller
 
         // END // Add userBelongsToFamilyRule
 
+        /* ************* Image ************** */
+        echo "Adding image related permissions\n";
+
+        $createImage = $auth->createPermission('createImage');
+        $createImage->description = 'Create an image';
+        $auth->add($createImage);
+        $auth->addChild($userRole, $createImage);
+
+        $updateImage = $auth->createPermission('updateImage');
+        $updateImage->description = 'Update an image';
+        $auth->add($updateImage);
+        $auth->addChild($userRole, $updateImage);
+
+        $viewImage = $auth->createPermission('viewImage');
+        $viewImage->description = 'View a single image details';
+        $auth->add($viewImage);
+        $auth->addChild($userRole, $viewImage);
+
+        $listImages = $auth->createPermission('listImages');
+        $listImages->description = 'View a list of images';
+        $auth->add($listImages);
+        $auth->addChild($userRole, $listImages);
+
+        $deleteImage = $auth->createPermission('deleteImage');
+        $deleteImage->description = 'Delete a image';
+        $auth->add($deleteImage);
+        $auth->addChild($userRole, $deleteImage);
 
         /* ************* Location ************** */
         echo "Adding location related permissions\n";

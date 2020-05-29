@@ -2,7 +2,6 @@
 
 use yii\bootstrap\Html;
 use yii\bootstrap\Tabs;
-use yii\helpers\HtmlPurifier;
 use yii\helpers\Url;
 
 /* @var $this yii\web\View */
@@ -46,7 +45,7 @@ $this->params['breadcrumbs'][] = Yii::t('app', 'Weapp Data');
 
                 <div id="phone-header-image">
                     <?= Html::img(
-                        '@web/img/pg/' . $model->id . '/' . $model->weapp_cover_image,
+                        '@imgUrl/pg/' . $model->id . '/' . $model->weapp_cover_image,
                         ['alt' => 'Cover image'])
                     ?>
                 </div>
@@ -167,7 +166,9 @@ $this->params['breadcrumbs'][] = Yii::t('app', 'Weapp Data');
                                     '{adults} adults, {kids} kids, {membership_type} {price}', [
                                         'adults' => $price->adults,
                                         'kids' => $price->kids,
-                                        'membership_type' => $price->membership_type === 1 ? Yii::t('app', 'Member') : Yii::t('app', 'Not Member'),
+                                        'membership_type' => $price->membership_type === 1 ?
+                                            Yii::t('app', 'Member') :
+                                            Yii::t('app', 'Not Member'),
                                         'price' => $price->price
                                     ]), ['class' => 'program-price']);
 
@@ -179,7 +180,9 @@ $this->params['breadcrumbs'][] = Yii::t('app', 'Weapp Data');
 
                         // The program does not have any prices
                         echo Html::tag('header',
-                            Yii::t('app', 'You have not added any prices to the program yet.'));
+                            Yii::t('app',
+                                'You have not added any prices to the program yet.'
+                            ));
                     }
                     ?>
                 </div>
@@ -197,7 +200,7 @@ $this->params['breadcrumbs'][] = Yii::t('app', 'Weapp Data');
     foreach ($model->images as $image) {
 
         $imageTag = Html::img(
-                "@web/img/pg/$model->id/th/" . $image->name, [
+                "@imgUrl/pg/$model->id/th/" . $image->name, [
                 'alt' => $image->name,
                 'class' => 'img-thumbnail'
         ]);

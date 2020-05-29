@@ -629,41 +629,48 @@ function deleteProgramPrice(id) {
  * 								WEAPP
  *************************************************************************** */
 
-$('button#update-weapp-cover-image').click(() => {
-  let modal = $('#cover-image-selection-modal');
-  let modalBody = $('.modal-body');
-  let pgId = $('#update-weapp-cover-image').attr('data-pg-id');
-  let requestUrl = Mh.globalData.apiurl + 'images?program-group-id=' + pgId;
-  let imgUrl = $('#update-weapp-cover-image').attr('data-url');
+/**
+ * Fetch all the ProgramGroup images given it's ID and
+ * display them in the application modal to let the user
+ * select one as the ProgramGroup Wechat mini-program cover image
+ */
+$('button#update-weapp-cover-image').click(function () {
+  const $modal = $('#cover-image-selection-modal');
+  const pgId = $(this).attr('data-pg-id');
+  const imgUrl = `${Mh.globalData.imgurl}pg/${pgId}/`;
+  const url = Mh.globalData.apiurl + 'images?program-group-id=' +
+    pgId;
+  let html = '<div id="pg-select-container">';
 
-  let html = '';
+  $modal.modal();
+  $modal.modal('show');
 
-  modal.modal();
-  modal.modal('show');
-
-  $.getJSON(requestUrl, res => {
-    console.log(res);
-    res.forEach(e => {
-      html += '<img class="pg-images-preview" src="' + imgUrl + e.name + '" data-name="' + e.name + '"/>'
+  $.ajax({
+    url,
+    method: 'GET',
+    headers: Mh.globalData.authHeaders
+  }).done(res => {
+    res.forEach(image => {
+      html += `<img class="pg-images-preview" alt="${image.name}" ` +
+        `data-name="${image.name}" src="${imgUrl}${image.name}">`;
     });
 
+    html += '</div>';
     // Update the modal body with the images
-    modalBody.html(html);
+    $modal.find('.modal-body').html(html);
 
     // Add a click handler to the images
     $('.pg-images-preview').click(function () {
-
-      let imgName = $(this).attr('data-name');
-      let imgSrc = imgUrl + imgName;
-
-      modal.modal('hide');
-
+      const imgName = $(this).attr('data-name');
+      $modal.modal('hide');
       // Update the values on the form
       $('input#programgroup-weapp_cover_image').val(imgName);
-      $('img#pg-weapp-cover-image').attr('src', imgSrc);
+      $('img#pg-weapp-cover-image').attr('src', imgUrl + imgName);
     });
+  }).fail(xhr => {
+    console.error(
+      `Request to ${url} failed with status ${xhr.status}`, xhr);
   });
-
 });
 
 $('#download-images-button').click(function() {

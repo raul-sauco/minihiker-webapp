@@ -8,6 +8,7 @@ return [
     ['class' => UrlRule::class, 'controller' => 'client'],
     ['class' => UrlRule::class, 'controller' => 'client-search', 'pluralize' => false],
     ['class' => UrlRule::class, 'controller' => 'family'],
+    ['class' => UrlRule::class, 'controller' => 'image'],
     ['class' => UrlRule::class, 'controller' => 'payment'],
     ['class' => UrlRule::class, 'controller' => 'program-client',
         'extraPatterns' => [
