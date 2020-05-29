@@ -1,5 +1,6 @@
 <?php
 
+use common\helpers\WxContentHelper;
 use common\models\ImageUploadForm;
 use common\models\User;
 use dosamigos\fileupload\FileUploadUI;
@@ -37,7 +38,6 @@ $this->params['breadcrumbs'][] = Yii::t('app', 'Update');
 
 <div id="program-group-weapp-data-update">
 
-
     <!-- The modal -->
     <div class="modal fade" id="cover-image-selection-modal"
          tabindex="-1" role="dialog" aria-labelledby="modalLabel"
@@ -70,7 +70,7 @@ $this->params['breadcrumbs'][] = Yii::t('app', 'Update');
 
     <div class="row">
 
-        <div class="col-lg-6 left-container">
+        <div class="col-lg-8 left-container">
 
             <div class="row">
 
@@ -100,15 +100,15 @@ $this->params['breadcrumbs'][] = Yii::t('app', 'Update');
 
             <div class="row">
 
-                <div class="col-lg-2">
+                <div class="col-lg-3">
                     <?= $form->field($model, 'min_age')->textInput() ?>
                 </div>
 
-                <div class="col-lg-2">
+                <div class="col-lg-3">
                     <?= $form->field($model, 'max_age')->textInput() ?>
                 </div>
 
-                <div class="col-lg-8">
+                <div class="col-lg-6">
                     <?= $form->field($model, 'accompanied')
                         ->dropDownList([
                             '0' => Yii::t('app', 'Only childs'),
@@ -140,7 +140,7 @@ $this->params['breadcrumbs'][] = Yii::t('app', 'Update');
 
         </div>
 
-        <div class="col-lg-6 right-container">
+        <div class="col-lg-4 right-container">
 
             <div class="form-group field-programgroup-weapp_display_image">
 
@@ -154,12 +154,13 @@ $this->params['breadcrumbs'][] = Yii::t('app', 'Update');
                 if (!empty($model->weapp_cover_image)) {
 
                     // There is a current cover image, display it
-                    echo Html::img('@web/img/pg/' . $model->id . '/' .
+                    echo Html::img('@imgUrl/pg/' . $model->id . '/' .
                         $model->weapp_cover_image, [
                         'id' => 'pg-weapp-cover-image',
                         'alt' => Yii::t('app',
-                            '{program-group}\'s cover image', ['program-group' => $model->weapp_display_name]),
-                        'data-url' => Url::to('@web/img/pg/' . $model->id . '/')
+                            '{program-group}\'s cover image',
+                            ['program-group' => $model->weapp_display_name]),
+                        'data-url' => Url::to('@imgUrl/pg/' . $model->id . '/')
                     ]);
 
                     // Update button instead of create
@@ -169,7 +170,7 @@ $this->params['breadcrumbs'][] = Yii::t('app', 'Update');
                                 'class' => 'btn btn-primary',
                                 'id' => 'update-weapp-cover-image',
                                 'data-pg-id' => $model->id,
-                                'data-url' => Url::to('@web/img/pg/' . $model->id . '/')
+                                'data-url' => Url::to('@imgUrl/pg/' . $model->id . '/')
                             ]
                     );
 
@@ -178,11 +179,12 @@ $this->params['breadcrumbs'][] = Yii::t('app', 'Update');
                     // No current cover image display a placeholder
 
                     // There is a current cover image, display it
-                    echo Html::img('@web/img/no_image.png', [
+                    echo Html::img('@imgUrl/no_image.png', [
                         'id' => 'pg-weapp-cover-image',
                         'alt' => Yii::t('app',
-                            '{program-group}\'s cover image placeholder', ['program-group' => $model->weapp_display_name]),
-                        'data-url' => Url::to('@web/img/pg/' . $model->id . '/')
+                            '{program-group}\'s cover image placeholder',
+                            ['program-group' => $model->weapp_display_name]),
+                        'data-url' => Url::to('@imgUrl/pg/' . $model->id . '/')
                     ]);
 
                     // Update button instead of create
@@ -192,7 +194,7 @@ $this->params['breadcrumbs'][] = Yii::t('app', 'Update');
                             'class' => 'btn btn-success',
                             'id' => 'update-weapp-cover-image',
                             'data-pg-id' => $model->id,
-                            'data-url' => Url::to('@web/img/pg/' . $model->id . '/')
+                            'data-url' => Url::to('@imgUrl/pg/' . $model->id . '/')
                         ]
                     );
 
@@ -207,7 +209,7 @@ $this->params['breadcrumbs'][] = Yii::t('app', 'Update');
 
     <div class="row">
 
-        <div class="col-lg-12">
+        <div class="col-lg-8">
 
             <?= Tabs::widget([
                 'items' => [
@@ -268,11 +270,7 @@ $this->params['breadcrumbs'][] = Yii::t('app', 'Update');
             ]) ?>
         </div>
 
-    </div>
-
-    <div class="row">
-
-        <div class="col-lg-12">
+        <div class="col-lg-4">
             <?php
 
             // Find the user access token if set
@@ -333,6 +331,17 @@ $this->params['breadcrumbs'][] = Yii::t('app', 'Update');
     );
 
     ActiveForm::end();
+
+    if (WxContentHelper::hasRemoteImages($model)) {
+        echo Html::button(
+            Yii::t('app', 'Download images'),
+            [
+                'class' => 'btn btn-success btn-lg',
+                'id' => 'download-images-button',
+                'data-pg-id' => $model->id
+            ]
+        );
+    }
 
     ?>
 

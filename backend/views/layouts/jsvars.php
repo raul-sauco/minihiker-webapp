@@ -30,7 +30,11 @@ $this->registerJsVar(
             'baseurl' => Yii::getAlias('@web/'),
             'apiurl' => Yii::$app->params['apiUrl'],
             'staticurl' => Yii::getAlias('@staticUrl/'),
-            'imgurl' => Yii::getAlias('@imgUrl/')
+            'imgurl' => Yii::getAlias('@imgUrl/'),
+            'authHeaders' => [
+                'Content-Type' => 'application/json',
+                'Authorization' => 'Bearer ' . $user->access_token ?? 'guest'
+            ]
         ],
         'methods' => []
     ]

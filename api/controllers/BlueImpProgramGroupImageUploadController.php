@@ -63,7 +63,7 @@ class BlueImpProgramGroupImageUploadController extends BaseController
             $image['name'] = $file->image->name;
             $image['size'] = BlueimpHelper::getFileSize($file);
             $image['type'] = $file->image->type;
-            $image['url'] = Url::to('@web/img/pg/', true) .
+            $image['url'] = Url::to('@imgUrl/pg/', true) .
                 $file->program_group_id . '/' . $file->image->name;
             $image['deleteUrl'] = Url::to('@web/bu/' .
                 $file->image->id, true) ;
@@ -105,7 +105,7 @@ class BlueImpProgramGroupImageUploadController extends BaseController
         foreach ($image->programGroupImages as $programGroupImage) {
 
             // Delete related files
-            $folder = Yii::$app->basePath . '/web/img/pg/' .
+            $folder = Yii::getAlias('@imgPath/pg/') .
                 $programGroupImage->program_group_id . '/';
             $fullSize = $folder .  $programGroupImage->image->name;
             if (file_exists($fullSize)) {

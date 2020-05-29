@@ -4,7 +4,8 @@ return [
         '@bower' => '@vendor/bower-asset',
         '@npm'   => '@vendor/npm-asset',
         '@staticUrl' => (empty($_SERVER['HTTP_HOST']) ||
-            $_SERVER['HTTP_HOST'] === 'backend.mh') ?
+            $_SERVER['HTTP_HOST'] === 'backend.mh' ||
+            $_SERVER['HTTP_HOST'] === 'api.mh') ?
             'http://static.mh' : 'https://static.minihiker.com',
         '@imgUrl' => '@staticUrl/img',
         '@cssUrl' => '@staticUrl/css',

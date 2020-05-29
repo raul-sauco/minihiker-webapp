@@ -388,7 +388,7 @@ function formatAsCurrency(amount) {
  */
 function fetchProgramPrices(id) {
 
-  const url = apiurl + 'program-prices?program-id=' + id,
+  const url = Mh.globalData.apiurl + 'program-prices?program-id=' + id,
     authHeader = 'Bearer ' + userAccessToken,
     container = $('#program-prices-container');
   let html = '';
@@ -531,7 +531,7 @@ function submitProgramPriceForm() {
   });
 
   let method = 'POST';
-  let url = apiurl + 'program-prices';
+  let url = Mh.globalData.apiurl + 'program-prices';
   if (data.id) {
     method = 'PUT';
     url += '/' + data.id;
@@ -593,7 +593,7 @@ function deleteProgramPrice(id) {
     $loadingOverlay.fadeIn('fast');
 
     $.ajax({
-      url: apiurl + 'program-prices/' + id,
+      url: Mh.globalData.apiurl + 'program-prices/' + id,
       type: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
@@ -633,7 +633,7 @@ $('button#update-weapp-cover-image').click(() => {
   let modal = $('#cover-image-selection-modal');
   let modalBody = $('.modal-body');
   let pgId = $('#update-weapp-cover-image').attr('data-pg-id');
-  let requestUrl = apiurl + 'images?program-group-id=' + pgId;
+  let requestUrl = Mh.globalData.apiurl + 'images?program-group-id=' + pgId;
   let imgUrl = $('#update-weapp-cover-image').attr('data-url');
 
   let html = '';
@@ -666,13 +666,33 @@ $('button#update-weapp-cover-image').click(() => {
 
 });
 
+$('#download-images-button').click(function() {
+  const $this = $(this);
+  $this.html(Mh.globalData.spinner20);
+  $this.removeClass('btn-success').addClass('btn-primary');
+  const pgId = $this.attr('data-pg-id');
+  const url = Mh.globalData.apiurl + 'program-group-image-downloads/' + pgId;
+  $.ajax({
+    url,
+    method: 'PATCH',
+    headers: Mh.globalData.authHeaders
+  }).done((res, status, xhr) => {
+    $this.html('完成了');
+    $this.removeClass('btn-primary').addClass('btn-success');
+    location.reload();
+  }).fail(xhr => {
+    $this.html('下载错误');
+    $this.removeClass('btn-primary').addClass('btn-danger');
+  });
+});
+
 /**
  * Fetch
  * @param id
  */
 function getProgramGroupImagesPreview(id) {
 
-  let url = apiurl + 'bu?program-group-id=' + id;
+  let url = Mh.globalData.apiurl + 'bu?program-group-id=' + id;
   let fu = $('#imageuploadform-file-fileupload');
 
   $.getJSON(url, (res) => {

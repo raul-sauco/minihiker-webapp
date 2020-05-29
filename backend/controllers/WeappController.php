@@ -61,13 +61,13 @@ class WeappController extends Controller
             Yii::$app->response->getHeaders()->set('Vary', 'Accept');
             Yii::$app->response->format = Response::FORMAT_JSON;
 
-            $dir = Yii::$app->params['imageDirectory'] . 'pg/' . $id . '/';
+            $dir = Yii::getAlias('@imgPath/pg/') . $id . '/';
 
             $response = [];
 
             if ($iuf->save($dir)) {
 
-                $url = Url::to("@web/img/pg/$id/" . $iuf->file_name, true);
+                $url = Url::to("@imgUrl/pg/$id/" . $iuf->file_name, true);
 
                 // Link the models with the image
                 $imageModel = new Image();
@@ -96,8 +96,7 @@ class WeappController extends Controller
                         'size' => $iuf->file->size,
                         'url' => $url,
                         'thumbnailUrl' => $url,
-                        'deleteUrl' => (strpos(Url::base(true), 'localhost') ? 'http://localhost/mhapi/' :
-                                'https://api.minihiker.com/') . 'bu/' . $imageModel->id,
+                        'deleteUrl' => Yii::$app->params['apiUrl'] . 'bu/' . $imageModel->id,
                         'deleteType' => 'DELETE'
                     ];
 
@@ -107,14 +106,12 @@ class WeappController extends Controller
                     'Unable to save picture')];
             }
             @unlink($iuf->file->tempName);
+        } else if ($iuf->hasErrors(['picture'])) {
+            $response[] = ['errors' => $iuf->getErrors()];
         } else {
-            if ($iuf->hasErrors(['picture'])) {
-                $response[] = ['errors' => $iuf->getErrors()];
-            } else {
-                throw new HttpException(500,
-                    Yii::t('app',
-                        'Could not upload file'));
-            }
+            throw new HttpException(500,
+                Yii::t('app',
+                    'Could not upload file'));
         }
         return $response;
     }

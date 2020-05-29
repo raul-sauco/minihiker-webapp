@@ -4,6 +4,7 @@ use yii\rest\UrlRule;
 
 /** Url rules for apivp1 application */
 return [
+    ['class' => 'yii\rest\UrlRule', 'controller' => ['bu' => 'blue-imp-program-group-image-upload']],
     ['class' => UrlRule::class, 'controller' => 'client'],
     ['class' => UrlRule::class, 'controller' => 'client-search', 'pluralize' => false],
     ['class' => UrlRule::class, 'controller' => 'family'],
@@ -28,5 +29,6 @@ return [
             '{family-id}' => '<family_id:\\d[\\d,]*>'
         ]
     ],
+    ['class' => UrlRule::class, 'controller' => 'program-group-image-download'],
     ['class' => UrlRule::class, 'controller' => 'program-search', 'pluralize' => false],
 ];

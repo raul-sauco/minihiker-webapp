@@ -106,6 +106,7 @@ return [
     'Discount' => '优惠',
     'Display name' => '表示名字',
     'Displaying results for {query}' => '表示{query}的结果',
+    'Download images' => '下载图片',
     'Duplicate Record' => '重叠信息',
     'Edit Participants' => '编辑参加者',
     'Email' => '电邮',

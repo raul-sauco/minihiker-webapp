@@ -205,3 +205,14 @@ img#pg-weapp-cover-image {
 
   }
 }
+
+#program-group-weapp-data-update {
+  #download-images-button {
+    position: fixed;
+    top: 120px;
+    right: 0;
+    width: 6em;
+    border-radius: 1em 0 0 1em;
+    transition: all 1s ease-in-out;
+  }
+}
