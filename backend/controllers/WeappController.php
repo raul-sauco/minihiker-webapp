@@ -5,6 +5,7 @@ namespace backend\controllers;
 use backend\helpers\BlueImpImageUploadHelper;
 use common\models\ImageUploadForm;
 use common\models\ProgramGroup;
+use common\models\WeappProgramSearch;
 use Yii;
 use yii\base\Exception;
 use yii\filters\AccessControl;
@@ -31,8 +32,18 @@ class WeappController extends Controller
                 'rules' => [
                     [
                         'allow' => true,
-                        'actions' => ['upload-image'],
+                        'actions' => ['index'],
+                        'roles' => ['listPrograms'],
+                    ],
+                    [
+                        'allow' => true,
+                        'actions' => ['upload-image', 'view'],
                         'roles' => ['viewProgram'],
+                    ],
+                    [
+                        'allow' => true,
+                        'actions' => ['update'],
+                        'roles' => ['updateProgram'],
                     ],
                 ],
             ],
@@ -43,6 +54,57 @@ class WeappController extends Controller
                 ],
             ],
         ];
+    }
+
+    /**
+     * @param string $q
+     * @return string
+     */
+    public function actionIndex($q = ''): string
+    {
+        $searchModel = new WeappProgramSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->get());
+
+        return $this->render('index', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+            'q' => $q
+        ]);
+    }
+
+    /**
+     * Displays the information related to this ProgramGroup visible
+     * on the Weapp.
+     *
+     * @param integer $id
+     * @return mixed
+     * @throws NotFoundHttpException
+     */
+    public function actionView($id): string
+    {
+        return $this->render('view', [
+            'model' => $this->findModel($id),
+        ]);
+    }
+
+    /**
+     * Updates the information related to this ProgramGroup that is
+     * displayed on the Weapp. If update is successful, the browser
+     * will be redirected to the 'view' page.
+     *
+     * @param integer $id
+     * @return mixed
+     * @throws NotFoundHttpException
+     */
+    public function actionUpdate($id)
+    {
+        $model = $this->findModel($id);
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            return $this->redirect(['view', 'id' => $model->id]);
+        }
+        return $this->render('update', [
+            'model' => $model,
+        ]);
     }
 
     /**

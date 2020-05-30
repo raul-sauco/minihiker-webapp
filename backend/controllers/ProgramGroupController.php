@@ -6,19 +6,19 @@ use common\models\ProgramGroup;
 use Yii;
 use yii\data\ActiveDataProvider;
 use yii\filters\AccessControl;
-use yii\filters\VerbFilter;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 
 /**
- * ProgramController implements the CRUD actions for Program model.
+ * Class ProgramGroupController
+ * @package backend\controllers
  */
 class ProgramGroupController extends Controller
 {
     /**
      * @inheritdoc
      */
-    public function behaviors()
+    public function behaviors(): array
     {
         return [
             'access' => [
@@ -26,61 +26,12 @@ class ProgramGroupController extends Controller
                 'rules' => [
                     [
                         'allow' => true,
-                        'actions' => ['weapp-view'],
-                        'roles' => ['viewProgram'],
-                    ],
-                    [
-                        'allow' => true,
-                        'actions' => ['weapp-update','qas'],
+                        'actions' => ['qas'],
                         'roles' => ['updateProgram'],
                     ],
                 ],
-            ],
-            'verbs' => [
-                'class' => VerbFilter::class,
-                'actions' => [
-                    'delete' => ['POST'],
-                ],
-            ],
+            ]
         ];
-    }
-
-    /**
-     * Displays the information related to this ProgramGroup visible
-     * on the Weapp.
-     *
-     * @param integer $id
-     * @return mixed
-     * @throws NotFoundHttpException
-     */
-    public function actionWeappView($id)
-    {
-        return $this->render('weapp-view', [
-            'model' => $this->findModel($id),
-        ]);
-    }
-
-    /**
-     * Updates the information related to this ProgramGroup that is displayed on the
-     * Weapp. If update is successful, the browser will be redirected to the 'weapp-view' page.
-     *
-     * @param integer $id
-     * @return mixed
-     * @throws NotFoundHttpException
-     */
-    public function actionWeappUpdate($id)
-    {
-        $model = $this->findModel($id);
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-
-            return $this->redirect(['weapp-view', 'id' => $model->id]);
-
-        }
-
-        return $this->render('weapp-update', [
-            'model' => $model,
-        ]);
     }
 
     /**
@@ -112,16 +63,12 @@ class ProgramGroupController extends Controller
      * @return ProgramGroup the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
-    protected function findModel($id)
+    protected function findModel($id): ProgramGroup
     {
         if (($model = ProgramGroup::findOne($id)) !== null) {
-
             return $model;
-
         }
-
         throw new NotFoundHttpException(
             Yii::t('app', 'The requested page does not exist.'));
     }
-
 }

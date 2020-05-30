@@ -69,7 +69,7 @@ $this->beginPage()
             ],
             [
                 'label' => Yii::t('app', 'Mini Program'),
-                'url' => ['/weapp-program/index'],
+                'url' => ['/weapp/index'],
                 'visible' => $user->can('listPrograms')
             ],
             [

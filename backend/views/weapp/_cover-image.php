@@ -13,4 +13,4 @@ if (!empty($model->weapp_cover_image)) {
     $src = '@imgUrl/no-image.png';
     $alt = Yii::t('app', 'No image found');
 }
-echo Html::img($src, ['alt' => $alt]);
+echo Html::img($src, ['alt' => $alt, 'class' => 'pg-weapp-cover-image']);

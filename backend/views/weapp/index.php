@@ -1,11 +1,7 @@
 <?php
 
-use common\helpers\ProgramHelper;
-use yii\helpers\Html;
-use yii\grid\GridView;
 use yii\widgets\ListView;
 use yii\widgets\Pjax;
-use common\models\Program;
 
 /* @var $this yii\web\View */
 /* @var $searchModel common\models\ProgramSearch */

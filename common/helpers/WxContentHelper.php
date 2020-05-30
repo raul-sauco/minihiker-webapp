@@ -254,8 +254,9 @@ class WxContentHelper
         $image->name = $name;
         $image->type = self::findImageMimeType($name, $programGroup);
         if (!$image->save()) {
-            Yii::error(
+            Yii::error([
                 "Error saving image $name for ProgramGroup $programGroup->id",
+                $image->getErrors()],
                 __METHOD__
             );
             return false;
@@ -265,8 +266,9 @@ class WxContentHelper
         $programGroupImage->image_id = $image->id;
         if (!$programGroupImage->save()) {
             Yii::error(
-                "Error saving ProgramGroupImage for ProgramGroup " .
+                ["Error saving ProgramGroupImage for ProgramGroup " .
                 "$programGroup->id and Image $image->id",
+                    $programGroupImage->getErrors()],
                 __METHOD__
             );
             return false;
@@ -280,14 +282,16 @@ class WxContentHelper
      * @param ProgramGroup $programGroup
      * @return string
      */
-    private static function findImageMimeType(string $name, ProgramGroup $programGroup): string
+    private static function findImageMimeType(
+        string $name, ProgramGroup $programGroup): string
     {
         $type = '';
         $path = Yii::getAlias('@imgPath/pg/') . $programGroup->id . "/$name";
         try {
-            FileHelper::getMimeType($path);
+            $type = FileHelper::getMimeType($path);
         } catch (Exception $e) {
-            Yii::warning("Failed to find mime type of image $path", __METHOD__);
+            Yii::warning("Failed to find mime type of image $path",
+                __METHOD__);
         }
         return $type;
     }

@@ -1,6 +1,6 @@
 <?php
 $controllersList = 'program|client|family|location|program-price|wx-payment-log|' .
-    'wx-unified-payment-order|wx-payment-log|weapp-program';
+    'wx-unified-payment-order|wx-payment-log|weapp';
 
 $params = array_merge(
     require __DIR__ . '/../../common/config/params.php',
