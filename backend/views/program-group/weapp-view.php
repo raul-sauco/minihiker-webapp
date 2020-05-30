@@ -44,9 +44,7 @@ $this->params['breadcrumbs'][] = Yii::t('app', 'Weapp Data');
             <div id="phone-content">
 
                 <div id="phone-header-image">
-                    <?= Html::img(
-                        '@imgUrl/pg/' . $model->id . '/' . $model->weapp_cover_image,
-                        ['alt' => 'Cover image'])
+                    <?= $this->render('/weapp-program/_cover-image', ['model' => $model])
                     ?>
                 </div>
 

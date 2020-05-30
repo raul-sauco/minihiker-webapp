@@ -3,17 +3,19 @@
 /* @var $this yii\web\View */
 /* @var $model common\models\ProgramGroup */
 
-use yii\bootstrap\Html; ?>
+use yii\bootstrap\Html;
+?>
 
 <div class="list-item">
 
     <div class="weapp-program-group-container">
 
         <div class="pg-image-container">
-            <?= Html::img("@web/img/pg/$model->id/" . $model->weapp_cover_image, [
-                    'alt' => Yii::t('app', '{item}\'s image',
-                        ['item' => $model->weapp_display_name])
-            ]) ?>
+            <?= Html::a(
+                    $this->render('_cover-image', ['model' => $model]),
+                    ['program-group/weapp-view', 'id' => $model->id],
+                    ['title' => Yii::t('app', 'View')]
+            ) ?>
         </div>
 
         <div class="pg-details-container">

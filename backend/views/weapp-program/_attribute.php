@@ -1,7 +1,5 @@
 <?php
 
-use yii\bootstrap\Html;
-
 /* @var $model common\models\ProgramGroup */
 /* @var $attr string */
 /* @var $this yii\web\View */

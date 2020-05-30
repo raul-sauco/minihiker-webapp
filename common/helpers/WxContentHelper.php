@@ -252,7 +252,7 @@ class WxContentHelper
     {
         $image = new Image();
         $image->name = $name;
-        $image->type = 'todo';
+        $image->type = self::findImageMimeType($name, $programGroup);
         if (!$image->save()) {
             Yii::error(
                 "Error saving image $name for ProgramGroup $programGroup->id",
@@ -272,5 +272,23 @@ class WxContentHelper
             return false;
         }
         return true;
+    }
+
+    /**
+     * Find the MIME type of a downloaded image
+     * @param string $name
+     * @param ProgramGroup $programGroup
+     * @return string
+     */
+    private static function findImageMimeType(string $name, ProgramGroup $programGroup): string
+    {
+        $type = '';
+        $path = Yii::getAlias('@imgPath/pg/') . $programGroup->id . "/$name";
+        try {
+            FileHelper::getMimeType($path);
+        } catch (Exception $e) {
+            Yii::warning("Failed to find mime type of image $path", __METHOD__);
+        }
+        return $type;
     }
 }
