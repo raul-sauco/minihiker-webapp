@@ -1,6 +1,10 @@
 <?php
 
+use common\models\ProgramGuide;
+use common\models\User;
 use yii\bootstrap\Html;
+use yii\data\ActiveDataProvider;
+use yii\grid\GridView;
 use yii\helpers\Markdown;
 
 /* @var $this yii\web\View */
@@ -89,7 +93,7 @@ $this->params['breadcrumbs'][] = $this->title;
     	        ['view', 'id' => $program->id],
     	        [
     	            'class' => 'btn btn-sm ' .
-    	            ($model->id == $program->id ? 'btn-info' : 'btn-default'),
+    	            ($model->id === $program->id ? 'btn-info' : 'btn-default'),
     	        ]) . ' ';
 
     	}
@@ -190,10 +194,7 @@ $this->params['breadcrumbs'][] = $this->title;
     		        'programId' => $model->id,
     		        'model' => $family,
     		        'serial' => $serial,
-    		        'familySerial' => ++$familySerial,
-    		        'participantIds' =>$participantIds,
-    		        'kidCount' => $kidCount,
-    		        'adultCount' => $adultCount,
+    		        'familySerial' => ++$familySerial
     		    ]);
 
     		    $serial += $participantMemberCount;
@@ -206,11 +207,11 @@ $this->params['breadcrumbs'][] = $this->title;
     </table>
 
     <?php
-    $guideDataProvider = new \yii\data\ActiveDataProvider([
+    $guideDataProvider = new ActiveDataProvider([
         'query' => $model->getGuides(),
     ]);
 
-    echo \yii\grid\GridView::widget([
+    echo GridView::widget([
         'dataProvider' => $guideDataProvider,
         'columns' => [
             [
@@ -219,8 +220,8 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             [
                 'label' => Yii::t('app', 'Remarks'),
-                'value' => function(\common\models\User $data) use ($model) {
-                    $pg = \common\models\ProgramGuide::findOne(['program_id' => $model->id, 'user_id' => $data->id]);
+                'value' => static function(User $data) use ($model) {
+                    $pg = ProgramGuide::findOne(['program_id' => $model->id, 'user_id' => $data->id]);
                     return $pg->notes ?? '';
                 }
             ],
@@ -242,7 +243,7 @@ $this->params['breadcrumbs'][] = $this->title;
         echo Html::tag('span', $message) . '. ';
         echo Html::a(
                 Yii::t('app', 'View'),
-                ['program-group/weapp-view', 'id' => $model->program_group_id])
+                ['weapp/view', 'id' => $model->program_group_id])
         ?>
     </div>
 

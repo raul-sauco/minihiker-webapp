@@ -1,13 +1,13 @@
 <?php
 
-namespace api\helpers;
+namespace common\helpers;
 
 use common\models\ProgramGroupImage;
 use Yii;
 
 /**
  * Class BlueimpHelper
- * @package api\helpers
+ * @package common\helpers
  */
 class BlueimpHelper
 {
@@ -18,8 +18,8 @@ class BlueimpHelper
      */
     public static function getFileSize(ProgramGroupImage $programGroupImage)
     {
-        $baseBath = Yii::$app->basePath;
-        $path = $baseBath . '/web/img/pg/' . $programGroupImage->program_group_id . '/' .
+        $path = Yii::getAlias('@imgPath/pg/') .
+            $programGroupImage->program_group_id . '/' .
             $programGroupImage->image->name;
 
         if (file_exists($path)) {

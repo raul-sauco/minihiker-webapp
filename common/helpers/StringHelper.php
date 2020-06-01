@@ -104,4 +104,26 @@ class StringHelper
         // Return all individual words between spaces
         return explode(' ', $s);
     }
+
+    /**
+     * Return a human readable string representing the file size.
+     * https://stackoverflow.com/a/23888858/2557030
+     *
+     * keywords: humanfilesize human_filesize file_size
+     *
+     * @param string $file
+     * @param int $dec
+     * @return string
+     */
+    public static function fileSize(string $file, $dec = 2): string
+    {
+        if (!file_exists($file)) {
+            return '0kB';
+        }
+        $bytes = filesize($file);
+        $size   = array('B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB');
+        $factor = floor((strlen($bytes) - 1) / 3);
+        return sprintf("%.{$dec}f", $bytes / (1024 ** $factor)) .
+            @$size[$factor];
+    }
 }

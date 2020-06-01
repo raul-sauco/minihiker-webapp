@@ -2,11 +2,11 @@
 
 namespace api\controllers;
 
-use api\helpers\BlueimpHelper;
 use common\controllers\BaseController;
+use common\helpers\BlueimpHelper;
+use common\models\Image;
 use common\models\ProgramGroup;
 use common\models\ProgramGroupImage;
-use common\models\Image;
 use Yii;
 use yii\helpers\Url;
 use yii\web\NotFoundHttpException;

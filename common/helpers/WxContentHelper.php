@@ -34,7 +34,6 @@ class WxContentHelper
         }
         $html = $programGroup->weapp_description;
         $images = self::getImageTags($html);
-        Yii::error($images, __METHOD__);
         foreach ($images as $image) {
             if (self::isImageRemote($image['src'])) {
                 // Make a local copy of the image file
