@@ -15,7 +15,7 @@ class WeappProgramSearch extends ProgramGroup
     /**
      * {@inheritdoc}
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             [['id', 'type_id', 'accompanied', 'weapp_visible', 'min_age', 'max_age',
@@ -28,9 +28,8 @@ class WeappProgramSearch extends ProgramGroup
     /**
      * {@inheritdoc}
      */
-    public function scenarios()
+    public function scenarios(): array
     {
-        // bypass scenarios() implementation in the parent class
         return Model::scenarios();
     }
 
@@ -42,7 +41,7 @@ class WeappProgramSearch extends ProgramGroup
      *
      * @return ActiveDataProvider
      */
-    public function search($get)
+    public function search($get): ActiveDataProvider
     {
         // Find all the weapp visible programs starting today of after.
         $query = ProgramGroup::find()->joinWith(['location', 'programs'])
