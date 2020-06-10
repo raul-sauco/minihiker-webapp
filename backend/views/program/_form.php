@@ -184,14 +184,13 @@ use yii\widgets\ActiveForm;
     </div>
 
     <div class="row">
-        <div class="form-group col-lg-4">
-
-            <?= Html::submitButton($model->isNewRecord ?
-                Yii::t('app', 'Create') :
-                Yii::t('app', 'Update'),
-                ['class' => $model->isNewRecord ?
-                    'btn btn-success' : 'btn btn-primary']) ?>
-
+        <div class="col-lg-4">
+            <div class="form-group">
+                <?= Html::submitButton(
+                    Yii::t('app', 'Save'),
+                    ['class' => 'btn btn-success']
+                ) ?>
+            </div>
         </div>
     </div>
 

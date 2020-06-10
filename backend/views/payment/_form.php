@@ -1,6 +1,7 @@
 <?php
 
 use yii\helpers\Html;
+use yii\jui\DatePicker;
 use yii\widgets\ActiveForm;
 use common\models\Wallet;
 
@@ -11,19 +12,22 @@ use common\models\Wallet;
 
 <div class="payment-form">
 
-    <?php $form = ActiveForm::begin(['options' => ['id' => 'payment-form']]); ?>
+    <?php $form = ActiveForm::begin([
+            'options' => ['id' => 'payment-form']
+    ]); ?>
     
     <div class="row">
 
     	<div class="col-lg-4">
 
-    		<?= $form->field($model, 'date')->widget(\yii\jui\DatePicker::classname(), [
-    		    'dateFormat' => 'yyyy-MM-dd',
-                'clientOptions' => [
-                    'changeMonth' => true,
-                    'changeYear' => true,
-                ],
-    		    'options' => ['class' => 'form-control'],
+    		<?= $form->field($model, 'date')->widget(
+    		        DatePicker::class, [
+                            'dateFormat' => 'yyyy-MM-dd',
+                            'clientOptions' => [
+                                'changeMonth' => true,
+                                'changeYear' => true,
+                            ],
+                            'options' => ['class' => 'form-control'],
 			]) ?>
     		
     	</div>
@@ -67,15 +71,13 @@ use common\models\Wallet;
 
     </div>
 
-
     <?= $form->field($model, 'remarks')->textarea(['rows' => 6]) ?>
 
     <div class="form-group">
-        <?= Html::submitButton($model->isNewRecord ?
-            Yii::t('app', 'Create') :
-            Yii::t('app', 'Update'),
-                ['class' => $model->isNewRecord ?
-                    'btn btn-success' : 'btn btn-primary']) ?>
+        <?= Html::submitButton(
+            Yii::t('app', 'Save'),
+            ['class' => 'btn btn-success']
+        ) ?>
     </div>
 
     <?php ActiveForm::end(); ?>
