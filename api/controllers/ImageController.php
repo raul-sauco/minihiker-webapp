@@ -41,12 +41,18 @@ class ImageController extends ActiveBaseController
     {
         $id = Yii::$app->request->get('program-group-id');
         if ($id !== null && ($pg = ProgramGroup::findOne($id)) !== null) {
-            $query = $pg->getImages();
+            $config = [
+                'query' => $pg->getImages(),
+                'pagination' => [
+                    'pageSizeLimit' => [1,1000],
+                    'defaultPageSize' => 1000
+                ],
+            ];
         } else {
-            $query = Image::find();
+            $config = [
+                'query' => Image::find()
+            ];
         }
-        return new ActiveDataProvider([
-            'query' => $query
-        ]);
+        return new ActiveDataProvider($config);
     }
 }

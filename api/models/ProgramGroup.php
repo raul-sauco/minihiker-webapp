@@ -8,8 +8,9 @@ use yii\db\ActiveQuery;
  * Class ProgramGroup
  * @package api\models
  *
- * @property ActiveQuery $location
- * @property ActiveQuery $programs
+ * @property Location $location
+ * @property Program[] $programs
+ * @property ProgramType $type
  */
 class ProgramGroup extends \common\models\ProgramGroup
 {
@@ -30,9 +31,9 @@ class ProgramGroup extends \common\models\ProgramGroup
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
-    public function getType()
+    public function getType(): ActiveQuery
     {
         return $this->hasOne(ProgramType::class, ['id' => 'type_id']);
     }

@@ -100,48 +100,10 @@ class BlueImpProgramGroupImageUploadController extends BaseController
                 Yii::t('app',
                     'The resource requested does not exist on this server.'));
         }
+        $imageName = $image->name;
 
         // Delete all related ProgramGroupImage records
         foreach ($image->programGroupImages as $programGroupImage) {
-
-            // Delete related files
-            $folder = Yii::getAlias('@imgPath/pg/') .
-                $programGroupImage->program_group_id . '/';
-            $fullSize = $folder .  $programGroupImage->image->name;
-            if (file_exists($fullSize)) {
-                if (!unlink($fullSize)) {
-                    Yii::error(Yii::t(
-                        'app',
-                        'Error unlinking file ' . $fullSize),
-                        __METHOD__
-                    );
-                }
-            } else {
-                Yii::warning(Yii::t(
-                    'app',
-                    'Missing image file ' . $fullSize),
-                    __METHOD__
-                );
-            }
-
-            $thumbnail = $folder . 'th/' . $programGroupImage->image->name;
-            if (file_exists($thumbnail)) {
-                if (!unlink($thumbnail)) {
-                    Yii::error(Yii::t(
-                        'app',
-                        'Error unlinking file ' . $thumbnail),
-                        __METHOD__
-                    );
-                }
-            } else {
-                Yii::warning(Yii::t(
-                    'app',
-                    'Missing thumbnail file ' . $thumbnail),
-                    __METHOD__
-                );
-            }
-
-
             if (!$programGroupImage->delete()) {
                 $errorMsg = Yii::t('app',
                     'Could not delete ProgramGroupImage {img_id}/{pgi_id}.',
@@ -151,10 +113,14 @@ class BlueImpProgramGroupImageUploadController extends BaseController
                 Yii::error($errorMsg, __METHOD__);
                 throw new ServerErrorHttpException($errorMsg);
             }
-
         }
 
-        if (!$image->delete()) {
+        /*
+         * Deleting the related ProgramGroupImages should delete the image
+         * but check in case the image did not have related programGroupImages
+         */
+        $image = Image::findOne($id);
+        if ($image !== null && !$image->delete()) {
             $errorMsg = Yii::t(
                 'app',
                 'Could not delete Image {id}',
@@ -165,6 +131,6 @@ class BlueImpProgramGroupImageUploadController extends BaseController
         }
 
         // Deletion was successful, continue
-        return [$image->name => true];
+        return [$imageName => true];
     }
 }
