@@ -15,6 +15,7 @@ use common\models\ProgramPrice;
 use common\models\ProgramSearch;
 use common\models\ProgramUser;
 use Yii;
+use yii\db\StaleObjectException;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\web\Controller;
@@ -282,39 +283,22 @@ class ProgramController extends Controller
      * @return mixed
      * @throws NotFoundHttpException
      * @throws \Throwable
-     * @throws \yii\db\StaleObjectException
+     * @throws StaleObjectException
      */
     public function actionDelete($id)
     {
         $model = $this->findModel($id);
-
-        Expense::deleteAll(['program_id' => $model->id]);
-
-        Payment::deleteAll(['program_id' => $model->id]);
-
-        ProgramClient::deleteAll(['program_id' => $model->id]);
-
-        ProgramFamily::deleteAll(['program_id' => $model->id]);
-
-        ProgramGuide::deleteAll(['program_id' => $model->id]);
-
-        ProgramPrice::deleteAll(['program_id' => $model->id]);
-
-        ProgramUser::deleteAll(['program_id' => $model->id]);
-
         $pg = $model->programGroup;
-
         $model->delete();
-
         if ((int)$pg->getPrograms()->count() === 0) {
-
             return $this->redirect(['index']);
-
         }
-
-        // There are some other programs on the group show the group page
-        $id = $pg->getPrograms()->one()->id;
-        return $this->redirect(['view', 'id' => $id]);
+        /** @var Program $p */
+        $p = $pg->getPrograms()->one();
+        if ($p !== null) {
+            return $this->redirect(['view', 'id' => $p->id]);
+        }
+        return $this->redirect(['index']);
     }
 
     /**

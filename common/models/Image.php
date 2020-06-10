@@ -3,8 +3,11 @@
 namespace common\models;
 
 use Yii;
+use yii\base\InvalidConfigException;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
+use yii\db\ActiveQuery;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "image".
@@ -22,7 +25,7 @@ use yii\behaviors\TimestampBehavior;
  * @property ProgramGroupImage[] $programGroupImages
  * @property ProgramGroup[] $programGroups
  */
-class Image extends \yii\db\ActiveRecord
+class Image extends ActiveRecord
 {
     /**
      * {@inheritdoc}
@@ -42,8 +45,10 @@ class Image extends \yii\db\ActiveRecord
             [['created_by', 'updated_by', 'created_at', 'updated_at'], 'integer'],
             [['name'], 'string', 'max' => 255],
             [['type'], 'string', 'max' => 25],
-            [['created_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['created_by' => 'id']],
-            [['updated_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['updated_by' => 'id']],
+            [['created_by'], 'exist', 'skipOnError' => true, 'targetClass' =>
+                User::class, 'targetAttribute' => ['created_by' => 'id']],
+            [['updated_by'], 'exist', 'skipOnError' => true, 'targetClass' =>
+                User::class, 'targetAttribute' => ['updated_by' => 'id']],
         ];
     }
 
@@ -68,43 +73,46 @@ class Image extends \yii\db\ActiveRecord
      * {@inheritDoc}
      * @see \yii\base\Component::behaviors()
      */
-    public function behaviors()
+    public function behaviors(): array
     {
         return [
-            BlameableBehavior::className(),
-            TimestampBehavior::className(),
+            BlameableBehavior::class,
+            TimestampBehavior::class,
         ];
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
-    public function getCreatedBy()
+    public function getCreatedBy(): ActiveQuery
     {
-        return $this->hasOne(User::className(), ['id' => 'created_by']);
+        return $this->hasOne(User::class, ['id' => 'created_by']);
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
-    public function getUpdatedBy()
+    public function getUpdatedBy(): ActiveQuery
     {
-        return $this->hasOne(User::className(), ['id' => 'updated_by']);
+        return $this->hasOne(User::class, ['id' => 'updated_by']);
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
-    public function getProgramGroupImages()
+    public function getProgramGroupImages(): ActiveQuery
     {
-        return $this->hasMany(ProgramGroupImage::className(), ['image_id' => 'id']);
+        return $this->hasMany(ProgramGroupImage::class, ['image_id' => 'id']);
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
+     * @throws InvalidConfigException
      */
-    public function getProgramGroups()
+    public function getProgramGroups(): ActiveQuery
     {
-        return $this->hasMany(ProgramGroup::className(), ['id' => 'program_group_id'])->viaTable('program_group_image', ['image_id' => 'id']);
+        return $this->hasMany(
+            ProgramGroup::class, ['id' => 'program_group_id'])
+            ->viaTable('program_group_image', ['image_id' => 'id']);
     }
 }

@@ -2,10 +2,19 @@
 namespace common\helpers;
 
 use common\models\Client;
+use common\models\Expense;
+use common\models\Payment;
+use common\models\Program;
+use common\models\ProgramClient;
+use common\models\ProgramFamily;
+use common\models\ProgramGuide;
+use common\models\ProgramPrice;
 use common\models\ProgramUser;
 use common\models\User;
+use common\models\WxUnifiedPaymentOrder;
 use Yii;
 use yii\behaviors\TimestampBehavior;
+use yii\db\StaleObjectException;
 
 /**
  * Helper functionality for Program model.
@@ -283,6 +292,38 @@ class ProgramHelper
                 $program->touch('updated_at');
             }
 
+        }
+    }
+
+    /**
+     * Delete all related records that could make program deletion fail.
+     * For each related record, recursively delete related records that
+     * reference them.
+     *
+     * https://stackoverflow.com/a/1133461/2557030
+     * select constraint_name,table_name,column_name
+     *   from information_schema.key_column_usage
+     *   where referenced_table_name='program'
+     *   and referenced_column_name='id'
+     *   and table_schema='database_name_here';
+     *
+     * @param Program $program
+     * @return void
+     * @throws StaleObjectException
+     * @throws \Throwable
+     */
+    public static function deleteAllRelatedRecords (Program $program): void
+    {
+        Expense::deleteAll(['program_id' => $program->id]);
+        Payment::deleteAll(['program_id' => $program->id]);
+        ProgramClient::deleteAll(['program_id' => $program->id]);
+        ProgramFamily::deleteAll(['program_id' => $program->id]);
+        ProgramGuide::deleteAll(['program_id' => $program->id]);
+        ProgramUser::deleteAll(['program_id' => $program->id]);
+        foreach ($program->getProgramPrices()->each() as $programPrice) {
+            /** @var ProgramPrice $programPrice */
+            WxUnifiedPaymentOrder::deleteAll(['price_id' => $programPrice->id]);
+            $programPrice->delete();
         }
     }
 }

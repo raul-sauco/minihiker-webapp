@@ -2,9 +2,13 @@
 
 namespace common\models;
 
+use common\helpers\ImageHelper;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
+use yii\db\ActiveQuery;
+use yii\db\ActiveRecord;
+use yii\db\StaleObjectException;
 
 /**
  * This is the model class for table "program_group_image".
@@ -21,12 +25,12 @@ use yii\behaviors\TimestampBehavior;
  * @property Image $image
  * @property ProgramGroup $programGroup
  */
-class ProgramGroupImage extends \yii\db\ActiveRecord
+class ProgramGroupImage extends ActiveRecord
 {
     /**
      * {@inheritdoc}
      */
-    public static function tableName()
+    public static function tableName(): string
     {
         return 'program_group_image';
     }
@@ -34,23 +38,30 @@ class ProgramGroupImage extends \yii\db\ActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             [['program_group_id', 'image_id'], 'required'],
-            [['program_group_id', 'image_id', 'created_by', 'updated_by', 'created_at', 'updated_at'], 'integer'],
-            [['program_group_id', 'image_id'], 'unique', 'targetAttribute' => ['program_group_id', 'image_id']],
-            [['created_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['created_by' => 'id']],
-            [['updated_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['updated_by' => 'id']],
-            [['image_id'], 'exist', 'skipOnError' => true, 'targetClass' => Image::className(), 'targetAttribute' => ['image_id' => 'id']],
-            [['program_group_id'], 'exist', 'skipOnError' => true, 'targetClass' => ProgramGroup::className(), 'targetAttribute' => ['program_group_id' => 'id']],
+            [['program_group_id', 'image_id', 'created_by', 'updated_by',
+                'created_at', 'updated_at'], 'integer'],
+            [['program_group_id', 'image_id'], 'unique', 'targetAttribute' =>
+                ['program_group_id', 'image_id']],
+            [['created_by'], 'exist', 'skipOnError' => true, 'targetClass' =>
+                User::class, 'targetAttribute' => ['created_by' => 'id']],
+            [['updated_by'], 'exist', 'skipOnError' => true, 'targetClass' =>
+                User::class, 'targetAttribute' => ['updated_by' => 'id']],
+            [['image_id'], 'exist', 'skipOnError' => true, 'targetClass' =>
+                Image::class, 'targetAttribute' => ['image_id' => 'id']],
+            [['program_group_id'], 'exist', 'skipOnError' => true, 'targetClass' =>
+                ProgramGroup::class, 'targetAttribute' =>
+                ['program_group_id' => 'id']],
         ];
     }
 
     /**
      * {@inheritdoc}
      */
-    public function attributeLabels()
+    public function attributeLabels(): array
     {
         return [
             'program_group_id' => Yii::t('app', 'Program Group ID'),
@@ -63,47 +74,61 @@ class ProgramGroupImage extends \yii\db\ActiveRecord
     }
 
     /**
+     * @throws \Throwable
+     * @throws StaleObjectException
+     */
+    public function afterDelete(): void
+    {
+        $image = $this->image;
+        if ($image !== null && (int)$image->getProgramGroupImages()->count() === 0) {
+            ImageHelper::removeProgramGroupImage($image, $this);
+            $image->delete();
+        }
+        parent::afterDelete();
+    }
+
+    /**
      *
      * {@inheritDoc}
      * @see \yii\base\Component::behaviors()
      */
-    public function behaviors()
+    public function behaviors(): array
     {
         return [
-            BlameableBehavior::className(),
-            TimestampBehavior::className(),
+            BlameableBehavior::class,
+            TimestampBehavior::class,
         ];
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
-    public function getCreatedBy()
+    public function getCreatedBy(): ActiveQuery
     {
-        return $this->hasOne(User::className(), ['id' => 'created_by']);
+        return $this->hasOne(User::class, ['id' => 'created_by']);
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
-    public function getUpdatedBy()
+    public function getUpdatedBy(): ActiveQuery
     {
-        return $this->hasOne(User::className(), ['id' => 'updated_by']);
+        return $this->hasOne(User::class, ['id' => 'updated_by']);
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
-    public function getImage()
+    public function getImage(): ActiveQuery
     {
-        return $this->hasOne(Image::className(), ['id' => 'image_id']);
+        return $this->hasOne(Image::class, ['id' => 'image_id']);
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
-    public function getProgramGroup()
+    public function getProgramGroup(): ActiveQuery
     {
-        return $this->hasOne(ProgramGroup::className(), ['id' => 'program_group_id']);
+        return $this->hasOne(ProgramGroup::class, ['id' => 'program_group_id']);
     }
 }

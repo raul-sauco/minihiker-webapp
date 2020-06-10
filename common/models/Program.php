@@ -9,6 +9,7 @@ use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
+use yii\db\StaleObjectException;
 use yii\helpers\Html;
 
 /**
@@ -122,26 +123,24 @@ class Program extends ActiveRecord
     /**
      * {@inheritDoc}
      * @return bool
+     * @throws StaleObjectException
+     * @throws \Throwable
      */
     public function beforeDelete(): bool
     {
-        // Delete related ProgramUser records
-        ProgramUser::deleteAll(['program_id' => $this->id]);
-
+        ProgramHelper::deleteAllRelatedRecords($this);
         return parent::beforeDelete();
     }
 
     /**
      * @throws \Throwable
-     * @throws \yii\db\StaleObjectException
+     * @throws StaleObjectException
      */
-    public function afterDelete()
+    public function afterDelete(): void
     {
         // Delete the program group if there are no more programs
         if ((int)$this->programGroup->getPrograms()->count() === 0) {
-
             $this->programGroup->delete();
-
         }
     }
 

@@ -2,9 +2,15 @@
 
 namespace common\models;
 
+use common\helpers\ProgramGroupHelper;
+use Throwable;
 use Yii;
+use yii\base\InvalidConfigException;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
+use yii\db\ActiveQuery;
+use yii\db\ActiveRecord;
+use yii\db\StaleObjectException;
 use yii\helpers\Html;
 use yii\helpers\HtmlPurifier;
 
@@ -40,14 +46,15 @@ use yii\helpers\HtmlPurifier;
  * @property User $updatedBy
  * @property ProgramGroupImage[] $programGroupImages
  * @property Image[] $images
+ * @property string $namei18n
  * @property Qa[] $qas
  */
-class ProgramGroup extends \yii\db\ActiveRecord
+class ProgramGroup extends ActiveRecord
 {
     /**
      * {@inheritdoc}
      */
-    public static function tableName()
+    public static function tableName(): string
     {
         return 'program_group';
     }
@@ -55,12 +62,15 @@ class ProgramGroup extends \yii\db\ActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function rules()
+    public function rules(): array
     {
         return [
-            [['type_id', 'accompanied', 'weapp_visible', 'weapp_in_banner', 'min_age', 'max_age', 'created_by', 'updated_by', 'created_at', 'updated_at'], 'integer'],
+            [['type_id', 'accompanied', 'weapp_visible', 'weapp_in_banner',
+                'min_age', 'max_age', 'created_by', 'updated_by',
+                'created_at', 'updated_at'], 'integer'],
             [['location_id', 'accompanied'], 'required'],
-            [['theme', 'summary', 'keywords', 'weapp_description', 'price_description', 'refund_description'], 'string'],
+            [['theme', 'summary', 'keywords', 'weapp_description',
+                'price_description', 'refund_description'], 'string'],
             [[
                 'theme',
                 'summary',
@@ -68,24 +78,28 @@ class ProgramGroup extends \yii\db\ActiveRecord
                 'weapp_description',
                 'price_description',
                 'refund_description'
-            ], 'filter', 'filter' => function ($value) {
+            ], 'filter', 'filter' => static function ($value) {
                 return HtmlPurifier::process($value);
             }],
             [['name'], 'string', 'max' => 128],
             [['location_id'], 'string', 'max' => 12],
             [['weapp_cover_image'], 'string', 'max' => 100],
             [['weapp_display_name'], 'string', 'max' => 50],
-            [['created_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['created_by' => 'id']],
-            [['location_id'], 'exist', 'skipOnError' => true, 'targetClass' => Location::class, 'targetAttribute' => ['location_id' => 'name_zh']],
-            [['type_id'], 'exist', 'skipOnError' => true, 'targetClass' => ProgramType::class, 'targetAttribute' => ['type_id' => 'id']],
-            [['updated_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['updated_by' => 'id']],
+            [['created_by'], 'exist', 'skipOnError' => true, 'targetClass' =>
+                User::class, 'targetAttribute' => ['created_by' => 'id']],
+            [['location_id'], 'exist', 'skipOnError' => true, 'targetClass' =>
+                Location::class, 'targetAttribute' => ['location_id' => 'name_zh']],
+            [['type_id'], 'exist', 'skipOnError' => true, 'targetClass' =>
+                ProgramType::class, 'targetAttribute' => ['type_id' => 'id']],
+            [['updated_by'], 'exist', 'skipOnError' => true, 'targetClass' =>
+                User::class, 'targetAttribute' => ['updated_by' => 'id']],
         ];
     }
 
     /**
      * {@inheritdoc}
      */
-    public function attributeLabels()
+    public function attributeLabels(): array
     {
         return [
             'id' => Yii::t('app', 'ID'),
@@ -113,10 +127,21 @@ class ProgramGroup extends \yii\db\ActiveRecord
     }
 
     /**
+     * @return bool
+     * @throws Throwable
+     * @throws StaleObjectException
+     */
+    public function beforeDelete(): bool
+    {
+        ProgramGroupHelper::deleteAllRelatedRecords($this);
+        return parent::beforeDelete();
+    }
+
+    /**
      * {@inheritDoc}
      * @see \yii\base\Component::behaviors()
      */
-    public function behaviors()
+    public function behaviors(): array
     {
         return [
             BlameableBehavior::class,
@@ -131,7 +156,7 @@ class ProgramGroup extends \yii\db\ActiveRecord
      *
      * @return string The ProgramGroup's name
      */
-    public function getNamei18n()
+    public function getNamei18n(): string
     {
 
         $name = empty($this->type->name) ? '' :
@@ -146,66 +171,69 @@ class ProgramGroup extends \yii\db\ActiveRecord
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
-    public function getPrograms()
+    public function getPrograms(): ActiveQuery
     {
         return $this->hasMany(Program::class, ['program_group_id' => 'id']);
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
-    public function getCreatedBy()
+    public function getCreatedBy(): ActiveQuery
     {
         return $this->hasOne(User::class, ['id' => 'created_by']);
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
-    public function getLocation()
+    public function getLocation(): ActiveQuery
     {
         return $this->hasOne(Location::class, ['name_zh' => 'location_id']);
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
-    public function getType()
+    public function getType(): ActiveQuery
     {
         return $this->hasOne(ProgramType::class, ['id' => 'type_id']);
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
-    public function getUpdatedBy()
+    public function getUpdatedBy(): ActiveQuery
     {
         return $this->hasOne(User::class, ['id' => 'updated_by']);
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
-    public function getProgramGroupImages()
+    public function getProgramGroupImages(): ActiveQuery
     {
-        return $this->hasMany(ProgramGroupImage::class, ['program_group_id' => 'id']);
+        return $this->hasMany(
+            ProgramGroupImage::class, ['program_group_id' => 'id']);
     }
 
     /**
-     * @return \yii\db\ActiveQuery
-     * @throws \yii\base\InvalidConfigException
+     * @return ActiveQuery
+     * @throws InvalidConfigException
      */
-    public function getImages()
+    public function getImages(): ActiveQuery
     {
-        return $this->hasMany(Image::class, ['id' => 'image_id'])->viaTable('program_group_image', ['program_group_id' => 'id']);
+        return $this->hasMany(
+            Image::class, ['id' => 'image_id'])
+            ->viaTable('program_group_image', ['program_group_id' => 'id']);
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
-    public function getQas()
+    public function getQas(): ActiveQuery
     {
         return $this->hasMany(Qa::class, ['program_group_id' => 'id']);
     }
