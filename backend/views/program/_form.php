@@ -135,7 +135,7 @@ use yii\widgets\ActiveForm;
         <div class="col-lg-4">
 
             <?= $form->field($pg, 'accompanied')->dropDownList([
-                '0' => Yii::t('app', 'Only childs'),
+                '0' => Yii::t('app', 'Only children'),
                 '1' => Yii::t('app', 'With parents')
             ])->label(Yii::t('app', 'Program Type')) ?>
 
@@ -199,10 +199,9 @@ use yii\widgets\ActiveForm;
 
 <?php
 ActiveForm::end();
-
 if (!$model->isNewRecord) {
-
-    $this->registerJs("fetchProgramPrices($model->id)",View::POS_READY,'fetchProgramPricesJs');
-    $this->registerJsVar('currentProgramId', $model->id);
-
+    $this->registerJs("fetchProgramPrices($model->id)",
+        View::POS_READY,
+        'fetchProgramPricesJs'
+    );
 }

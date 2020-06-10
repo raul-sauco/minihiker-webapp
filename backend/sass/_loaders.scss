@@ -1,0 +1,48 @@
+@import "vars";
+.lds-ring-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+@mixin lds($size, $color: $color-main) {
+  display: inline-block;
+  position: relative;
+  width: $size;
+  height: $size;
+  div {
+    box-sizing: border-box;
+    display: block;
+    position: absolute;
+    width: calc(#{$size} * 0.8);
+    height: calc(#{$size} * 0.8);
+    margin: calc(#{$size} / 10);
+    border: calc(#{$size} / 10) solid $color;
+    border-radius: 50%;
+    animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+    border-color: $color transparent transparent transparent;
+  }
+  div:nth-child(1) {
+    animation-delay: -0.45s;
+  }
+  div:nth-child(2) {
+    animation-delay: -0.3s;
+  }
+  div:nth-child(3) {
+    animation-delay: -0.15s;
+  }
+}
+.lds-ring-50 {
+  @include lds($size: 50px);
+}
+.lds-ring-80 {
+  @include lds($size: 80px);
+}
+@keyframes lds-ring {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+

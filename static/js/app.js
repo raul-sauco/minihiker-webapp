@@ -387,20 +387,23 @@ function formatAsCurrency(amount) {
  */
 function fetchProgramPrices(id) {
   const url = Mh.globalData.apiurl + 'program-prices?program-id=' + id;
-  let html = '';
+  const $container = $('#program-prices-container');
+  $container.html(Mh.globalData.spinner50);
   $.ajax({
     url,
     method: "GET",
     headers: Mh.globalData.requestHeaders,
     success: res => {
       // If successful will get an array of prices
+      let html = '';
       res.forEach(p => {
         html += generateProgramPriceHtmlTag(p);
       });
-      $('#program-prices-container').html(html);
+      $container.html(html);
     },
-    fail: err => {
-      console.warn(err);
+    error: err => {
+      console.error(err);
+      $container.html('<div class="alert alert-danger">下载价格时出错</div>');
     }
   });
 }
@@ -453,7 +456,7 @@ function showProgramPriceUpdateForm(id, adults, kids, membership_type, price) {
   const modalContent = $('#modalContent');
   const spinner = $('<div>', {
     id: 'program-price-form-loading-container',
-    html: Mh.globalData.spinner80
+    html: Mh.globalData.spinner50
   });
   modalContent.html(spinner);
   $('#modalHeader').html('更新程序价格');
@@ -472,19 +475,19 @@ function showProgramPriceUpdateForm(id, adults, kids, membership_type, price) {
  */
 function showProgramPriceCreateForm(pid) {
   if (Mh.debug) {
-    console.debug(`Fetching create form for program ${pid}, id: + ${currentProgramId}`);
+    console.debug(`Fetching create form for program ${pid}`);
   }
   const modal = $('#appModal');
   const modalContent = $('#modalContent');
   const spinner = $('<div>', {
     id: 'program-price-form-loading-container',
-    html: Mh.globalData.spinner80
+    html: Mh.globalData.spinner50
   });
   modalContent.html(spinner);
   $('#modalHeader').html('创建新的计划价格');
   modal.modal('show');
   const url = $('#program-prices-container')
-    .attr('data-create-url') + '?pid=' + currentProgramId;
+    .attr('data-create-url') + '?pid=' + pid;
   $.get(url, res => {
     modalContent.append(res);
     $('#program-price-form-loading-container').hide();

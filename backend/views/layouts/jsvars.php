@@ -2,6 +2,8 @@
 
 use yii\helpers\Html;
 
+/* @var $this \yii\web\View */
+
 // Fetch the application user
 $user = Yii::$app->user->identity;
 
@@ -10,23 +12,10 @@ $this->registerJsVar(
         'debug' => YII_DEBUG,
         'globalData' => [
             'debounceWait' => 500,
-            'spinner20' => Html::tag('div',
-                Html::img('@imgUrl/spinner-20.gif',
-                    ['class' => 'loading-spinner']),
-                ['class' => 'spinner-container spinner-container-20']
-            ),
-            'spinner50' => Html::tag('div',
-                Html::img('@staticUrl/img/spinner_50.gif',
-                    ['class' => 'loading-spinner']),
-                ['class' => 'spinner-container spinner-container-50']
-            ),
-            'spinner80' => Html::tag('div',
-            '<div></div><div></div><div></div><div></div>',
-                ['class' => 'lds-ring-80']),
-            'spinner200' => Html::tag('div',
-                Html::img('@staticUrl/img/spinner_200.gif',['class' => 'loading-spinner']),
-                ['class' => 'spinner-container spinner-container-200']
-            ),
+            'spinner20' => $this->render('spinner', ['size' => 20]),
+            'spinner50' => $this->render('spinner', ['size' => 50]),
+            'spinner80' => $this->render('spinner', ['size' => 80]),
+            'spinner200' => $this->render('spinner', ['size' => 200]),
             'username' => $user->username ?? '',
             'accesstoken' => $user->access_token ?? '',
             'applanguage' => Yii::$app->language,
