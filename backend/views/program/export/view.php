@@ -1,7 +1,6 @@
 <?php
 
-use yii\helpers\Html;
-use yii\helpers\Markdown;
+use backend\assets\TableExportAsset;
 
 /* @var $this yii\web\View */
 /* @var $model common\models\Program */
@@ -16,53 +15,13 @@ $this->params['breadcrumbs'][] =
 
 $this->params['breadcrumbs'][] = $this->title;
 
-// Register the export plugin
-\backend\assets\TableExportAsset::register($this);
+TableExportAsset::register($this);
 ?>
 
 <div class="program-export">
-
 	<?= $this->render('/layouts/_createInfo', ['model' => $model]) ?>
-
-    <div class="program-group-links">
-
-        <?php
-        foreach ($model->programGroup->programs as $program) {
-
-            $link = $program->programPeriod->name;
-            $link .= '. ';
-            $link .= Yii::$app->formatter->asDate($program->start_date, 'short');
-            $link .= ' - ';
-            $link .= Yii::$app->formatter->asDate($program->end_date, 'short');
-
-            $link .= Html::tag('div', $program->getLongParticipantCount());
-
-
-
-            echo Html::a(
-                    $link,
-                    ['export', 'id' => $program->id],
-                    [
-                        'class' => 'btn btn-sm ' .
-                            ($model->id == $program->id ? 'btn-info' : 'btn-default'),
-                    ]) . ' ';
-
-        }
-        ?>
-
-    </div>
-
-    <?php
-    if (!empty($model->remarks)) {
-        echo Html::tag('div' ,
-            Markdown::process(Html::encode($model->remarks)),
-            [
-                'class' => 'alert alert-info program-remarks-container' ,
-                'role' => 'alert',
-                'id' => "program-$model->id-remarks"
-            ]);
-    }
-    ?>
+    <?= $this->render('/program/_program-group-links', ['model' => $model]) ?>
+    <?= $this->render('/program/_remarks', ['model' => $model]) ?>
 
     <!-- --------------------------------------------------
     -------- From here down is the new view code ----------
@@ -134,7 +93,6 @@ $this->params['breadcrumbs'][] = $this->title;
     		        'programId' => $model->id,
     		        'model' => $family,
     		        'serial' => $serial,
-    		        'participantIds' =>$participantIds,
     		        'kidCount' => $kidCount,
     		        'adultCount' => $adultCount,
     		    ]);

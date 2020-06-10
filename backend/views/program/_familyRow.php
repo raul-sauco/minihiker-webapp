@@ -5,8 +5,6 @@
 /* @var $serial integer */
 /* @var $familySerial integer */
 /* @var $programId int */
-/* @var $kidCount int */
-/* @var $adultCount int */
 /* @var $clients common\models\Client[] */
 /* @var $participantCount integer */
 

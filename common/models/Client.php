@@ -19,7 +19,7 @@ use yii\db\ActiveRecord;
  * @property string $name_en
  * @property string $birthdate
  * @property bool $is_male
- * @property bool $is_kid
+ * @deprecated  bool $is_kid
  * @property int $family_role_id
  * @property string $family_role_other
  * @property string $remarks

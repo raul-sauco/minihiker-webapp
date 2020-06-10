@@ -140,17 +140,9 @@ echo Html::tag('td', Html::a($serial, [
         ],
 ]);
 
-echo Html::tag('td', Html::a(Html::encode($model->getName()),
-    ['/client/view', 'id' => $model->id]) .
-    ($model->is_kid ? Html::tag('span',
-        Yii::t('app', '(kid)'),
-        ['class' => 'client-name-display-is-kid']) : ''), [
-    'class' => 'program-view-client-name-cell ' . $statusClass,
-    'id' => "program-view-client-$model->id-name",
-    'data' => [
-        'family-id' => $family->id,
-        'client-id' => $model->id,
-    ],
+echo $this->render('_client-name-cell', [
+    'model' => $model,
+    'statusClass' => $statusClass
 ]);
 
 echo Html::tag('td',

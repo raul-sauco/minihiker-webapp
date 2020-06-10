@@ -13,11 +13,17 @@ class ClientSearch extends Client
     /**
      * @inheritdoc
      */
-    public function rules()
+    public function rules(): array
     {
         return [
-            [['id', 'family_id', 'created_by', 'updated_by', 'created_at', 'updated_at'], 'integer'],
-            [['name_zh', 'nickname', 'name_pinyin', 'name_en', 'birthdate', 'remarks', 'phone_number', 'phone_number_2', 'email', 'wechat_id', 'id_card_number', 'passport_number', 'passport_issue_date', 'passport_expire_date', 'passport_place_of_issue', 'passport_issuing_authority', 'place_of_birth'], 'safe'],
+            [['id', 'family_id', 'created_by', 'updated_by',
+                'created_at', 'updated_at'], 'integer'],
+            [['name_zh', 'nickname', 'name_pinyin', 'name_en',
+                'birthdate', 'remarks', 'phone_number', 'phone_number_2',
+                'email', 'wechat_id', 'id_card_number', 'passport_number',
+                'passport_issue_date', 'passport_expire_date',
+                'passport_place_of_issue', 'passport_issuing_authority',
+                'place_of_birth'], 'safe'],
             [['is_male', 'is_kid'], 'boolean'],
         ];
     }
@@ -51,7 +57,6 @@ class ClientSearch extends Client
         $this->load($params);
 
         if (!$this->validate()) {
-            // uncomment the following line if you do not want to return any records when validation fails
             // $query->where('0=1');
             return $dataProvider;
         }

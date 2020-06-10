@@ -243,7 +243,9 @@ class Program extends ActiveRecord
     public function getDetailedParticipantCount(): string
     {
         $kidCount = $this->getClients()->where(['family_role_id' => 1])->count();
-        $adultCount = $this->getClients()->where(['!=', 'family_role_id', 1])->count();
+        $adultCount = $this->getClients()
+            ->where(['!=', 'family_role_id', 1])
+            ->orWhere(['family_role_id' => null])->count();
 
         return Yii::t('app', '{n,plural,=0{no kids} =1{1 kid} other{# kids}}. ' .
             '{i,plural,=0{no adults} =1{1 adult} other{# adults}}.', [
