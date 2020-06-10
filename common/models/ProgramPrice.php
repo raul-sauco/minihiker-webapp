@@ -5,41 +5,45 @@ namespace common\models;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
+use yii\db\ActiveQuery;
+use yii\db\ActiveRecord;
+use yii\db\StaleObjectException;
 
 /**
  * This is the model class for table "program_price".
  *
  * @property int $id
- * @property int $program_id
- * @property int $adults
- * @property int $kids
- * @property int $membership_type
- * @property int $price
- * @property int $created_by
- * @property int $updated_by
- * @property int $created_at
- * @property int $updated_at
+ * @property int|null $program_id
+ * @property int|null $adults
+ * @property int|null $kids
+ * @property int|null $membership_type
+ * @property int|null $price
+ * @property int|null $created_by
+ * @property int|null $updated_by
+ * @property int|null $created_at
+ * @property int|null $updated_at
  *
  * @property User $createdBy
  * @property Program $program
+ * @property mixed $namei18n
  * @property User $updatedBy
+ * @property WxUnifiedPaymentOrder[] $wxUnifiedPaymentOrders
  */
-class ProgramPrice extends \yii\db\ActiveRecord
+class ProgramPrice extends ActiveRecord
 {
     /**
      * {@inheritdoc}
      */
-    public static function tableName()
+    public static function tableName(): string
     {
         return 'program_price';
     }
 
     /**
-     * Override this to eliminate the model name on the generated forms.
-     *
+     * Override this to eliminate the model name on the generated forms.     *
      * @return string
      */
-    public function formName()
+    public function formName(): string
     {
         return '';
     }
@@ -47,20 +51,25 @@ class ProgramPrice extends \yii\db\ActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function rules()
+    public function rules(): array
     {
         return [
-            [['program_id', 'adults', 'kids', 'membership_type', 'price', 'created_by', 'updated_by', 'created_at', 'updated_at'], 'integer'],
-            [['created_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['created_by' => 'id']],
-            [['program_id'], 'exist', 'skipOnError' => true, 'targetClass' => Program::className(), 'targetAttribute' => ['program_id' => 'id']],
-            [['updated_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['updated_by' => 'id']],
+            [['program_id', 'adults', 'kids', 'membership_type', 'price',
+                'created_by', 'updated_by', 'created_at', 'updated_at'],
+                'integer'],
+            [['created_by'], 'exist', 'skipOnError' => true, 'targetClass' =>
+                User::class, 'targetAttribute' => ['created_by' => 'id']],
+            [['program_id'], 'exist', 'skipOnError' => true, 'targetClass' =>
+                Program::class, 'targetAttribute' => ['program_id' => 'id']],
+            [['updated_by'], 'exist', 'skipOnError' => true, 'targetClass' =>
+                User::class, 'targetAttribute' => ['updated_by' => 'id']],
         ];
     }
 
     /**
      * {@inheritdoc}
      */
-    public function attributeLabels()
+    public function attributeLabels(): array
     {
         return [
             'id' => Yii::t('app', 'ID'),
@@ -76,47 +85,79 @@ class ProgramPrice extends \yii\db\ActiveRecord
         ];
     }
 
-    public function getNamei18n()
+    /**
+     * Get the i18n version of the model's name
+     * @return string
+     */
+    public function getNamei18n(): string
     {
         return Yii::t('app',
-            '{n,plural,=0{no kids} =1{1 kid} other{# kids}}, {i,plural,=0{no adults} =1{1 adult} other{# adults}}',
+            '{n,plural,=0{no kids} =1{1 kid} other{# kids}}, ' .
+            '{i,plural,=0{no adults} =1{1 adult} other{# adults}}',
             ['n' => $this->kids, 'i' => $this->adults]);
+    }
+
+    /**
+     * @return bool
+     * @throws \Throwable
+     * @throws StaleObjectException
+     */
+    public function beforeDelete(): bool
+    {
+        foreach ($this->wxUnifiedPaymentOrders as $wxUnifiedPaymentOrder) {
+            if (!$wxUnifiedPaymentOrder->delete()) {
+                Yii::error([
+                    "Error deleting wx-unified-payment-order $wxUnifiedPaymentOrder->id",
+                    $wxUnifiedPaymentOrder->errors
+                ], __METHOD__);
+            }
+        }
+        return parent::beforeDelete();
     }
 
     /**
     * {@inheritDoc}
     * @see \yii\base\Component::behaviors()
     */
-    public function behaviors()
+    public function behaviors(): array
     {
         return [
-            BlameableBehavior::className(),
-            TimestampBehavior::className(),
+            BlameableBehavior::class,
+            TimestampBehavior::class,
         ];
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
-    public function getCreatedBy()
+    public function getCreatedBy(): ActiveQuery
     {
-        return $this->hasOne(User::className(), ['id' => 'created_by']);
+        return $this->hasOne(User::class, ['id' => 'created_by']);
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
-    public function getProgram()
+    public function getProgram(): ActiveQuery
     {
-        return $this->hasOne(Program::className(), ['id' => 'program_id']);
+        return $this->hasOne(Program::class, ['id' => 'program_id']);
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
-    public function getUpdatedBy()
+    public function getUpdatedBy(): ActiveQuery
     {
-        return $this->hasOne(User::className(), ['id' => 'updated_by']);
+        return $this->hasOne(User::class, ['id' => 'updated_by']);
     }
 
+    /**
+     * Gets query for [[WxUnifiedPaymentOrders]].
+     *
+     * @return ActiveQuery
+     */
+    public function getWxUnifiedPaymentOrders(): ActiveQuery
+    {
+        return $this->hasMany(WxUnifiedPaymentOrder::class, ['price_id' => 'id']);
+    }
 }

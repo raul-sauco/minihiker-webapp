@@ -382,42 +382,31 @@ function formatAsCurrency(amount) {
  *************************************************************************** */
 
 /**
- * Fetch all the Prices for a given program.
- *
+ * Fetch all the Prices for a given program. *
  * @param id
  */
 function fetchProgramPrices(id) {
-
-  const url = Mh.globalData.apiurl + 'program-prices?program-id=' + id,
-    authHeader = 'Bearer ' + userAccessToken,
-    container = $('#program-prices-container');
+  const url = Mh.globalData.apiurl + 'program-prices?program-id=' + id;
   let html = '';
-
   $.ajax({
-    url: url,
-    type: "GET",
-    dataType: 'json',
-    // xhrFields: { withCredentials: true },
+    url,
+    method: "GET",
+    headers: Mh.globalData.requestHeaders,
     success: res => {
       // If successful will get an array of prices
       res.forEach(p => {
         html += generateProgramPriceHtmlTag(p);
       });
-      container.html(html);
+      $('#program-prices-container').html(html);
     },
-    fail: res => {
-      console.warn(res);
-    },
-    beforeSend: xhr => {
-      xhr.setRequestHeader('Authorization', authHeader);
+    fail: err => {
+      console.warn(err);
     }
   });
-
 }
 
 /**
- * Generate the html tag for a program price.
- *
+ * Generate the html tag for a program price. *
  * @param p
  * @returns {string}
  */
@@ -446,7 +435,6 @@ function generateProgramPriceHtmlTag(p) {
 
   html += '</div>';
 
-
   return html;
 }
 
@@ -461,21 +449,19 @@ function generateProgramPriceHtmlTag(p) {
  * @param price
  */
 function showProgramPriceUpdateForm(id, adults, kids, membership_type, price) {
-
-  let modal = $('#appModal');
-  let modalContent = $('#modalContent');
-
-  // Get the update url from the container and replace the id, view program/_form #program-prices-container
-  let updateUrl = $('#program-prices-container').attr('data-update-url').replace(/0/gi, id);
-
+  const modal = $('#appModal');
+  const modalContent = $('#modalContent');
+  const spinner = $('<div>', {
+    id: 'program-price-form-loading-container',
+    html: Mh.globalData.spinner80
+  });
+  modalContent.html(spinner);
   $('#modalHeader').html('更新程序价格');
-  modalContent.html(
-    '<div id="program-price-form-loading-container"><img src="' + baseurl + 'img/loading.gif " /></div>'
-  );
-
   modal.modal('show');
-
-  $.get(updateUrl, res => {
+  // Get the update url from the container and replace the id
+  const url = $('#program-prices-container')
+    .attr('data-update-url').replace(/0/gi, id);
+  $.get(url, res => {
     $('#modalContent').append(res);
     $('#program-price-form-loading-container').hide();
   });
@@ -485,23 +471,21 @@ function showProgramPriceUpdateForm(id, adults, kids, membership_type, price) {
  * Load and display the program-price create form.
  */
 function showProgramPriceCreateForm(pid) {
-
-  console.log('Fetching create form for program pid:' + pid + ', id: ' + currentProgramId);
-
-  let modal = $('#appModal');
-  let modalContent = $('#modalContent');
-
-  // Get the update url from the container and replace the id, view program/_form #program-prices-container
-  let createUrl = $('#program-prices-container').attr('data-create-url') + '?pid=' + currentProgramId;
-
+  if (Mh.debug) {
+    console.debug(`Fetching create form for program ${pid}, id: + ${currentProgramId}`);
+  }
+  const modal = $('#appModal');
+  const modalContent = $('#modalContent');
+  const spinner = $('<div>', {
+    id: 'program-price-form-loading-container',
+    html: Mh.globalData.spinner80
+  });
+  modalContent.html(spinner);
   $('#modalHeader').html('创建新的计划价格');
-  modalContent.html(
-    '<div id="program-price-form-loading-container"><img src="' + baseurl + 'img/loading.gif " /></div>'
-  );
-
   modal.modal('show');
-
-  $.get(createUrl, res => {
+  const url = $('#program-prices-container')
+    .attr('data-create-url') + '?pid=' + currentProgramId;
+  $.get(url, res => {
     modalContent.append(res);
     $('#program-price-form-loading-container').hide();
   });
@@ -648,7 +632,7 @@ $('button#update-weapp-cover-image').click(function () {
   $.ajax({
     url,
     method: 'GET',
-    headers: Mh.globalData.authHeaders
+    headers: Mh.globalData.requestHeaders
   }).done(res => {
     res.forEach(image => {
       html += `<img class="pg-images-preview" alt="${image.name}" ` +
@@ -682,7 +666,7 @@ $('#download-images-button').click(function() {
   $.ajax({
     url,
     method: 'PATCH',
-    headers: Mh.globalData.authHeaders
+    headers: Mh.globalData.requestHeaders
   }).done((res, status, xhr) => {
     $this.html('完成了');
     $this.removeClass('btn-primary').addClass('btn-success');

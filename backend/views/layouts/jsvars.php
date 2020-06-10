@@ -20,6 +20,9 @@ $this->registerJsVar(
                     ['class' => 'loading-spinner']),
                 ['class' => 'spinner-container spinner-container-50']
             ),
+            'spinner80' => Html::tag('div',
+            '<div></div><div></div><div></div><div></div>',
+                ['class' => 'lds-ring-80']),
             'spinner200' => Html::tag('div',
                 Html::img('@staticUrl/img/spinner_200.gif',['class' => 'loading-spinner']),
                 ['class' => 'spinner-container spinner-container-200']
@@ -31,7 +34,7 @@ $this->registerJsVar(
             'apiurl' => Yii::$app->params['apiUrl'],
             'staticurl' => Yii::getAlias('@staticUrl/'),
             'imgurl' => Yii::getAlias('@imgUrl/'),
-            'authHeaders' => [
+            'requestHeaders' => [
                 'Content-Type' => 'application/json',
                 'Authorization' => 'Bearer ' . $user->access_token ?? 'guest'
             ]

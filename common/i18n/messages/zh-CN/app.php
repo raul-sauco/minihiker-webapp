@@ -17,7 +17,6 @@
  * NOTE: this file must be saved in UTF-8 encoding.
  */
 return [
-    '(kid)' => '(小)',
     'Access Token' => '访问令牌',
     'Accompanied' => '活动类型',
     'Add' => '创建',

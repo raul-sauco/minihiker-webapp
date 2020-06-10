@@ -320,9 +320,9 @@ class ProgramHelper
         ProgramFamily::deleteAll(['program_id' => $program->id]);
         ProgramGuide::deleteAll(['program_id' => $program->id]);
         ProgramUser::deleteAll(['program_id' => $program->id]);
+        // Call delete on each item to insure beforeDelete gets called
         foreach ($program->getProgramPrices()->each() as $programPrice) {
             /** @var ProgramPrice $programPrice */
-            WxUnifiedPaymentOrder::deleteAll(['price_id' => $programPrice->id]);
             $programPrice->delete();
         }
     }
