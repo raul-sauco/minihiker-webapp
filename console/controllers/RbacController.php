@@ -24,23 +24,17 @@ class RbacController extends Controller
     public function actionInit(): void
     {
         $db = Yii::$app->db->dsn;
-
         if (strpos($db, 'test') !== false) {
             echo "Initializing RBAC on TEST database\n";
         } else {
             echo "Initializing RBAC on PRODUCTION database\n";
         }
-
-        echo "Cleaning the tables\n";
-
         $this->cleanTables();
-
         $auth = Yii::$app->authManager;
 
-        echo "Adding roles\n";
-
         /* ************* ROLES ************* */
-        echo "Creating roles\n";
+
+        echo "Adding roles\n";
 
         $adminRole = $auth->createRole('admin');
         $auth->add($adminRole);
@@ -66,7 +60,6 @@ class RbacController extends Controller
         $viewMan->description = 'View the manual page';
         $auth->add($viewMan);
         $auth->addChild($userRole, $viewMan);
-
 
         /* ************* Program ************** */
         echo "Adding program related permissions\n";
@@ -95,6 +88,34 @@ class RbacController extends Controller
         $deleteProgram->description = 'Delete a program';
         $auth->add($deleteProgram);
         $auth->addChild($adminRole, $deleteProgram);
+
+        /* ************* ProgramPrice ************** */
+        echo "Adding program-price related permissions\n";
+
+        $createProgramPrice = $auth->createPermission('createProgramPrice');
+        $createProgramPrice->description = 'Create a programPrice';
+        $auth->add($createProgramPrice);
+        $auth->addChild($userRole, $createProgramPrice);
+
+        $updateProgramPrice = $auth->createPermission('updateProgramPrice');
+        $updateProgramPrice->description = 'Update a programPrice';
+        $auth->add($updateProgramPrice);
+        $auth->addChild($userRole, $updateProgramPrice);
+
+        $viewProgramPrice = $auth->createPermission('viewProgramPrice');
+        $viewProgramPrice->description = 'View a single programPrice details';
+        $auth->add($viewProgramPrice);
+        $auth->addChild($userRole, $viewProgramPrice);
+
+        $listProgramPrices = $auth->createPermission('listProgramPrices');
+        $listProgramPrices->description = 'View a list of programPrices';
+        $auth->add($listProgramPrices);
+        $auth->addChild($userRole, $listProgramPrices);
+
+        $deleteProgramPrice = $auth->createPermission('deleteProgramPrice');
+        $deleteProgramPrice->description = 'Delete a programPrice';
+        $auth->add($deleteProgramPrice);
+        $auth->addChild($userRole, $deleteProgramPrice);
 
         /* *************** QA **************** */
         echo "Adding Q/A related permissions\n";
@@ -391,6 +412,7 @@ class RbacController extends Controller
      */
     private function cleanTables (): void
     {
+        echo "Cleaning the tables\n";
         Yii::$app->db->createCommand()->delete('auth_assignment')->execute();
         Yii::$app->db->createCommand()->delete('auth_item_child')->execute();
         Yii::$app->db->createCommand()->delete('auth_item')->execute();
