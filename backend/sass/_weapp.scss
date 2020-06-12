@@ -149,6 +149,10 @@
       }
     }
   }
+  img#pg-weapp-cover-image {
+    margin-bottom: 15px;
+    max-width: 100%;
+  }
   #imageuploadform-file-fileupload .files tr td:first-child {
     max-width: 300px;
     & .preview > a {
