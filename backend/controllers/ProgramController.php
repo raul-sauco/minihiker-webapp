@@ -4,16 +4,10 @@ namespace backend\controllers;
 
 use common\helpers\ProgramHelper;
 use common\models\Client;
-use common\models\Expense;
-use common\models\Payment;
 use common\models\Program;
-use common\models\ProgramClient;
-use common\models\ProgramFamily;
 use common\models\ProgramGroup;
 use common\models\ProgramGuide;
-use common\models\ProgramPrice;
 use common\models\ProgramSearch;
-use common\models\ProgramUser;
 use Yii;
 use yii\db\StaleObjectException;
 use yii\filters\AccessControl;
@@ -198,7 +192,9 @@ class ProgramController extends Controller
             $pg->save() && $model->save()) {
 
             if ($ref === 'weapp') {
-                return $this->redirect(['program-group/weapp-view', 'id' => $model->program_group_id]);
+                return $this->redirect([
+                    'weapp/view', 'id' => $model->program_group_id
+                ]);
             }
 
             // If it is a regular update redirect to the view page

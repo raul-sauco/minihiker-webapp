@@ -19,16 +19,18 @@ use yii\helpers\Html;
  * @property int $status
  * @property int $program_group_id
  * @property int $program_period_id
- * @property string $start_date
- * @property string $end_date
- * @property int $registration_open
- * @property int $client_limit
- * @property string $remarks
- * @property int $price
- * @property int $created_by
- * @property int $updated_by
- * @property int $created_at
- * @property int $updated_at
+ * @property string|null $start_date
+ * @property string|null $end_date
+ * @property int|null $registration_open
+ * @property int|null $client_limit
+ * @property string|null $remarks
+ * @property int|null $price
+ * @property int|null $deposit
+ * @property string|null $deposit_message
+ * @property int|null $created_by
+ * @property int|null $updated_by
+ * @property int|null $created_at
+ * @property int|null $updated_at
  *
  * @property Expense[] $expenses
  * @property Payment[] $payments
@@ -53,11 +55,11 @@ use yii\helpers\Html;
  */
 class Program extends ActiveRecord
 {
-    const STATUS_DELETED = 0;
-    const STATUS_PROPOSED = 1;
-    const STATUS_CONFIRMED = 2;
-    const STATUS_CANCELLED = 3;
-    const STATUS_ACTIVE = 10;
+    public const STATUS_DELETED = 0;
+    public const STATUS_PROPOSED = 1;
+    public const STATUS_CONFIRMED = 2;
+    public const STATUS_CANCELLED = 3;
+    public const STATUS_ACTIVE = 10;
 
     /**
      * {@inheritdoc}
@@ -73,14 +75,25 @@ class Program extends ActiveRecord
     public function rules(): array
     {
         return [
-            [['status', 'program_group_id', 'program_period_id', 'registration_open', 'client_limit', 'price', 'created_by', 'updated_by', 'created_at', 'updated_at'], 'integer'],
+            [['status', 'program_group_id', 'program_period_id',
+                'registration_open', 'client_limit', 'price', 'deposit',
+                'created_by', 'updated_by', 'created_at', 'updated_at'],
+                'integer'],
             [['program_group_id', 'program_period_id'], 'required'],
             [['start_date', 'end_date'], 'date', 'format' => 'php:Y-m-d'],
-            [['remarks'], 'string'],
-            [['program_group_id'], 'exist', 'skipOnError' => true, 'targetClass' => ProgramGroup::class, 'targetAttribute' => ['program_group_id' => 'id']],
-            [['program_period_id'], 'exist', 'skipOnError' => true, 'targetClass' => ProgramPeriod::class, 'targetAttribute' => ['program_period_id' => 'id']],
-            [['created_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['created_by' => 'id']],
-            [['updated_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['updated_by' => 'id']],
+            [['remarks', 'deposit_message'], 'string'],
+            [['program_group_id'], 'exist', 'skipOnError' => true,
+                'targetClass' => ProgramGroup::class,
+                'targetAttribute' => ['program_group_id' => 'id']],
+            [['program_period_id'], 'exist', 'skipOnError' => true,
+                'targetClass' => ProgramPeriod::class,
+                'targetAttribute' => ['program_period_id' => 'id']],
+            [['created_by'], 'exist', 'skipOnError' => true,
+                'targetClass' => User::class,
+                'targetAttribute' => ['created_by' => 'id']],
+            [['updated_by'], 'exist', 'skipOnError' => true,
+                'targetClass' => User::class,
+                'targetAttribute' => ['updated_by' => 'id']],
         ];
     }
 
@@ -101,6 +114,8 @@ class Program extends ActiveRecord
             'client_limit' => Yii::t('app', 'Client Limit'),
             'remarks' => Yii::t('app', 'Remarks'),
             'price' => Yii::t('app', 'Price'),
+            'deposit' => Yii::t('app', 'Deposit'),
+            'deposit_message' => Yii::t('app', 'Deposit Message'),
             'created_by' => Yii::t('app', 'Created By'),
             'updated_by' => Yii::t('app', 'Updated By'),
             'created_at' => Yii::t('app', 'Created At'),
@@ -118,6 +133,18 @@ class Program extends ActiveRecord
             BlameableBehavior::class,
             TimestampBehavior::class,
         ];
+    }
+
+    /**
+     * @param bool $insert
+     * @return bool
+     */
+    public function beforeSave($insert)
+    {
+        if (empty($this->deposit) || empty($this->deposit_message)) {
+            ProgramHelper::fillDefaultDepositValues($this);
+        }
+        return parent::beforeSave($insert);
     }
 
     /**

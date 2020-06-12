@@ -21,13 +21,11 @@ use yii\helpers\Url;
                 'end_date' => Yii::$app->formatter->asDate($program->end_date)
             ]) ?>
         </div>
-        <div class="weapp-program-instance-registration">
-            <div class="weapp-program-instance-registration-status">
-                <?= $program->registration_open ?
-                    Yii::t('app', 'Registration Open') :
-                    Yii::t('app', 'Registration Closed')
-                ?>
-            </div>
+        <div class="weapp-program-instance-registration-status">
+            <?= $program->registration_open ?
+                Yii::t('app', 'Registration Open') :
+                Yii::t('app', 'Registration Closed')
+            ?>
         </div>
         <div class="weapp-program-instance-registration-numbers">
             <?= Yii::t('app',
@@ -36,6 +34,16 @@ use yii\helpers\Url;
                 'max' => empty($program->client_limit) ? 0 :
                     $program->client_limit
             ]) ?>
+        </div>
+        <div class="weapp-program-instance-deposit">
+            <?= Yii::t('app', 'Deposit') ?>:
+            <?= empty($program->deposit) ? Yii::t('yii', '(not set)') :
+                ($program->deposit . '元/人') ?>
+        </div>
+        <div class="weapp-program-instance-deposit-message">
+            <div><?= Yii::t('app', 'Deposit Message') ?>:</div>
+            <div><?= $program->deposit_message ??
+                Yii::t('yii', '(not set)') ?></div>
         </div>
         <div class="weapp-program-instance-prices">
             <?php

@@ -11,7 +11,6 @@ use common\models\ProgramGuide;
 use common\models\ProgramPrice;
 use common\models\ProgramUser;
 use common\models\User;
-use common\models\WxUnifiedPaymentOrder;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\StaleObjectException;
@@ -324,6 +323,25 @@ class ProgramHelper
         foreach ($program->getProgramPrices()->each() as $programPrice) {
             /** @var ProgramPrice $programPrice */
             $programPrice->delete();
+        }
+    }
+
+    /**
+     * Fill the deposit and deposit message with some defaults if empty
+     * @param Program $program
+     */
+    public static function fillDefaultDepositValues (Program $program)
+    {
+        if ($program->deposit === null || $program->deposit === '') {
+            if ($program->programGroup->location->international) {
+                $program->deposit = 5000;
+            } else {
+                $program->deposit = 2000;
+            }
+        }
+        if (empty($program->deposit_message)) {
+            $program->deposit_message = '此购买链接用于支付活动定金，' . $program->deposit .
+                '元/人，活动费用以页面显示金额为准，工作人员会联系您补缴尾款';
         }
     }
 }
