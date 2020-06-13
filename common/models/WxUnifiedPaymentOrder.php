@@ -14,44 +14,45 @@ use yii\helpers\ArrayHelper;
  *
  * @property int $id
  * @property int $status Current status of the order
+ * @property int|null $hidden
  * @property string $appid appid of the app that originates the request
  * @property string $mch_id Wx merchant id for Minihiker
- * @property string $device_info Device ID for the device that generated the request, for example a payment terminal. Not used with Minihiker
+ * @property string|null $device_info Device ID for the device that generated the request, for example a payment terminal. Not used with Minihiker
  * @property string $nonce_str Random string, length < 32
- * @property string $sign HASH signature of the data
- * @property string $sign_type Signature type, defaults to MD5
+ * @property string|null $sign HASH signature of the data
+ * @property string|null $sign_type Signature type, defaults to MD5
  * @property string $body Simple description of the product sold
- * @property string $detail Detailed description of the product
- * @property string $attach Additional data, can be used as custom parameter
+ * @property string|null $detail Detailed description of the product
+ * @property string|null $attach Additional data, can be used as custom parameter
  * @property string $out_trade_no Merchant order number
- * @property string $fee_type ISO 4217 currency code for the transaction i.e. CNY
- * @property string $total_fee Transaction amount
+ * @property string|null $fee_type ISO 4217 currency code for the transaction i.e. CNY
+ * @property float $total_fee Transaction amount
  * @property string $spbill_create_ip IP of the machine calling Wx payment API
- * @property string $time_start Order generation time, formatted as yyyyMMddHHmmss
- * @property string $time_expire Order expiration time, format yyyyMMddHHmmss, more than 1 minute and less than 2 hours after generation time
- * @property string $goods_tag Order offer marks, parameters required for the use of vouchers or discount features, indicating details of vouchers or concessions
+ * @property string|null $time_start Order generation time, formatted as yyyyMMddHHmmss
+ * @property string|null $time_expire Order expiration time, format yyyyMMddHHmmss, more than 1 minute and less than 2 hours after generation time
+ * @property string|null $goods_tag Order offer marks, parameters required for the use of vouchers or discount features, indicating details of vouchers or concessions
  * @property string $notify_url WeChat payment result notification. Cannot contain parameters
  * @property string $trade_type For Wx Miniapp use JSAPI as trade type
- * @property string $product_id Internal merchant's product id.
- * @property string $limit_pay A value of "no_credit" will stop users from using credit cards to pay
+ * @property string|null $product_id Internal merchant's product id.
+ * @property string|null $limit_pay A value of "no_credit" will stop users from using credit cards to pay
  * @property string $openid End user openid on the merchant's system
- * @property string $receipt A value of "Y" will display this transaction on the user transactions records. Electronic invoice needs to be enabled by the merchant
- * @property string $scene_info JSON object with physical store data.
- * @property int $price_id
- * @property int $family_id Family ID, on the miniapp used as "Account ID"
- * @property int $client_id ID of the client that performed the payment
- * @property string $prepay_id Prepay ID returned with the preorder request
- * @property string $prepay_sign Signature of the package sent to the miniapp for user confirmation.
- * @property string $prepay_timestamp Timestamp. Time prepay package was sent to miniapp for user confirmation.
- * @property string $notify_xml Raw notify XML package sent by WX backend.
- * @property string $notify_result_code Notify result code SUCCESS/FAIL.
- * @property string $notify_return_code Notify return code SUCCESS/FAIL.
- * @property string $notify_err_code Short description of the error.
- * @property string $notify_err_code_des Long description of the error.
- * @property int $created_by
- * @property int $updated_by
- * @property int $created_at
- * @property int $updated_at
+ * @property string|null $receipt A value of "Y" will display this transaction on the user transactions records. Electronic invoice needs to be enabled by the merchant
+ * @property string|null $scene_info JSON object with physical store data.
+ * @property int|null $price_id
+ * @property int|null $family_id Family ID, on the miniapp used as "Account ID"
+ * @property int|null $client_id ID of the client that performed the payment
+ * @property string|null $prepay_id Prepay ID returned with the preorder request
+ * @property string|null $prepay_sign Signature of the package sent to the miniapp for user confirmation.
+ * @property string|null $prepay_timestamp Timestamp. Time prepay package was sent to miniapp for user confirmation.
+ * @property string|null $notify_xml Raw notify XML package sent by WX backend.
+ * @property string|null $notify_result_code Notify result code SUCCESS/FAIL.
+ * @property string|null $notify_return_code Notify return code SUCCESS/FAIL.
+ * @property string|null $notify_err_code Short description of the error.
+ * @property string|null $notify_err_code_des Long description of the error.
+ * @property int|null $created_by
+ * @property int|null $updated_by
+ * @property int|null $created_at
+ * @property int|null $updated_at
  *
  * @property Client $client
  * @property User $createdBy
@@ -93,7 +94,7 @@ class WxUnifiedPaymentOrder extends ActiveRecord
     {
         return [
             [['status', 'appid', 'mch_id', 'nonce_str', 'body', 'out_trade_no', 'total_fee', 'spbill_create_ip', 'notify_url', 'trade_type', 'openid'], 'required'],
-            [['status', 'price_id', 'family_id', 'client_id', 'created_by', 'updated_by', 'created_at', 'updated_at'], 'integer'],
+            [['status', 'hidden', 'price_id', 'family_id', 'client_id', 'created_by', 'updated_by', 'created_at', 'updated_at'], 'integer'],
             [['detail', 'notify_xml'], 'string'],
             [['total_fee'], 'number'],
             [['appid', 'mch_id', 'device_info', 'nonce_str', 'sign', 'sign_type', 'out_trade_no', 'goods_tag', 'product_id', 'limit_pay', 'prepay_sign', 'prepay_timestamp', 'notify_result_code', 'notify_return_code', 'notify_err_code'], 'string', 'max' => 32],
@@ -120,6 +121,7 @@ class WxUnifiedPaymentOrder extends ActiveRecord
         return [
             'id' => Yii::t('app', 'ID'),
             'status' => Yii::t('app', 'Status'),
+            'hidden' => Yii::t('app', 'Hidden'),
             'appid' => Yii::t('app', 'Appid'),
             'mch_id' => Yii::t('app', 'Mch ID'),
             'device_info' => Yii::t('app', 'Device Info'),
