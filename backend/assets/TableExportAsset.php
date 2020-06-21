@@ -1,29 +1,32 @@
 <?php
+
 namespace backend\assets;
 
+use common\assets\XlsxAsset;
+use yii\bootstrap\BootstrapAsset;
 use yii\web\AssetBundle;
+use yii\web\YiiAsset;
 
+/**
+ * Class TableExportAsset
+ * @package backend\assets
+ */
 class TableExportAsset extends AssetBundle
 {
-    public $sourcePath = '@npm';
-    public $baseUrl = '@web';
+    public $baseUrl = '@staticUrl';
 
     public $css = [
-        'node_modules/tableexport/dist/css/tableexport.' . (YII_DEBUG ? 'css' : 'min.css'),
+        'https://unpkg.com/tableexport/dist/css/tableexport.min.css',
     ];
 
     public $js = [
-        'node_modules/blobjs/Blob.' . (YII_DEBUG ? 'js' : 'min.js'),
-        'node_modules/xlsx/dist/cpexcel.js',
-        'node_modules/xlsx/dist/jszip.js',
-        'node_modules/xlsx/dist/xlsx.' . (YII_DEBUG ? 'js' : 'min.js'),
-        'node_modules/file-saverjs/FileSaver.' . (YII_DEBUG ? 'js' : 'min.js'),
-        'node_modules/tableexport/dist/js/tableexport.' . (YII_DEBUG ? 'js' : 'min.js'),
+        'https://unpkg.com/file-saver@2.0.2/dist/FileSaver.min.js',
+        'https://unpkg.com/tableexport/dist/js/tableexport.min.js'
     ];
 
     public $depends = [
-        'yii\web\YiiAsset',
-        'yii\bootstrap\BootstrapAsset',
+        YiiAsset::class,
+        BootstrapAsset::class,
+        XlsxAsset::class
     ];
-
 }

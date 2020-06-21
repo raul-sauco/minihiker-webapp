@@ -46,7 +46,7 @@ return [
             'showScriptName' => false,
             'rules' => [
                 "<controller:($controllersList)>/create" => '<controller>/create',
-                "<controller:($controllersList)>/<id:\d+>/<action:(update|delete)>" => '<controller>/<action>',
+                "<controller:($controllersList)>/<id:\d+>/<action:(update|delete|export)>" => '<controller>/<action>',
                 "<controller:($controllersList)>/<id:\d+>" => '<controller>/view',
                 "<controller:($controllersList)>s" => '<controller>/index',
                 'family/<id:\d+>/merge-search' => 'family/merge-search',

@@ -33,6 +33,51 @@ echo Html::tag('td', $serial, [
     ],
 ]);
 
+echo Html::tag('td', Html::a(Html::encode($model->getName()),
+    ['/client/view', 'id' => $model->id]), [
+    'class' => 'program-view-client-name-cell',
+    'id' => "program-view-client-$model->id-name",
+    'data' => [
+        'family-id' => $family->id,
+        'client-id' => $model->id,
+    ],
+]);
+
+echo Html::tag('td',
+empty($model->id_card_number)? '' : "\u{200C}" . $model->id_card_number, [
+    'class' => 'program-view-client-id-card-number-cell',
+    'id' => "program-view-client-$model->id-id-card-number",
+    'data' => [
+        'family-id' => $family->id,
+        'client-id' => $model->id,
+    ],
+]);
+
+$expireDate = Yii::t('app', 'Not Set');
+if (!empty($model->passport_expire_date)) {
+    $expireDate = Yii::$app->formatter->asDate($model->passport_expire_date);
+}
+echo Html::tag('td', $expireDate, [
+    'class' => 'program-view-client-passport-expire-date-cell',
+    'id' => "program-view-client-$model->id-passport-expire-date",
+    'data' => [
+        'family-id' => $family->id,
+        'client-id' => $model->id,
+    ],
+]);
+
+$remarks = $model->getProgramClients()
+    ->where(['program_id' => $programId])->one()->remarks;
+
+echo Html::tag('td', $remarks ?? '', [
+    'class' => 'program-view-client-remarks-cell',
+    'id' => "program-view-client-$model->id-remarks",
+    'data' => [
+        'family-id' => $family->id,
+        'client-id' => $model->id,
+    ],
+]);
+
 if ($isFirst) {
 
     echo Html::tag('td', ClientHelper::getFamilyWechatId($model), [
@@ -60,48 +105,11 @@ if ($isFirst) {
         'rowspan' => $rowSpan,
     ]);
 
-}
-
-echo Html::tag('td', Html::a(Html::encode($model->getName()),
-    ['/client/view', 'id' => $model->id]), [
-    'class' => 'program-view-client-name-cell',
-    'id' => "program-view-client-$model->id-name",
-    'data' => [
-        'family-id' => $family->id,
-        'client-id' => $model->id,
-    ],
-]);
-
-$expireDate = Yii::t('app', 'Not Set');
-
-if (!empty($model->passport_expire_date)) {
-
-    $expireDate = Yii::$app->formatter->asDate($model->passport_expire_date);
-
-}
-
-echo Html::tag('td', $expireDate, [
-    'class' => 'program-view-client-passport-expire-date-cell',
-    'id' => "program-view-client-$model->id-passport-expire-date",
-    'data' => [
-        'family-id' => $family->id,
-        'client-id' => $model->id,
-    ],
-]);
-
-
-if ($isFirst) {
-
     $phoneNumber = Yii::t('app', 'Not Set');
-
     if (!empty($family->mother) && !empty($family->mother->phone_number)) {
-
         $phoneNumber = $family->mother->phone_number;
-
     } elseif (!empty($family->father) && !empty($family->father->phone_number)) {
-
         $phoneNumber = $family->father->phone_number;
-
     }
 
     echo Html::tag('td', ClientHelper::getFamilyPhoneNumber($model), [
@@ -114,21 +122,11 @@ if ($isFirst) {
         'rowspan' => $rowSpan,
     ]);
 
-}
-
-
-if ($isFirst) {
-
     $email = Yii::t('app', 'Not Set');
-
     if (!empty($family->mother) && !empty($family->mother->email)) {
-
         $email = $family->mother->email;
-
     } elseif (!empty($family->father) && !empty($family->father->email)) {
-
         $email = $family->father->email;
-
     }
 
     echo Html::tag('td', $email, [
@@ -143,7 +141,6 @@ if ($isFirst) {
 
     $alreadyPaid = $family->getPayments()
         ->where(['program_id' => $programId])->sum('amount');
-
     echo Html::tag('td',
         Yii::$app->formatter->asCurrency($alreadyPaid ?? 0), [
         'class' => 'program-view-client-paid-cell',
@@ -155,8 +152,8 @@ if ($isFirst) {
         'rowspan' => $rowSpan,
     ]);
 
-    $due = $family->getProgramFamilies()->where(['program_id' => $programId])->one()->final_cost;
-
+    $due = $family->getProgramFamilies()
+        ->where(['program_id' => $programId])->one()->final_cost;
     echo Html::tag('td',
         Yii::$app->formatter->asCurrency($due ?? 0), [
         'class' => 'program-view-client-due-cell',
@@ -169,58 +166,15 @@ if ($isFirst) {
     ]);
 
     $address = $family->address ?? Yii::t('app', 'Not Set');
-
     echo Html::tag('td', $address, [
-        'class' => 'program-view-client-due-cell',
-        'id' => "program-view-client-$model->id-due",
+        'class' => 'program-view-client-address-cell',
+        'id' => "program-view-client-$model->id-address",
         'data' => [
             'family-id' => $family->id,
             'client-id' => $model->id,
         ],
         'rowspan' => $rowSpan,
     ]);
-
 }
-
-/*
-echo Html::tag('td', Yii::t('app', 'Not Set'), [
-    'class' => 'program-view-client-contract-cell',
-    'id' => "program-view-client-$model->id-contract",
-    'data' => [
-        'family-id' => $family->id,
-        'client-id' => $model->id,
-    ],
-]);
-
-echo Html::tag('td', Yii::t('app', 'Not Set'), [
-    'class' => 'program-view-client-visa-cell',
-    'id' => "program-view-client-$model->id-visa",
-    'data' => [
-        'family-id' => $family->id,
-        'client-id' => $model->id,
-    ],
-]);
-*/
-
-$remarks = $model->getProgramClients()->where(['program_id' => $programId])->one()->remarks;
-
-echo Html::tag('td', $remarks ?? '', [
-    'class' => 'program-view-client-remarks-cell',
-    'id' => "program-view-client-$model->id-remarks",
-    'data' => [
-        'family-id' => $family->id,
-        'client-id' => $model->id,
-    ],
-]);
-
-echo Html::tag('td',
-    empty($model->id_card_number)? '' : "\u{200C}" . $model->id_card_number, [
-    'class' => 'program-view-client-id-card-number-cell',
-    'id' => "program-view-client-$model->id-id-card-number",
-    'data' => [
-        'family-id' => $family->id,
-        'client-id' => $model->id,
-    ],
-]);
 
 echo Html::endTag('tr');

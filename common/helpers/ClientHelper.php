@@ -74,7 +74,8 @@ class ClientHelper
      */
     public static function getFamilyPhoneNumber($client): string
     {
-        return self::getFamilyGlobalAttribute($client, 'phone_number');
+        return "\u{200C}" .
+            self::getFamilyGlobalAttribute($client, 'phone_number');
     }
 
     /**
