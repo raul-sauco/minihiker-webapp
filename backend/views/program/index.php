@@ -1,6 +1,7 @@
 <?php
 
 use common\helpers\ProgramHelper;
+use common\models\User;
 use yii\helpers\Html;
 use yii\grid\GridView;
 use yii\widgets\Pjax;
@@ -33,21 +34,21 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         // 'filterModel' => $searchModel,
-        'rowOptions' => function (Program $model) {
+        'rowOptions' => static function (Program $model) {
             return ['class' => ProgramHelper::getProgramIndexGridItemHighlightClass($model)];
         },
         'columns' => [
             [
                 'attribute' => 'programGroup.name',
                 'label' => Yii::t('app', 'Display name'),
-                'value' => function (Program $data) {
+                'value' => static function (Program $data) {
                     return Html::a($data->getNamei18n(), ['view', 'id' => $data->id]);
                 },
                 'format' => 'html'
             ],
             [
                 'label' => Yii::t('app', 'Participant Count'),
-                'value' => function (Program $data) {
+                'value' => static function (Program $data) {
                     // $f = $data->getFamilies()->count() . '家庭. ';
                     return $data->getXLParticipantCount();
                 }
@@ -62,7 +63,27 @@ $this->params['breadcrumbs'][] = $this->title;
                 }
             ],*/
             'start_date:date',
-            'updated_at:date'
+            [
+                'label' => Yii::t('app', 'Created By'),
+                'value' => static function (Program $program) {
+                /** @var User $user */
+                    if (($user = $program->createdBy) !== null) {
+                        return $user->username;
+                    }
+                    return Yii::t('', 'N/A');
+                }
+            ],
+            'updated_at:date',
+            [
+                'label' => Yii::t('app', 'Updated By'),
+                'value' => static function (Program $program) {
+                    /** @var User $user */
+                    if (($user = $program->updatedBy) !== null) {
+                        return $user->username;
+                    }
+                    return Yii::t('', 'N/A');
+                }
+            ]
         ],
     ]); ?>
 
