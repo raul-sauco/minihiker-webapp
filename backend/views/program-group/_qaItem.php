@@ -4,7 +4,8 @@
 /* @var $model common\models\Qa */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-use yii\bootstrap\Html; ?>
+use yii\bootstrap\Html;
+?>
 
 <div class="program-group-qa-container <?= empty($model->answer) ? 'qa-unanswered' : '' ?>">
 
@@ -43,5 +44,12 @@ use yii\bootstrap\Html; ?>
         </div>
 
     </div>
+
+    <button class="btn btn-sm btn-success save-qa-answer-button"
+        id="save-qa-answer-button-<?= $model->id ?>"
+        data-text="<?= Yii::t('app', 'Save') ?>"
+        data-id="<?= $model->id ?>">
+        <?= Yii::t('app', 'Save') ?>
+    </button>
 
 </div>

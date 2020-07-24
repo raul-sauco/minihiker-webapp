@@ -33,4 +33,5 @@ return [
     ['class' => UrlRule::class, 'controller' => 'program-group-image-download'],
     ['class' => UrlRule::class, 'controller' => 'program-price'],
     ['class' => UrlRule::class, 'controller' => 'program-search', 'pluralize' => false],
+    ['class' => UrlRule::class, 'controller' => 'qa'],
 ];
