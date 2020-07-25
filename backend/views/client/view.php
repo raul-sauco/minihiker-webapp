@@ -134,7 +134,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'attribute' => 'passport_image',
                 'visible' => !empty($model->passport_image),
                 'value' => static function(Client $data) {
-                    return Html::img('@web/img/c/p/' . $data->passport_image, [
+                    return Html::img('@imgUrl/c/p/' . $data->passport_image, [
                             'alt' => $data->name_zh . ' passport image'
                     ]);
                 },
