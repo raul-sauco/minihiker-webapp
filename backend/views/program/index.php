@@ -1,11 +1,10 @@
 <?php
 
 use common\helpers\ProgramHelper;
-use common\models\User;
-use yii\helpers\Html;
-use yii\grid\GridView;
-use yii\widgets\Pjax;
 use common\models\Program;
+use yii\grid\GridView;
+use yii\helpers\Html;
+use yii\widgets\Pjax;
 
 /* @var $this yii\web\View */
 /* @var $searchModel common\models\ProgramSearch */
@@ -33,7 +32,6 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
-        // 'filterModel' => $searchModel,
         'rowOptions' => static function (Program $model) {
             return ['class' => ProgramHelper::getProgramIndexGridItemHighlightClass($model)];
         },
@@ -66,26 +64,24 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'label' => Yii::t('app', 'Created By'),
                 'value' => static function (Program $program) {
-                /** @var User $user */
                     if (($user = $program->createdBy) !== null) {
                         return $user->username;
                     }
-                    return Yii::t('', 'N/A');
+                    return Yii::t('app', 'N/A');
                 }
             ],
             'updated_at:date',
             [
                 'label' => Yii::t('app', 'Updated By'),
                 'value' => static function (Program $program) {
-                    /** @var User $user */
                     if (($user = $program->updatedBy) !== null) {
                         return $user->username;
                     }
-                    return Yii::t('', 'N/A');
+                    return Yii::t('app', 'N/A');
                 }
             ]
         ],
-    ]); ?>
+    ]) ?>
 
     <?php Pjax::end(); ?>
 
