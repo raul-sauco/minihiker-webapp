@@ -20,7 +20,7 @@ echo FileUploadUI::widget([
         'accept' => 'image/*'
     ],
     'clientOptions' => [
-        'maxFileSize' => 2000000,
+        'maxFileSize' => Yii::$app->params['maxBlueImpFileSize'],
         // TODO add authentication header here or on clientEvents
     ],
     // ...

@@ -16,7 +16,6 @@ use yii\imagine\Image;
 class ImageUploadForm extends Model
 {
     // Attributes
-    private $max_size = 512000;
     public $file_name;
     
     /** @var UploadedFile */
@@ -33,7 +32,7 @@ class ImageUploadForm extends Model
             [['file_name'], 'string', 'max' => 64],
             [['file'], 'required'],
             [['file'], 'image', 'extensions' => 'png, gif, jpg, JPG, jpeg',
-                'maxSize' => $this->max_size],
+                'maxSize' => Yii::$app->params['maxBlueImpFileSize']],
         ];
     }
     
