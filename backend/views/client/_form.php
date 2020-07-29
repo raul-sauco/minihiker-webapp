@@ -86,6 +86,8 @@ use yii\helpers\Url;
 
             <?= $form->field($model, 'id_card_number')->textInput(['maxlength' => true]) ?>
 
+            <?= $form->field($model, 'passport_number')->textInput(['maxlength' => true]) ?>
+
             <?= $form->field($model, 'passport_issue_date', ['options' => ['class' => 'form-group']])
                 ->widget(DatePicker::class, [
                     'dateFormat' => 'yyyy-MM-dd',
