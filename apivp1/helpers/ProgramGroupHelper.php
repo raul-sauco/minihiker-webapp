@@ -17,10 +17,10 @@ use yii\db\ActiveQuery;
 class ProgramGroupHelper
 {
     /**
-     * Check if any of the programs belonging to this program group
-     * has the registration_open value set to true.
-     * If any of them has the value set to true, return true.
-     * If none of them has the value set to true, return false.
+     * Check if any of the programs belonging to this program group has the
+     * registration_open value set to true and the client limit has not
+     * been reached yet.
+     * If true for any of the programs, return true, otherwise return false.
      *
      * @param ProgramGroup $programGroup
      * @return bool whether any of the programs in this program group
@@ -28,23 +28,18 @@ class ProgramGroupHelper
      */
     public static function isRegistrationOpen(ProgramGroup $programGroup): bool
     {
-        // Iterate over all the programs
         foreach ($programGroup->programs as $program) {
-
-
-            // If any of them has the registration open set to true, return true
-            if ($program->registration_open === 1) {
-
+            // If any program's registration is open and the client limit has not been reached, return true
+            Yii::warning("Checking program $program->id with registration $program->registration_open and $program->registrations clients out of $program->client_limit");
+            if ($program->registration_open === 1 && (int)$program->client_limit > (int)$program->registrations) {
                 return true;
-
             }
         }
-
         return false;
     }
 
     /**
-     * Return an ActiveQuery that fetches PorgramGroups recommended for the
+     * Return an ActiveQuery that fetches ProgramGroups recommended for the
      * user passed on as a parameter. It will fetch based on previous navigation
      * history.
      *
