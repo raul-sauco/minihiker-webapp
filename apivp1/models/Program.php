@@ -10,11 +10,11 @@ use yii\db\ActiveQuery;
  * Class Program
  * @package apivp1\models
  *
+ * @property-read bool $selfRegistered
  * @property null|ActiveQuery $participants
  */
 class Program extends \common\models\Program
 {
-
     /**
      * @return ActiveQuery
      */
@@ -74,6 +74,20 @@ class Program extends \common\models\Program
     }
 
     /**
+     * Find out whether the current application user's family has already
+     * registered for this program
+     * @return bool
+     * @throws InvalidConfigException
+     */
+    public function getSelfRegistered(): bool
+    {
+        return ($user = Yii::$app->user->identity) !== null &&
+            ($client = Client::findOne(['user_id' => $user->id])) !== null &&
+            ($family = $client->family) !== null &&
+            $family->getPrograms()->where(['id' => $this->id])->one() !== null;
+    }
+
+    /**
      * Remove fields that are not relevant to API consumers.
      *
      * @return array
@@ -98,7 +112,8 @@ class Program extends \common\models\Program
     public function extraFields(): array
     {
         return [
-            'registrations' => 'registrations',
+            'registrations',
+            'selfRegistered',
             'period' => 'programPeriod',
             'prices' => 'programPrices',
             'programGroup',
