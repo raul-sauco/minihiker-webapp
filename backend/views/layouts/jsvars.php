@@ -25,7 +25,7 @@ $this->registerJsVar(
             'imgurl' => Yii::getAlias('@imgUrl/'),
             'requestHeaders' => [
                 'Content-Type' => 'application/json',
-                'Authorization' => 'Bearer ' . $user->access_token ?? 'guest'
+                'Authorization' => 'Bearer ' . ($user === null ? 'guest' : ($user->access_token ?? 'guest'))
             ]
         ],
         'methods' => []
