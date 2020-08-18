@@ -27,6 +27,20 @@ $this->params['breadcrumbs'][] = Yii::t('app', 'Weapp Data');
         <?= Html::a(Yii::t('app', 'Update'),
             ['update', 'id' => $model->id], ['class' => 'btn btn-primary'])
         ?>
+        <?php
+        $unanswered = $model->getQas()
+            ->where(['answer' => null])
+            ->orWhere(['answer' => ''])
+            ->count();
+
+        echo Html::a(
+            ($unanswered > 0 ? Html::icon('warning-sign') . ' '  : '') .
+            Yii::t('app', 'FAQ') .
+            ($unanswered > 0 ? " ($unanswered)" : ''),
+            ['program-group/qas', 'id' => $model->id], [
+                'class' => 'btn ' . ($unanswered > 0 ? 'btn-warning' : 'btn-primary'),
+            ]
+        ) ?>
     </p>
     <?= Tabs::widget([
             'items' => [

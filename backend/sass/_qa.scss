@@ -10,9 +10,13 @@
     padding: 0.5rem;
     position: relative;
     display: flex;
-    .qa-asked-by-info {
-      font-size: 1.4rem;
-      color: $muted-text;
+    .qa-main-header {
+      display: flex;
+      justify-content: space-between;
+      .qa-asked-by-info {
+        font-size: 1.4rem;
+        color: $muted-text;
+      }
     }
     .qa-avatar-container {
       margin-right: 1rem;
@@ -42,10 +46,6 @@
       right: 10px;
     }
     .save-qa-answer-button {
-      position: absolute;
-      top: 5px;
-      right: 50%;
-      transform: translateX(50%);
       display: none;
     }
   }

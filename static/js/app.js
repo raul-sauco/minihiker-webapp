@@ -1,6 +1,22 @@
 /**
- * Main Javascrip file for www.minihiker.com
+ * Main Javascript file for www.minihiker.com
  */
+
+/**
+ * Generate a random string of a desired length
+ * https://stackoverflow.com/a/1349426/2557030
+ * @param length
+ * @returns {string}
+ */
+Mh.methods.generateRandomString =  (length = 32) => {
+  const characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  const charactersLength = characters.length;
+  let result           = '';
+  for ( let i = 0; i < length; i++ ) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return result;
+}
 
 /**
  * Return the role ID for the textual family role
@@ -50,6 +66,53 @@ Mh.methods.formatDate = (date) => {
   }
   return result;
 }
+
+/**
+ * Displays a notification on the screen to inform the user of something
+ * that needs their immediate attention. *
+ * @param text The text to display.
+ * @param type The type of notification ('error' , 'success'...)
+ * @param details It will be used to generate the tag id property.
+ * @returns
+ */
+Mh.methods.displayNotification = (text, type, details) => {
+  const container = $('#notification-window');
+  let css_class = 'notification-message alert ';
+  if (type === 'error') {
+    css_class += ' alert-danger ';
+  } else if (type === 'success') {
+    css_class += ' alert-success';
+  } else {
+    console.warn('Unrecognized message type ' + type + ' at displayNotification()');
+  }
+  // Allow for empty details parameter
+  if (!details) {
+    // https://stackoverflow.com/a/8084248/2557030
+    details = Math.random().toString(36).substring(7);
+  }
+  const html = '<div class="' + css_class + '" id="' + details + '">' + text + '</div>';
+  container.html(html);
+  $(`#${details}`).slideToggle().delay(2000).fadeOut();
+}
+
+/**
+ * Convenience method to display success notifications
+ * @param text
+ * @param details
+ */
+Mh.methods.flashSuccess = (text, details = 'success-notification') => {
+  Mh.methods.displayNotification(text, 'success', details);
+}
+
+/**
+ * Convenience method to display error notifications
+ * @param text
+ * @param details
+ */
+Mh.methods.flashError = (text, details = 'error-notification') => {
+  Mh.methods.displayNotification(text, 'error', details);
+}
+
 /**
  * Toggles the relation between a Program and a Client.
  *
@@ -97,7 +160,7 @@ function addClient(url, programId, clientId) {
       updateLink('.add-client-btn', response.link_text,
         response.program_id, response.client_id);
 
-      displayNotification(response.message, 'success');
+      Mh.methods.displayNotification(response.message, 'success');
 
     }).fail(
     function (xhr) {
@@ -132,7 +195,7 @@ function removeClient(url, programId, clientId) {
 
       var details = 'p' + response.program_id + 'c' + response.client_id;
 
-      displayNotification(response.message, 'success', details);
+      Mh.methods.displayNotification(response.message, 'success', details);
 
     }).fail(
     function (xhr) {
@@ -140,7 +203,7 @@ function removeClient(url, programId, clientId) {
       console.error('There was an error with message: '
         + xhr.responseText);
 
-      displayNotification(xhr.responseText, 'error');
+      Mh.methods.displayNotification(xhr.responseText, 'error');
     }
   );
 }
@@ -177,38 +240,6 @@ function updateLink(css_class, text, program_id, client_id) {
   } else {
     console.error('Unrecognized css class ' + css_class + ' on updateLink(...)');
   }
-}
-
-/**
- * Displays a notification on the screen to inform the user of something
- * that needs their immediate attention.
- *
- * @param text The text to display.
- * @param type The type of notification ('error' , 'success'...)
- * @param details It will be used to generate the tag id property.
- * @returns
- */
-function displayNotification(text, type, details) {
-
-  var container = $('#notification-window');
-  var previous_content = container.html();
-  var css_class = 'notification-message alert ';
-
-  if (type == 'error') {
-    css_class += ' alert-danger ';
-  } else if (type == 'success') {
-    css_class += ' alert-success';
-  } else {
-    console.warn('Unrecognized message type ' + type + ' at displayNotification()');
-  }
-
-  var html = '<div class="' + css_class + '" id="' + details + '">' + text + '</div>';
-
-  container.html(html);
-
-  var id_selector = '#' + details;
-
-  $(id_selector).slideToggle().delay(800).fadeOut(800);
 }
 
 /* ***************************************************************************
