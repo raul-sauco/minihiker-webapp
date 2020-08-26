@@ -3,8 +3,10 @@
 namespace common\models;
 
 use Yii;
+use yii\base\InvalidConfigException;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
+use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 
 /**
@@ -12,6 +14,7 @@ use yii\db\ActiveRecord;
  *
  * @property int $id
  * @property string $name
+ * @property string|null $avatar
  * @property string $serial_number
  * @property string $category
  * @property string $membership_date
@@ -40,7 +43,7 @@ class Family extends ActiveRecord
     /**
      * {@inheritdoc}
      */
-    public static function tableName()
+    public static function tableName(): string
     {
         return 'family';
     }
@@ -48,7 +51,7 @@ class Family extends ActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             [['name'], 'required'],
@@ -57,7 +60,7 @@ class Family extends ActiveRecord
             [['created_by', 'updated_by', 'created_at', 'updated_at'], 'integer'],
             [['name'], 'string', 'max' => 12],
             [['serial_number'], 'string', 'max' => 7],
-            [['category', 'wechat', 'place_of_residence'], 'string', 'max' => 64],
+            [['avatar', 'category', 'wechat', 'place_of_residence'], 'string', 'max' => 64],
             [['phone'], 'string', 'max' => 18],
             [['created_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['created_by' => 'id']],
             [['updated_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['updated_by' => 'id']],
@@ -67,11 +70,12 @@ class Family extends ActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function attributeLabels()
+    public function attributeLabels(): array
     {
         return [
             'id' => Yii::t('app', 'ID'),
             'name' => Yii::t('app', 'Name'),
+            'avatar' => Yii::t('app', 'Avatar'),
             'serial_number' => Yii::t('app', 'Serial Number'),
             'category' => Yii::t('app', 'Category'),
             'membership_date' => Yii::t('app', 'Membership Date'),
@@ -91,7 +95,7 @@ class Family extends ActiveRecord
      * {@inheritDoc}
      * @see \yii\base\Component::behaviors()
      */
-    public function behaviors()
+    public function behaviors(): array
     {
         return [
             BlameableBehavior::class,
@@ -100,66 +104,66 @@ class Family extends ActiveRecord
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
-    public function getClients()
+    public function getClients(): ActiveQuery
     {
         return $this->hasMany(Client::class, ['family_id' => 'id']);
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
-    public function getImportErrors()
+    public function getImportErrors(): ActiveQuery
     {
         return $this->hasMany(ImportError::class, ['family_id' => 'id']);
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
-    public function getExpenses()
+    public function getExpenses(): ActiveQuery
     {
         return $this->hasMany(Expense::class, ['family_id' => 'id']);
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
-    public function getCreatedBy()
+    public function getCreatedBy(): ActiveQuery
     {
         return $this->hasOne(User::class, ['id' => 'created_by']);
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
-    public function getUpdatedBy()
+    public function getUpdatedBy(): ActiveQuery
     {
         return $this->hasOne(User::class, ['id' => 'updated_by']);
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
-    public function getPayments()
+    public function getPayments(): ActiveQuery
     {
         return $this->hasMany(Payment::class, ['family_id' => 'id']);
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
-    public function getProgramFamilies()
+    public function getProgramFamilies(): ActiveQuery
     {
         return $this->hasMany(ProgramFamily::class, ['family_id' => 'id']);
     }
 
     /**
-     * @return \yii\db\ActiveQuery
-     * @throws \yii\base\InvalidConfigException
+     * @return ActiveQuery
+     * @throws InvalidConfigException
      */
-    public function getPrograms()
+    public function getPrograms(): ActiveQuery
     {
         return $this->hasMany(
             Program::class,
@@ -174,7 +178,7 @@ class Family extends ActiveRecord
      *
      *         Wallet::WALLET_TYPE_CARD
      *
-     * @param integer $walletType filtering parameter.
+     * @param integer|null $walletType filtering parameter.
      * @return bool|int the sum of the payments of the current family.
      */
     public function getPaid($walletType = null)
@@ -196,7 +200,7 @@ class Family extends ActiveRecord
      *
      *         Wallet::WALLET_TYPE_CARD
      *
-     * @param integer $walletType filtering parameter.
+     * @param integer|null $walletType filtering parameter.
      * @return bool|int the sum of the expenses of the current family.
      */
     public function getDue($walletType = null)
@@ -213,9 +217,9 @@ class Family extends ActiveRecord
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
-    public function getWxUnifiedPaymentOrders()
+    public function getWxUnifiedPaymentOrders(): ActiveQuery
     {
         return $this->hasMany(WxUnifiedPaymentOrder::class, ['family_id' => 'id']);
     }
