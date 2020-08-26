@@ -6,6 +6,7 @@ use apivp1\helpers\ClientHelper;
 use apivp1\models\Client;
 use common\controllers\BaseController;
 use Yii;
+use yii\base\Exception;
 use yii\web\ServerErrorHttpException;
 
 /**
@@ -32,10 +33,10 @@ class WxAuthController extends BaseController
      *
      * @return array
      * @throws ServerErrorHttpException
+     * @throws Exception
      */
     public function actionCreate (): array
     {
-
         /**
          * The wechat miniapp sends a login request to the backend and obtains
          * a temporary code 'jsCode' that sends to the backend.
@@ -45,23 +46,8 @@ class WxAuthController extends BaseController
          *
          * Using the openid we can find the client, or create a new Client,
          * and personalize the content to their needs.
-         *
-         * The Wechat miniapp MAY also send the user information to be used to
-         * automatically update some of the user's details, for example:
-         *
-         * $userInfo = [
-         *      'nickName'	:	'Raul (壁虎）',
-         *      'gender'	:	1,
-         *      'language'	:	'zh_CN',
-         *      'city'	    :	'Lijiang',
-         *      'province'	:	'Yunnan',
-         *      'country'	:	'China',
-         *      'avatarUrl'	:	'https://wx.qlogo.cn/mmopen/vi_32/mS5kwr5ibehvIoZfj7DAmbpMVptrq8v94OWibibDCy6icSNcYovM32SKALPiau3TlVYQnhrr66IFszrKiaeenBbrhCbQ/132'
-         * ];
-         *
          */
         $jsCode = Yii::$app->request->post('jsCode');
-        $userInfo = Yii::$app->request->post('userInfo');
 
         $appId = Yii::$app->params['weapp_app_id'];
         $appSecret = Yii::$app->params['weapp_app_secret'];
@@ -109,10 +95,12 @@ WARNING
          * create a new Client.
          * @var Client $client
          */
-        $client = ClientHelper::fetchOrCreateByOpenId($res['openid'], $userInfo);
+        $client = ClientHelper::fetchOrCreateByOpenId($res['openid']);
 
         if ($client === null) {
-            throw new ServerErrorHttpException('Obtained null Client for openid ' . $res['openid']);
+            throw new ServerErrorHttpException(
+                'Obtained null Client for openid ' . $res['openid']
+            );
         }
 
         // If the wx session key is different update it
@@ -122,30 +110,15 @@ WARNING
             $client->wx_session_key_obtained_at = time();
 
             if (!$client->save()) {
-                Yii::error("Error updating Client $client->id's session key.",__METHOD__);
+                Yii::error(
+                    "Error updating Client $client->id's session key.",__METHOD__
+                );
             }
         }
 
         return [
             'success' => true,
-            'access_token' => $client->user->access_token,
-            'username' => $client->user->username,
-            'user_id' => $client->user_id,
-            'client_id' => $client->id,
-            'family_id' => $client->family_id
+            'access_token' => $client->user->access_token
         ];
-
-    }
-
-    /**
-     * Send the HTTP options available to this route
-     */
-    public function actionOptions(): void
-    {
-        if (Yii::$app->getRequest()->getMethod() !== 'OPTIONS') {
-            Yii::$app->getResponse()->setStatusCode(405);
-        }
-        $options = $this->_verbs;
-        Yii::$app->getResponse()->getHeaders()->set('Allow', implode(', ', $options));
     }
 }
