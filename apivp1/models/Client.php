@@ -2,10 +2,12 @@
 
 namespace apivp1\models;
 
+use yii\db\ActiveQuery;
 use yii\helpers\ArrayHelper;
 
 /**
  * Class Client
+ * @property Family $family
  * @package apivp1\models
  */
 class Client extends \common\models\Client
@@ -30,6 +32,14 @@ class Client extends \common\models\Client
         $scenarios[self::SCENARIO_FAMILY_CREATE_MEMBER] =
             ArrayHelper::merge($scenarios[self::SCENARIO_FAMILY_UPDATE_MEMBER], ['family_id']);
         return $scenarios;
+    }
+
+    /**
+     * @return ActiveQuery
+     */
+    public function getFamily(): ActiveQuery
+    {
+        return $this->hasOne(Family::class, ['id' => 'family_id']);
     }
 
     /**

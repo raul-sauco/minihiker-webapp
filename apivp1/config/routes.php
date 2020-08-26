@@ -4,6 +4,7 @@ use yii\rest\UrlRule;
 
 /** Url rules for apivp1 application */
 return [
+    ['class' => UrlRule::class, 'controller' => 'account-info', 'pluralize' => false],
     ['class' => UrlRule::class, 'controller' => 'client'],
     ['class' => UrlRule::class, 'controller' => 'family'],
     [
