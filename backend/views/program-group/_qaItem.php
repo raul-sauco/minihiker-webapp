@@ -4,6 +4,7 @@
 /* @var $model common\models\Qa */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
+use common\helpers\QaHelper;
 use yii\bootstrap\Html;
 ?>
 
@@ -11,8 +12,8 @@ use yii\bootstrap\Html;
     id="program-group-qa-container-<?= $model->id ?>">
 
     <div class="qa-avatar-container">
-        <?= Html::img($model->user_avatar_url, [
-                'alt' => $model->user_nickname . '\'s avatar'
+        <?= Html::img('@imgUrl/f/' . QaHelper::getWxAccountAvatar($model) , [
+                'alt' => QaHelper::getWxAccountNickname($model) . '\'s avatar'
         ]) ?>
     </div>
 
@@ -23,7 +24,7 @@ use yii\bootstrap\Html;
                 <?= Yii::t(
                     'app',
                     '{username} {asked}', [
-                    'username' => $model->user_nickname,
+                    'username' => QaHelper::getWxAccountNickname($model),
                     'asked' => Yii::$app->formatter->asDatetime($model->created_at)
                 ]) ?>
             </div>
