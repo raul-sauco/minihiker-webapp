@@ -90,6 +90,8 @@ WARNING
             ];
         }
 
+        Yii::debug(['Obtained response from WxAPI', $res], __METHOD__);
+
         /**
          * If we obtained a valid openid value from the weixin server, use it to find or
          * create a new Client.

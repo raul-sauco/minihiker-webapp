@@ -56,6 +56,17 @@ class ClientHelper extends \common\helpers\ClientHelper
                 'There was an error creating a new Client->user.');
         }
 
+        if (($clientRole = Yii::$app->authManager->getRole('client')) !== null) {
+            try {
+                Yii::$app->authManager->assign($clientRole, $user->id);
+            } catch (\Exception $exception) {
+                Yii::error($exception->getMessage(), __METHOD__);
+                throw new ServerErrorHttpException(
+                    'There was an error assigning permissions to the new user'
+                );
+            }
+        }
+
         // Create a Client to link to the user
         $client = new Client();
         $client->nickname = $user->username;
@@ -70,6 +81,7 @@ class ClientHelper extends \common\helpers\ClientHelper
         // Create a Family to link with the client
         $family = new Family();
         $family->name = '未注册';
+        $family->avatar = Yii::$app->params['defaultAvatar'];
         $family->membership_date = date('Y-m-d');
         $family->remarks = Yii::t('app',
             'Created automatically for openid {openid} on {date}',
@@ -86,13 +98,23 @@ class ClientHelper extends \common\helpers\ClientHelper
 
     /**
      * Return the last 8 characters of the result of hashing the
-     * entry parameter.
+     * entry parameter. Add extra random characters if needed
+     * to avoid collisions.
      *
      * @param $openid
      * @return bool|string
+     * @throws Exception
      */
     private static function generateTemporaryUsername ($openid)
     {
-        return substr(md5($openid), -8);
+        $name = substr(md5($openid), -8);
+        while (($user = User::findOne(['username' => $name])) !== null) {
+            Yii::warning(
+                "Collision found between new user and user $user->id",
+                __METHOD__
+            );
+            $name .= StringHelper::randomStr(4);
+        }
+        return $name;
     }
 }
