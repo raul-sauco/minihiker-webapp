@@ -15,6 +15,7 @@ return [
     'id' => 'app-apivp1',
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
+    'language' => 'zh-CN',
     'controllerNamespace' => 'apivp1\controllers',
     'components' => [
         'cache' => [

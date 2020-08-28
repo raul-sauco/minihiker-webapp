@@ -6,4 +6,5 @@ return [
     'senderName' => 'Example.com mailer',
     'user.passwordResetTokenExpire' => 3600,
     'maxFamilyMembersAllowed' => 20,
+    'defaultAvatar' => 'user.jpeg'
 ];

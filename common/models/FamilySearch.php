@@ -13,7 +13,7 @@ class FamilySearch extends Family
     /**
      * @inheritdoc
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             [['id', 'created_by', 'updated_by', 'created_at', 'updated_at'], 'integer'],
@@ -24,20 +24,17 @@ class FamilySearch extends Family
     /**
      * @inheritdoc
      */
-    public function scenarios()
+    public function scenarios(): array
     {
         // bypass scenarios() implementation in the parent class
         return Model::scenarios();
     }
 
     /**
-     * Creates data provider instance with search query applied
-     *
-     * @param array $params
-     *
+     * @param $params
      * @return ActiveDataProvider
      */
-    public function search($params)
+    public function search($params): ActiveDataProvider
     {
         $query = Family::find();
 
@@ -81,9 +78,10 @@ class FamilySearch extends Family
      * Find Family records that match a query string.
      *
      * @param $q
+     * @param $exclude
      * @return ActiveDataProvider
      */
-    public function searchByQuery($q, $exclude)
+    public function searchByQuery($q, $exclude): ActiveDataProvider
     {
         // Allow searching using client's attributes
         $query = Family::find()->joinWith('clients')->distinct();

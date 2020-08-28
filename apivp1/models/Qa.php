@@ -2,6 +2,9 @@
 
 namespace apivp1\models;
 
+use common\helpers\QaHelper;
+use Yii;
+
 /**
  * Class Qa
  * @package apivp1\models
@@ -9,11 +12,9 @@ namespace apivp1\models;
 class Qa extends \common\models\Qa
 {
     /**
-     * Remove fields that are not relevant to API consumers.
-     *
      * @return array
      */
-    public function fields()
+    public function fields(): array
     {
         $fields = parent::fields();
         unset(
@@ -24,5 +25,20 @@ class Qa extends \common\models\Qa
             $fields['updated_by']
         );
         return $fields;
+    }
+
+    /**
+     * @return array
+     */
+    public function extraFields(): array
+    {
+        return [
+            'wxAccountNickname' => static function (Qa $model) {
+                return QaHelper::getWxAccountNickname($model);
+            },
+            'wxAccountAvatar' => static function (Qa $model) {
+                return QaHelper::getWxAccountAvatar($model);
+            }
+        ];
     }
 }

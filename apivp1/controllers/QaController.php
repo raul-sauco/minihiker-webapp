@@ -59,7 +59,10 @@ class QaController extends ActiveBaseController
         }
 
         return new ActiveDataProvider([
-            'query' => $programGroup->getQas()
+            'query' => $programGroup->getQas(),
+            'sort' => [
+                'defaultOrder' => ['id' => SORT_DESC]
+            ]
         ]);
     }
 }

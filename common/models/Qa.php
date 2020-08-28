@@ -5,6 +5,8 @@ namespace common\models;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
+use yii\db\ActiveQuery;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "qa".
@@ -15,8 +17,8 @@ use yii\behaviors\TimestampBehavior;
  * @property string $answer
  * @property int $answered_at
  * @property int $answered_by
- * @property string $user_avatar_url
- * @property string $user_nickname
+ * @property string $user_avatar_url @deprecated infer avatar based on "created_by" property
+ * @property string $user_nickname @deprecated infer nickname based on "created_by" property
  * @property string $user_ip
  * @property int $created_by
  * @property int $updated_by
@@ -28,12 +30,12 @@ use yii\behaviors\TimestampBehavior;
  * @property ProgramGroup $programGroup
  * @property User $updatedBy
  */
-class Qa extends \yii\db\ActiveRecord
+class Qa extends ActiveRecord
 {
     /**
      * {@inheritdoc}
      */
-    public static function tableName()
+    public static function tableName(): string
     {
         return 'qa';
     }
@@ -41,24 +43,24 @@ class Qa extends \yii\db\ActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             [['program_group_id', 'answered_at', 'answered_by', 'created_by', 'updated_by', 'created_at', 'updated_at'], 'integer'],
             [['question', 'answer', 'user_avatar_url'], 'string'],
             [['user_nickname'], 'string', 'max' => 256],
             [['user_ip'], 'string', 'max' => 128],
-            [['answered_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['answered_by' => 'id']],
-            [['created_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['created_by' => 'id']],
-            [['program_group_id'], 'exist', 'skipOnError' => true, 'targetClass' => ProgramGroup::className(), 'targetAttribute' => ['program_group_id' => 'id']],
-            [['updated_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['updated_by' => 'id']],
+            [['answered_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['answered_by' => 'id']],
+            [['created_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['created_by' => 'id']],
+            [['program_group_id'], 'exist', 'skipOnError' => true, 'targetClass' => ProgramGroup::class, 'targetAttribute' => ['program_group_id' => 'id']],
+            [['updated_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['updated_by' => 'id']],
         ];
     }
 
     /**
      * {@inheritdoc}
      */
-    public function attributeLabels()
+    public function attributeLabels(): array
     {
         return [
             'id' => Yii::t('app', 'ID'),
@@ -81,44 +83,44 @@ class Qa extends \yii\db\ActiveRecord
     * {@inheritDoc}
     * @see \yii\base\Component::behaviors()
     */
-    public function behaviors()
+    public function behaviors(): array
     {
         return [
-            BlameableBehavior::className(),
-            TimestampBehavior::className(),
+            BlameableBehavior::class,
+            TimestampBehavior::class,
         ];
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
-    public function getAnsweredBy()
+    public function getAnsweredBy(): ActiveQuery
     {
-        return $this->hasOne(User::className(), ['id' => 'answered_by']);
+        return $this->hasOne(User::class, ['id' => 'answered_by']);
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
-    public function getCreatedBy()
+    public function getCreatedBy(): ActiveQuery
     {
-        return $this->hasOne(User::className(), ['id' => 'created_by']);
+        return $this->hasOne(User::class, ['id' => 'created_by']);
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
-    public function getProgramGroup()
+    public function getProgramGroup(): ActiveQuery
     {
-        return $this->hasOne(ProgramGroup::className(), ['id' => 'program_group_id']);
+        return $this->hasOne(ProgramGroup::class, ['id' => 'program_group_id']);
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
-    public function getUpdatedBy()
+    public function getUpdatedBy(): ActiveQuery
     {
-        return $this->hasOne(User::className(), ['id' => 'updated_by']);
+        return $this->hasOne(User::class, ['id' => 'updated_by']);
     }
 
 }
