@@ -26,6 +26,7 @@ return [
     ['class' => UrlRule::class, 'controller' => 'qa'],
     ['class' => UrlRule::class, 'controller' => 'weapp-log'],
     ['class' => UrlRule::class, 'controller' => 'wx-auth', 'pluralize' => false],
+    ['class' => UrlRule::class, 'controller' => ['wxua' => 'family-avatar']],
     ['class' => UrlRule::class, 'controller' => ['wxbp' => 'banner-program']],
     ['class' => UrlRule::class, 'controller' => ['wxcpi' => 'client-passport-image']],
     ['class' => UrlRule::class, 'controller' => ['wxps' => 'program-search']],
