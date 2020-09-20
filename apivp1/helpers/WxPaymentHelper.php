@@ -89,7 +89,8 @@ class WxPaymentHelper extends \common\helpers\WxPaymentHelper
 
         $order->out_trade_no = (string)time();
 
-        $order->total_fee = $amount;
+        // The miniprogram sends amounts on CNY but the server expects cents
+        $order->total_fee = $amount * 100;
 
         $order->openid = $client->openid;
 
