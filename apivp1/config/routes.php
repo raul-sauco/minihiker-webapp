@@ -35,4 +35,11 @@ return [
     ['class' => UrlRule::class, 'controller' => 'wx-payment', 'pluralize' => false],
     ['class' => UrlRule::class, 'controller' => 'wx-payment-notify', 'pluralize' => false],
     ['class' => UrlRule::class, 'controller' => 'wx-unified-payment-order'],
+	['class' => UrlRule::class, 'controller' => 'authentic'],
+	['class' => UrlRule::class, 'controller' => 'sms'],
+	['class' => UrlRule::class, 'controller' => 'contract','extraPatterns'=>[
+		'POST notify' => 'notify',
+		'GET scount' => 'scount',
+		'GET list' => 'list',
+	]],
 ];

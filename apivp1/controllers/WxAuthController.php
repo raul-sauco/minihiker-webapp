@@ -5,8 +5,8 @@ namespace apivp1\controllers;
 use apivp1\helpers\ClientHelper;
 use apivp1\models\Client;
 use common\controllers\BaseController;
+use common\helpers\HttpHelper;
 use Yii;
-use yii\base\Exception;
 use yii\web\ServerErrorHttpException;
 
 /**
@@ -34,6 +34,7 @@ class WxAuthController extends BaseController
      * @return array
      * @throws ServerErrorHttpException
      * @throws Exception
+     * @throws \yii\base\Exception
      */
     public function actionCreate (): array
     {
@@ -53,14 +54,16 @@ class WxAuthController extends BaseController
         $appSecret = Yii::$app->params['weapp_app_secret'];
         $weixin_url = "https://api.weixin.qq.com/sns/jscode2session?appid=$appId&secret=$appSecret&js_code=$jsCode&grant_type=authorization_code";
 
-        $ch = curl_init($weixin_url);
+       /* $ch = curl_init($weixin_url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_VERBOSE, 1);
         $response_raw = curl_exec($ch);
 
         // The response will be JSON, parse it before using
-        $res = json_decode($response_raw,true);
+        $res = json_decode($response_raw,true);*/
 
+        $res= HttpHelper::get($weixin_url);
+        $res=json_decode($res,true);
         /*
          * If there is any error, the response will take the following form:
          * {
