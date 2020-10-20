@@ -41,5 +41,8 @@ return [
                 ],
             ],
         ],
+	    'session'=>[
+	    	'timeout'=>900,
+	    ]
     ],
 ];
