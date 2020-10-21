@@ -77,6 +77,11 @@ $this->beginPage()
                 'url' => ['/user'],
                 'visible' => $user->can('listUsers')
             ],
+	        [
+		        'label' => Yii::t('app', 'Contract'),
+		        'url' => ['/contracts'],
+		        //'visible' => $user->can('listContract')
+	        ],
             Yii::$app->user->isGuest ? (
                 ['label' => Yii::t('app', 'Login'), 'url' => ['/site/login']]
             ) : (

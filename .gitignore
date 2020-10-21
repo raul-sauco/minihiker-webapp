@@ -49,6 +49,7 @@ phpunit.phar
 /backend/web/css
 /backend/web/img
 /backend/web/js
+/backend/web/contract
 
 # rsync files
 /publish

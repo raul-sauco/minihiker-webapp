@@ -1,6 +1,6 @@
 <?php
 $controllersList = 'program|client|family|location|program-price|user|weapp|weapp-log|wx-payment-log|' .
-    'wx-unified-payment-order|wx-payment-log|';
+    'wx-unified-payment-order|wx-payment-log|contract|';
 
 $rules = [
     "<controller:($controllersList)>/create" => '<controller>/create',
@@ -9,7 +9,11 @@ $rules = [
     "<controller:($controllersList)>s" => '<controller>/index',
     'family/<id:\d+>/merge-search' => 'family/merge-search',
     'family/<id:\d+>/merge-confirm' => 'family/merge-confirm',
-    'program-group/<id:\d+>/<action:(weapp-update|weapp-view|qas)>' => 'program-group/<action>'
+    'program-group/<id:\d+>/<action:(weapp-update|weapp-view|qas)>' => 'program-group/<action>',
+	'contracts/token'=>'contract/token',
+    'contracts/company'=>'contract/company',
+    'contracts/query'=>'contract/query',
+    'contracts/usersign'=>'contract/usersign'
 ];
 
 $params = array_merge(
