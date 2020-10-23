@@ -20,7 +20,7 @@ $this->registerJsVar(
             'accesstoken' => $user->access_token ?? '',
             'applanguage' => Yii::$app->language,
             'baseurl' => Yii::getAlias('@web/'),
-            'apiurl' => Yii::$app->params['apiUrl'],
+            'apiurl' => Yii::getAlias('@apiUrl/'),
             'staticurl' => Yii::getAlias('@staticUrl/'),
             'imgurl' => Yii::getAlias('@imgUrl/'),
             'requestHeaders' => [

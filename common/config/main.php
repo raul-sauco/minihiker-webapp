@@ -1,12 +1,14 @@
 <?php
+// Check if the app is running in the development server
+$devEnv = empty($_SERVER['HTTP_HOST']) ||
+    $_SERVER['HTTP_HOST'] === 'backend.mh' ||
+    $_SERVER['HTTP_HOST'] === 'api.mh';
 return [
     'aliases' => [
         '@bower' => '@vendor/bower-asset',
         '@npm'   => '@vendor/npm-asset',
-        '@staticUrl' => (empty($_SERVER['HTTP_HOST']) ||
-            $_SERVER['HTTP_HOST'] === 'backend.mh' ||
-            $_SERVER['HTTP_HOST'] === 'api.mh') ?
-            'http://static.mh' : 'https://static.minihiker.com',
+        '@staticUrl' => $devEnv ? 'http://static.mh' : 'https://static.minihiker.com',
+        '@apiUrl' => $devEnv ? 'http://api.mh' : 'https://api.minihiker.com',
         '@imgUrl' => '@staticUrl/img',
         '@cssUrl' => '@staticUrl/css',
         '@jsUrl' => '@staticUrl/js',
@@ -41,8 +43,5 @@ return [
                 ],
             ],
         ],
-	    'session'=>[
-	    	'timeout'=>900,
-	    ]
     ],
 ];
