@@ -123,7 +123,8 @@ WARNING
 
         return [
             'success' => true,
-            'access_token' => $client->user->access_token
+            'access_token' => $client->user->access_token,
+            'user_id' => $client->user_id,  // YHT weapp code expects the user_id parameter
         ];
     }
 }
