@@ -3,27 +3,36 @@ namespace backend\controllers;
 
 use yii\helpers\Url;
 use yii\web\Controller;
+use vova07\imperavi\actions\GetImagesAction;
+use vova07\imperavi\actions\UploadFileAction;
+use vova07\imperavi\actions\DeleteFileAction;
 
+/**
+ * Class ImperaviController
+ * Let users view, upload and delete images on the imperavi editor.
+ *
+ * @package backend\controllers
+ */
 class ImperaviController extends Controller
 {
     public function actions()
     {
         return [
             'images-get' => [
-                'class' => 'vova07\imperavi\actions\GetImagesAction',
-                'url' => Url::to('@web/img/imperavi', true), // Directory URL address, where files are stored.
-                'path' => '@webroot/img/imperavi', // Or absolute path to directory where files are stored.
+                'class' => GetImagesAction::class,
+                'url' => Url::to('@imgUrl/imperavi', true), // Directory URL address, where files are stored.
+                'path' => '@imgPath/imperavi', // Or absolute path to directory where files are stored.
                 'options' => ['only' => ['*.jpg', '*.jpeg', '*.png', '*.gif', '*.ico']], // These options are by default.
             ],
             'image-upload' => [
-                'class' => 'vova07\imperavi\actions\UploadFileAction',
-                'url' => Url::to('@web/img/imperavi', true), // Directory URL address, where files are stored.
-                'path' => '@webroot/img/imperavi', // Or absolute path to directory where files are stored.
+                'class' => UploadFileAction::class,
+                'url' => Url::to('@imgUrl/imperavi', true), // Directory URL address, where files are stored.
+                'path' => '@imgPath/imperavi', // Or absolute path to directory where files are stored.
             ],
             'file-delete' => [
-                'class' => 'vova07\imperavi\actions\DeleteFileAction',
-                'url' => Url::to('@web/img/imperavi', true), // Directory URL address, where files are stored.
-                'path' => '@webroot/img/imperavi', // Or absolute path to directory where files are stored.
+                'class' => DeleteFileAction::class,
+                'url' => Url::to('@imgUrl/imperavi', true), // Directory URL address, where files are stored.
+                'path' => '@imgPath/imperavi', // Or absolute path to directory where files are stored.
             ],
         ];
     }
