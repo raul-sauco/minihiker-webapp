@@ -12,8 +12,6 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="contract-index">
 
-    <!--<h1><? /*= Html::encode($this->title) */ ?></h1>-->
-
     <p>
 		<?=Html::a(Yii::t('app', 'Create Contract'), ['create'], ['class' => 'btn btn-success'])?>
     </p>
@@ -22,11 +20,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 	<?=GridView::widget([
 		'dataProvider' => $dataProvider,
-		//'filterModel' => $searchModel,
 		'columns'      => [
-			//['class' => 'yii\grid\SerialColumn'],
-
-			// 'id',
 			'contractno',
 			'contractfile',
 			'contracttitle',
