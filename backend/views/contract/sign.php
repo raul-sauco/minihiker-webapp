@@ -8,8 +8,8 @@
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <title>合同模板</title>
-    <script type="text/javascript" charset="utf-8" src="/assets/f46b666c/jquery.js"></script>
     <script type="text/javascript" charset="utf-8" src="https://webchat3.yunhetong.com/api_page/api/m/yht.js"></script>
+    <script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
     <style>
         .container{
             width:90%;
@@ -37,7 +37,7 @@
             background:#ff6d00;
         }
         .last_btn{
-            background:#005aff;
+            background:#0ba360;
         }
 
     </style>
@@ -132,7 +132,7 @@
 
 <body>
 <div class="container">
-    <img src="../images/photo.png" alt="" class="logo">
+    <img src="https://static.yunhetong.com/www/saas/img/login/logo.svg" alt="" class="logo">
     <div class="title">合同在线签章</div>
     <div>
         <div onclick="_sign()" class="last_btn">签署合同</div>
