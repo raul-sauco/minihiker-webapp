@@ -15,21 +15,9 @@ use yii\widgets\ActiveForm;
         'method' => 'get',
     ]); ?>
 
-    <?/*= $form->field($model, 'id') */?>
-
     <?= $form->field($model, 'contractno') ?>
 
-    <?/*= $form->field($model, 'contractfile') */?>
-
     <?= $form->field($model, 'contracttitle') ?>
-
-    <?/*= $form->field($model, 'touid') */?>
-
-    <?php // echo $form->field($model, 'status') ?>
-
-    <?php // echo $form->field($model, 'crated_at') ?>
-
-    <?php // echo $form->field($model, 'updated_at') ?>
 
     <div class="form-group">
         <?= Html::submitButton(Yii::t('app', 'Search'), ['class' => 'btn btn-primary']) ?>
