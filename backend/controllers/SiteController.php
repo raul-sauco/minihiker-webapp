@@ -8,17 +8,23 @@ use yii\web\Controller;
 use yii\filters\VerbFilter;
 use common\models\LoginForm;
 use common\models\ContactForm;
+use yii\web\ErrorAction;
+use yii\captcha\CaptchaAction;
 
+/**
+ * Class SiteController
+ * @package backend\controllers
+ */
 class SiteController extends Controller
 {
     /**
      * @inheritdoc
      */
-    public function behaviors()
+    public function behaviors(): array
     {
         return [
             'access' => [
-                'class' => AccessControl::className(),
+                'class' => AccessControl::class,
                 'only' => ['logout', 'index','man'],
                 'rules' => [
                     [
@@ -36,10 +42,15 @@ class SiteController extends Controller
                         'allow' => true,
                         'roles' => ['viewIndex'],
                     ],
+                    [
+                        'actions' => ['test'],
+                        'allow' => true,
+                        'roles' => ['admin']
+                    ]
                 ],
             ],
             'verbs' => [
-                'class' => VerbFilter::className(),
+                'class' => VerbFilter::class,
                 'actions' => [
                     'logout' => ['post'],
                 ],
@@ -50,15 +61,15 @@ class SiteController extends Controller
     /**
      * @inheritdoc
      */
-    public function actions()
+    public function actions(): array
     {
         return [
             'error' => [
-                'class' => 'yii\web\ErrorAction',
+                'class' => ErrorAction::class,
             ],
             'captcha' => [
-                'class' => 'yii\captcha\CaptchaAction',
-                'fixedVerifyCode' => YII_ENV_TEST ? 'testme' : null,
+                'class' => CaptchaAction::class,
+                'fixedVerifyCode' => YII_ENV_TEST ? 'testMe' : null,
             ],
         ];
     }
@@ -68,7 +79,7 @@ class SiteController extends Controller
      *
      * @return string
      */
-    public function actionIndex()
+    public function actionIndex(): string
     {
         return $this->render('index');
     }
@@ -78,7 +89,7 @@ class SiteController extends Controller
      *
      * @return string
      */
-    public function actionLogin()
+    public function actionLogin(): string
     {
         if (!Yii::$app->user->isGuest) {
             return $this->goHome();
@@ -98,7 +109,7 @@ class SiteController extends Controller
      *
      * @return string
      */
-    public function actionLogout()
+    public function actionLogout(): string
     {
         Yii::$app->user->logout();
 
@@ -110,10 +121,11 @@ class SiteController extends Controller
      *
      * @return string
      */
-    public function actionContact()
+    public function actionContact(): string
     {
         $model = new ContactForm();
-        if ($model->load(Yii::$app->request->post()) && $model->contact(Yii::$app->params['adminEmail'])) {
+        if ($model->load(Yii::$app->request->post()) &&
+            $model->contact(Yii::$app->params['adminEmail'])) {
             Yii::$app->session->setFlash('contactFormSubmitted');
 
             return $this->refresh();
@@ -125,10 +137,9 @@ class SiteController extends Controller
 
     /**
      * Displays about page.
-     *
      * @return string
      */
-    public function actionAbout()
+    public function actionAbout(): string
     {
         return $this->render('about');
     }
@@ -136,8 +147,17 @@ class SiteController extends Controller
     /**
      * Displays the manual page.
      */
-    public function actionMan()
+    public function actionMan(): string
     {
         return $this->render('/man/index');
+    }
+
+    /**
+     * Run a few tests on the app and display the results on-screen.
+     * @return string
+     */
+    public function actionTest(): string
+    {
+        return $this->render('test');
     }
 }
