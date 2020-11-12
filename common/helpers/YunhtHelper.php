@@ -104,10 +104,10 @@ class YunhtHelper {
 	public static function verify($data){
 		$param['appId']  = Yii::$app->params['YHT_APPID'];
 		$param['appKey'] = Yii::$app->params['YHT_APPKEY'];
-		$param['guId']   = $data['id_card_number'];
+		//$param['guId']   = $data['id_card_number'];
 		$param['idNo']   = $data['id_card_number'];
 		$param['idName'] = $data['name_zh'];
-		$res= HttpHelper::get(self::AUTH_PERSONAL_URL,$param);
+		$res= HttpHelper::post(self::AUTH_PERSONAL_URL,$param);
 		return json_decode($res,true);
 	}
 
