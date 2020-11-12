@@ -8,6 +8,7 @@ use common\models\WxUnifiedPaymentOrder;
 use Yii;
 use yii\base\Exception;
 use yii\base\InvalidConfigException;
+use yii\helpers\StringHelper;
 use yii\web\ServerErrorHttpException;
 
 /**
@@ -248,6 +249,8 @@ class WxPaymentHelper extends \common\helpers\WxPaymentHelper
 
     /**
      * Generate the WxUnifiedPayment order body.
+     * The body has a maximum length of 128 character.
+     * https://pay.weixin.qq.com/wiki/doc/api/wxa/wxa_api.php?chapter=9_1&index=1
      *
      * @param $priceId
      * @return string
@@ -255,19 +258,13 @@ class WxPaymentHelper extends \common\helpers\WxPaymentHelper
     private static function generateOrderBody ($priceId): string
     {
         $body = '童行者 项目报名订单 ';
-
         if (($price = ProgramPrice::findOne($priceId)) !== null) {
-
             if (($program = $price->program) !== null) {
-
                 $body .= $program->programGroup->weapp_display_name ?? '';
-
             }
-
             $body .= ' ' . $price->getNamei18n();
         }
-
-        return $body;
+        return StringHelper::truncate($body, 120);
     }
 
     /**

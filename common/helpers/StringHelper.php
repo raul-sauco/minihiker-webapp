@@ -6,6 +6,12 @@ use DateTime;
 use Exception;
 use Yii;
 
+/**
+ * Class StringHelper
+ * Common code helping out with string manipulation.
+ *
+ * @package common\helpers
+ */
 class StringHelper
 {
     /**
@@ -22,7 +28,7 @@ class StringHelper
      * @throws \yii\base\Exception
      */
     public static function randomStr(
-        $length,
+        int $length,
         $keyspace = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'): string
     {
         $pieces = [];
