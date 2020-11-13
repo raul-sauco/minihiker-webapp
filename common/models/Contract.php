@@ -60,14 +60,14 @@ class Contract extends \yii\db\ActiveRecord {
 
 	public function upload() {
 		if ($this->validate('contractfile')) {
-			$save_path = Yii::$app->basePath . '/web/contract/';
+			$save_path =Yii::getAlias('@contractPath').'/';
 			if ( ! file_exists($save_path)) {
 				mkdir($save_path, 0777, true);
 			}
 			$file_name = $this->File->baseName . date('YmdHis') . '.' . $this->File->extension;
 			$this->File->saveAs($save_path . $file_name);
 
-			return '/contract/' . $file_name;
+			return  $file_name;
 		} else {
 			return false;
 		}
