@@ -6,6 +6,7 @@ use yii\grid\GridView;
 /* @var $this yii\web\View */
 /* @var $searchModel common\models\ContractSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
+/* @var $companyed */
 
 $this->title                   = Yii::t('app', 'Contract');
 $this->params['breadcrumbs'][] = $this->title;
@@ -13,7 +14,12 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="contract-index">
 
     <p>
-		<?=Html::a(Yii::t('app', 'Create Contract'), ['create'], ['class' => 'btn btn-success'])?>
+        <?php if ($companyed):?>
+		   <?=Html::a(Yii::t('app', 'Create Contract'), ['create'], ['class' => 'btn btn-success'])?>
+	        <?=Html::a(Yii::t('app', 'Registered Company'), ['company'], ['class' => 'btn btn-primary'])?>
+        <?php else:?>
+	        <?=Html::a(Yii::t('app', 'Registered Company'), ['company'], ['class' => 'btn btn-primary'])?>
+        <?php endif;?>
     </p>
 
 	<?php echo $this->render('_search', ['model' => $searchModel]); ?>

@@ -37,7 +37,7 @@ class ContractController extends Controller {
 				'rules' => [
 					[
 						'allow' => true,
-						'actions' => ['index','view','create','update','delete','query','send'],
+						'actions' => ['index','view','create','update','delete','query','send','company'],
 						'roles' => ['@'],
 					],
 					[
@@ -65,10 +65,11 @@ class ContractController extends Controller {
 		$dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
 		//是否添加企业信息
-
+		$companyed=Company::find()->count();
 		return $this->render('index', [
 			'searchModel'  => $searchModel,
 			'dataProvider' => $dataProvider,
+			'companyed'=>$companyed
 		]);
 	}
 

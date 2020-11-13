@@ -43,8 +43,8 @@
 
 	</style>
 	<script>
-        var appid = <?= Yii::$app->params['YHT_APPID'];?>//"2020042717015000008";
-        var contractId = <?= $model->contractno;?>//'2009171511377866';
+        var appid = <?= Yii::$app->params['YHT_APPID'];?>;
+        var contractId = <?= $model->contractno;?>;
         var tokenUnableListener = function (obj){ //当 token 不合法时，SDK 会回调此方法
             var csrfToken = $('meta[name="csrf-token"]').attr("content");
             var param = {
