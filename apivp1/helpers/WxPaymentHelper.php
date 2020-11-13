@@ -259,12 +259,13 @@ class WxPaymentHelper extends \common\helpers\WxPaymentHelper
     {
         $body = '童行者 项目报名订单 ';
         if (($price = ProgramPrice::findOne($priceId)) !== null) {
-            if (($program = $price->program) !== null) {
-                $body .= $program->programGroup->weapp_display_name ?? '';
+            if (($program = $price->program) !== null && ($userId = Yii::$app->user->id !== null) !== null) {
+                $body = "童行者 项目$program->id 报名订单. p$priceId u$userId";
+            } else {
+                $body = "童行者 项目报名订单. p$priceId";
             }
-            $body .= ' ' . $price->getNamei18n();
         }
-        return StringHelper::truncate($body, 120);
+        return StringHelper::truncate($body, 60);
     }
 
     /**

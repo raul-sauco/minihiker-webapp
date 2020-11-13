@@ -89,7 +89,7 @@ class SiteController extends Controller
      *
      * @return string
      */
-    public function actionLogin(): string
+    public function actionLogin()
     {
         if (!Yii::$app->user->isGuest) {
             return $this->goHome();
@@ -109,7 +109,7 @@ class SiteController extends Controller
      *
      * @return string
      */
-    public function actionLogout(): string
+    public function actionLogout()
     {
         Yii::$app->user->logout();
 
@@ -121,7 +121,7 @@ class SiteController extends Controller
      *
      * @return string
      */
-    public function actionContact(): string
+    public function actionContact()
     {
         $model = new ContactForm();
         if ($model->load(Yii::$app->request->post()) &&
