@@ -2,6 +2,7 @@
 
 namespace common\models;
 
+use Exception;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
@@ -235,7 +236,7 @@ class User extends ActiveRecord implements IdentityInterface
     /**
      * {@inheritDoc}
      * @see \yii\db\BaseActiveRecord::afterSave()
-     * @throws \Exception
+     * @throws Exception
      */
     public function afterSave($insert, $changedAttributes)
     {
@@ -270,28 +271,24 @@ class User extends ActiveRecord implements IdentityInterface
 
     /**
      * Assign the roles corresponding to this user based on user type.
-     *
-     * @throws \Exception
+     * @throws Exception
      */
-    protected function assignRoles ()
+    protected function assignRoles (): void
     {
-        // Get a handle to the auth manager
         $auth = Yii::$app->authManager;
-        
         if ((int)$this->user_type === self::TYPE_ADMIN) {
-
-            Yii::debug('Assigning role admin to user ' . $this->id, __METHOD__);
             $auth->assign($auth->getRole('admin'), $this->id);
-
         } else if ((int)$this->user_type === self::TYPE_USER) {
-
-            Yii::debug('Assigning role user to user ' . $this->id, __METHOD__);
             $auth->assign($auth->getRole('user'), $this->id);
-
+        } else if ((int)$this->user_type === self::TYPE_CLIENT) {
+            $auth->assign($auth->getRole('user'), $this->id);
+        } else if ((int)$this->user_type === self::TYPE_SUSPENDED) {
+            Yii::debug("User $this->id is suspended, not assigning any role.", __METHOD__);
         } else {
-
-            Yii::debug('Not assigning any role to user ' . $this->id, __METHOD__);
-
+            Yii::warning(
+                "Unrecognized user type $this->user_type for user $this->id. Skipping rbac assignation.",
+                __METHOD__
+            );
         }
     }
 
