@@ -12,30 +12,31 @@ use yii\web\IdentityInterface;
 /**
  * This is the model class for table "user".
  *
- * @property integer $id
+ * @property int $id
  * @property string $username
  * @property string $password
  * @property string $auth_key
  * @property string $access_token
- * @property string $avatar
- * @property string $name_zh
- * @property string $name_pinyin
- * @property string $name_en
- * @property string $birthdate
- * @property boolean $is_male
- * @property string $id_card_number
- * @property string $passport_number
- * @property string $passport_issue_date
- * @property string $passport_expire_date
- * @property string $passport_place_of_issue
- * @property string $passport_issuing_authority
- * @property string $place_of_birth
- * @property integer $user_type
- * @property integer $created_by
- * @property integer $updated_by
- * @property integer $created_at
- * @property string $authKey
- * @property integer $updated_at
+ * @property string|null $avatar
+ * @property string|null $name_zh
+ * @property string|null $name_pinyin
+ * @property string|null $name_en
+ * @property string|null $birthdate
+ * @property bool|null $is_male
+ * @property string|null $id_card_number
+ * @property string|null $passport_number
+ * @property string|null $passport_issue_date
+ * @property string|null $passport_expire_date
+ * @property string|null $passport_place_of_issue
+ * @property string|null $passport_issuing_authority
+ * @property string|null $place_of_birth
+ * @property int $user_type
+ * @property int $is_verify
+ * @property string|null $phone_number
+ * @property int|null $created_by
+ * @property int|null $updated_by
+ * @property int|null $created_at
+ * @property int|null $updated_at
  *
  * @property ActiveQuery $programGroupViews
  * @property ActiveQuery $programGroupsViewed
@@ -120,6 +121,7 @@ class User extends ActiveRecord implements IdentityInterface
             'passport_issuing_authority' => Yii::t('app', 'Passport Issuing Authority'),
             'place_of_birth' => Yii::t('app', 'Place Of Birth'),
             'user_type' => Yii::t('app', 'User type'),
+            'is_verify' => Yii::t('app', 'Is Verify'),
             'created_by' => Yii::t('app', 'Created By'),
             'updated_by' => Yii::t('app', 'Updated By'),
             'created_at' => Yii::t('app', 'Created At'),
