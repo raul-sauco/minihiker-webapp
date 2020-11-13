@@ -103,7 +103,7 @@ class ContractController extends Controller {
 				//本地文件上传成功，上传至云
 				$yunht=new YunhtHelper();
 				//$yunht->getToken();
-				$y_param['contractFile']=Yii::$app->basePath . '/web'.$upload;
+				$y_param['contractFile']=Yii::getAlias('@contractPath').'/'.$upload;
 				$y_param['contractTitle']=$params['Contract']['contracttitle'];
 				$y_result=$yunht->fileContract($y_param);
 				if ($y_result['code']!=200){

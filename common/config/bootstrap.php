@@ -7,3 +7,4 @@ Yii::setAlias('@backend', dirname(__DIR__, 2) . '/backend');
 Yii::setAlias('@console', dirname(__DIR__, 2) . '/console');
 Yii::setAlias('@staticPath', dirname(__DIR__, 2) . '/static');
 Yii::setAlias('@imgPath', dirname(__DIR__, 2) . '/static/img');
+Yii::setAlias('@contractPath', dirname(__DIR__, 2) . '/static/yht/contract');
