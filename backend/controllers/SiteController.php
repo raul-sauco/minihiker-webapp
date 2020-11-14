@@ -151,13 +151,4 @@ class SiteController extends Controller
     {
         return $this->render('/man/index');
     }
-
-    /**
-     * Run a few tests on the app and display the results on-screen.
-     * @return string
-     */
-    public function actionTest(): string
-    {
-        return $this->render('test');
-    }
 }
