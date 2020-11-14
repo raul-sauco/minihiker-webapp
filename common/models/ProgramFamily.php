@@ -32,7 +32,7 @@ class ProgramFamily extends ActiveRecord
     /**
      * @inheritdoc
      */
-    public static function tableName()
+    public static function tableName(): string
     {
         return 'program_family';
     }
@@ -40,22 +40,22 @@ class ProgramFamily extends ActiveRecord
     /**
      * @inheritdoc
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             [['program_id', 'family_id'], 'required'],
             [['program_id', 'family_id', 'cost', 'discount', 'final_cost', 'status', 'created_by', 'updated_by', 'created_at', 'updated_at'], 'integer'],
             [['remarks'], 'string'],
             [['program_id', 'family_id'], 'unique', 'targetAttribute' => ['program_id', 'family_id']],
-            [['program_id'], 'exist', 'skipOnError' => true, 'targetClass' => Program::className(), 'targetAttribute' => ['program_id' => 'id']],
-            [['family_id'], 'exist', 'skipOnError' => true, 'targetClass' => Family::className(), 'targetAttribute' => ['family_id' => 'id']],
+            [['program_id'], 'exist', 'skipOnError' => true, 'targetClass' => Program::class, 'targetAttribute' => ['program_id' => 'id']],
+            [['family_id'], 'exist', 'skipOnError' => true, 'targetClass' => Family::class, 'targetAttribute' => ['family_id' => 'id']],
         ];
     }
 
     /**
      * @inheritdoc
      */
-    public function attributeLabels()
+    public function attributeLabels(): array
     {
         return [
             'program_id' => Yii::t('app', 'Program ID'),
@@ -77,34 +77,34 @@ class ProgramFamily extends ActiveRecord
      * {@inheritDoc}
      * @see \yii\base\Component::behaviors()
      */
-    public function behaviors()
+    public function behaviors(): array
     {
         return [
-            TimestampBehavior::className(),
-            BlameableBehavior::className(),
+            TimestampBehavior::class,
+            BlameableBehavior::class,
         ];
     }
 
     /**
      * @return ActiveQuery
      */
-    public function getProgram()
+    public function getProgram(): ActiveQuery
     {
-        return $this->hasOne(Program::className(), ['id' => 'program_id']);
+        return $this->hasOne(Program::class, ['id' => 'program_id']);
     }
 
     /**
      * @return ActiveQuery
      */
-    public function getFamily()
+    public function getFamily(): ActiveQuery
     {
-        return $this->hasOne(Family::className(), ['id' => 'family_id']);
+        return $this->hasOne(Family::class, ['id' => 'family_id']);
     }
 
     /**
      * @return ActiveQuery
      */
-    public function getPayments()
+    public function getPayments(): ActiveQuery
     {
         return $this->program->getPayments()
             ->where(['family_id' => $this->family_id]);

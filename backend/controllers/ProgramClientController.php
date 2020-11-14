@@ -2,17 +2,21 @@
 
 namespace backend\controllers;
 
+use common\helpers\ProgramClientHelper;
 use Yii;
 use common\models\Client;
 use common\models\Program;
 use common\models\ProgramClient;
 use common\models\ProgramClientSearch;
+use yii\base\InvalidConfigException;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use common\models\ClientSearch;
 use yii\web\BadRequestHttpException;
 use yii\helpers\Json;
+use yii\web\ServerErrorHttpException;
 
 /**
  * ProgramClientController implements the CRUD actions for ProgramClient model.
@@ -22,11 +26,27 @@ class ProgramClientController extends Controller
     /**
      * @inheritdoc
      */
-    public function behaviors()
+    public function behaviors(): array
     {
         return [
+            'access' => [
+                'class' => AccessControl::class,
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'actions' => [
+                            'index',
+                            'update-program-clients',
+                            'create',
+                            'update',
+                            'delete',
+                        ],
+                        'roles' => ['user'],
+                    ],
+                ],
+            ],
             'verbs' => [
-                'class' => VerbFilter::className(),
+                'class' => VerbFilter::class,
                 'actions' => [
                     'create' => ['POST'],
                     'delete' => ['POST'],
@@ -41,8 +61,9 @@ class ProgramClientController extends Controller
      *
      * @param integer $program_id
      * @return string
+     * @throws NotFoundHttpException
      */
-    public function actionUpdateProgramClients($program_id)
+    public function actionUpdateProgramClients(int $program_id): string
     {
         $searchModel = new ClientSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
@@ -70,24 +91,11 @@ class ProgramClientController extends Controller
     }
 
     /**
-     * Displays a single ProgramClient model.
-     * @param integer $program_id
-     * @param integer $client_id
-     * @return mixed
-     */
-    public function actionView($program_id, $client_id)
-    {
-        return $this->render('view', [
-            'model' => $this->findModel($program_id, $client_id),
-        ]);
-    }
-
-    /**
      * Deletes an existing ProgramClient model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
-     * @param integer $program_id
-     * @param integer $client_id
      * @return mixed
+     * @throws BadRequestHttpException
+     * @throws InvalidConfigException
      */
     public function actionDelete()
     {
@@ -139,16 +147,17 @@ class ProgramClientController extends Controller
      * Creates a new ProgramClient model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
+     * @throws BadRequestHttpException|InvalidConfigException
+     * @throws ServerErrorHttpException
      */
     public function actionCreate()
     {
-
         if (Yii::$app->request->isAjax) {
 
             $program_id = Yii::$app->request->post('program_id');
             $client_id = Yii::$app->request->post('client_id');
 
-            if ($this->safeLink($program_id, $client_id)) {
+            if (ProgramClientHelper::safeLink($program_id, $client_id)) {
 
                 // The record was added successfully
                 $message = Yii::t('app',
@@ -165,25 +174,23 @@ class ProgramClientController extends Controller
                 ];
                 return Json::encode($json);
 
-            } else {
-
-                // There was an error inserting
-                Yii::$app->response->statusCode = 500;
-
-                return Yii::t('app',
-                    'An error ocurred while trying to add {client} to program {program}.' ,
-                    [
-                        'client' => $client_id,
-                        'program' => $program_id,
-                    ]);
             }
 
-        } else {
-
-            Yii::error('Non AJAX request received at ProgramClientController->actionCreate' , __METHOD__);
-
-            throw new BadRequestHttpException('The requested address cannot be accessed in that manner.');
+            Yii::$app->response->statusCode = 500;
+            return Yii::t('app',
+                'An error ocurred while trying to add {client} to program {program}.' ,
+                [
+                    'client' => $client_id,
+                    'program' => $program_id,
+                ]);
         }
+        Yii::error(
+            'Non AJAX request received at ProgramClientController->actionCreate' ,
+            __METHOD__
+        );
+        throw new BadRequestHttpException(
+            'The requested address cannot be accessed in that manner.'
+        );
     }
 
     /**
@@ -224,15 +231,11 @@ class ProgramClientController extends Controller
     {
         if (($model = ProgramClient::findOne(['program_id' => $program_id,
             'client_id' => $client_id])) !== null) {
-
             return $model;
-
-        } else {
-
-            throw new NotFoundHttpException(
-                Yii::t('app', 'The requested page does not exist.'));
-
         }
+
+        throw new NotFoundHttpException(
+            Yii::t('app', 'The requested page does not exist.'));
     }
 
     protected function findProgram($program_id)
@@ -242,57 +245,6 @@ class ProgramClientController extends Controller
         } else {
             throw new NotFoundHttpException(
                 Yii::t('app', 'The requested page does not exist.'));
-        }
-    }
-
-    /**
-    * Links a Program model with a Client model by creating the corresponding record on
-    * the program_client table. Performs the necessary checks and updates accordingly the
-    * program_family table.
-    * @param integer $program_id The id of the Program to link
-    * @param integer $client_id The id of the Client to link
-    */
-    public static function safeLink($program_id, $client_id)
-    {
-        \Yii::trace("Linking Program $program_id and client $client_id", __METHOD__);
-
-        if (($program = Program::findOne($program_id)) === null) {
-
-            \Yii::error('Trying to create a ProgramClient entry with unexisting program id', __METHOD__);
-            return false;
-
-        } else if (($client = Client::findOne($client_id)) === null) {
-
-            \Yii::error('Trying to create a ProgramClient entry with unexisting client_id', __METHOD__);
-            return false;
-
-        } else if (ProgramClient::findOne(['program_id' => $program_id, 'client_id' => $client_id]) !== null) {
-
-            \Yii::warning('Trying to create an existing ProgramClient record', __METHOD__);
-            return false;
-
-        } else {
-
-            // There were no errors, both models exists and the link does not
-
-            // $model->link() fails to update timestamp and blameable
-            // $program->link('clients', $client);
-
-            $programClient = new ProgramClient();
-            $programClient->program_id = $program_id;
-            $programClient->client_id = $client_id;
-            $programClient->save();
-
-            if ($client->family_id !== null) {
-
-                // The client is assigned to a family, link the family and program
-                return ProgramFamilyController::safeLink($program->id, $client->family_id);
-
-            } else {
-
-                // The client is not assigned to a family
-                return true;
-            }
         }
     }
 

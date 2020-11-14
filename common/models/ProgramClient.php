@@ -2,9 +2,12 @@
 
 namespace common\models;
 
+use common\helpers\ProgramFamilyHelper;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
+use yii\db\ActiveQuery;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "program_client".
@@ -21,12 +24,12 @@ use yii\behaviors\TimestampBehavior;
  * @property Program $program
  * @property Client $client
  */
-class ProgramClient extends \yii\db\ActiveRecord
+class ProgramClient extends ActiveRecord
 {
     /**
      * @inheritdoc
      */
-    public static function tableName()
+    public static function tableName(): string
     {
         return 'program_client';
     }
@@ -34,22 +37,22 @@ class ProgramClient extends \yii\db\ActiveRecord
     /**
      * @inheritdoc
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             [['program_id', 'client_id'], 'required'],
             [['program_id', 'client_id', 'status', 'created_by', 'updated_by', 'created_at', 'updated_at'], 'integer'],
             [['remarks'], 'string'],
             [['program_id', 'client_id'], 'unique', 'targetAttribute' => ['program_id', 'client_id']],
-            [['program_id'], 'exist', 'skipOnError' => true, 'targetClass' => Program::className(), 'targetAttribute' => ['program_id' => 'id']],
-            [['client_id'], 'exist', 'skipOnError' => true, 'targetClass' => Client::className(), 'targetAttribute' => ['client_id' => 'id']],
+            [['program_id'], 'exist', 'skipOnError' => true, 'targetClass' => Program::class, 'targetAttribute' => ['program_id' => 'id']],
+            [['client_id'], 'exist', 'skipOnError' => true, 'targetClass' => Client::class, 'targetAttribute' => ['client_id' => 'id']],
         ];
     }
 
     /**
      * @inheritdoc
      */
-    public function attributeLabels()
+    public function attributeLabels(): array
     {
         return [
             'program_id' => Yii::t('app', 'Program ID'),
@@ -68,27 +71,43 @@ class ProgramClient extends \yii\db\ActiveRecord
      * {@inheritDoc}
      * @see \yii\base\Component::behaviors()
      */
-    public function behaviors()
+    public function behaviors(): array
     {
         return [
-            BlameableBehavior::className(),
-            TimestampBehavior::className(),
+            BlameableBehavior::class,
+            TimestampBehavior::class,
         ];
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @param bool $insert
+     * @param array $changedAttributes
      */
-    public function getProgram()
+    public function afterSave($insert, $changedAttributes): void
     {
-        return $this->hasOne(Program::className(), ['id' => 'program_id']);
+        // Update the family link
+        if (!ProgramFamilyHelper::safeLink($this->program_id, $this->client->family_id)) {
+            Yii::error(
+                "ProgramClient::afterSave error ($this->program_id,$this->client_id)",
+                __METHOD__
+            );
+        }
+        parent::afterSave($insert, $changedAttributes);
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
-    public function getClient()
+    public function getProgram(): ActiveQuery
     {
-        return $this->hasOne(Client::className(), ['id' => 'client_id']);
+        return $this->hasOne(Program::class, ['id' => 'program_id']);
+    }
+
+    /**
+     * @return ActiveQuery
+     */
+    public function getClient(): ActiveQuery
+    {
+        return $this->hasOne(Client::class, ['id' => 'client_id']);
     }
 }

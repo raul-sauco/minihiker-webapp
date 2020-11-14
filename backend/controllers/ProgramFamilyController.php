@@ -99,49 +99,6 @@ class ProgramFamilyController extends Controller
     }
 
     /**
-     * Links a Program model and a Family model after performing the checks to make
-     * sure it's safe to do so.
-     * 
-     * @param integer $program_id
-     * @param integer $family_id
-     * @return boolean
-     */
-    public static function safeLink($program_id, $family_id): bool
-    {
-        Yii::debug("Linking Program id=$program_id and Family id=$family_id", __METHOD__);
-
-        if (($program = Program::findOne($program_id)) === null) {
-
-            Yii::error("Trying to link Family $family_id with unexisting Program $program_id", __METHOD__);
-            return false;
-
-        }
-
-        if (($family = Family::findOne($family_id)) === null) {
-
-            Yii::error("Trying to link Program $program_id with unexisting Family $family_id", __METHOD__);
-            return false;
-
-        }
-
-        if (ProgramFamily::findOne(['program_id' => $program->id, 'family_id' => $family->id]) !== null) {
-
-            Yii::info("Already existing ProgramFamily record ($program_id,$family_id)", __METHOD__);
-            return true;
-
-        }
-
-        // There were no errors, link the models. $model-link() fails to add timestamps and creator.
-
-        $programFamily = new ProgramFamily();
-        $programFamily->program_id = $program_id;
-        $programFamily->family_id = $family_id;
-        $programFamily->save();
-
-        return true;
-    }
-
-    /**
      * Unlink a Program record and a Family record by deleting the corresponding
      * entry on the program_family table.
      *
