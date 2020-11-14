@@ -8,6 +8,8 @@ use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
+use yii\db\StaleObjectException;
+use yii\web\ServerErrorHttpException;
 
 /**
  * This is the model class for table "program_client".
@@ -93,6 +95,22 @@ class ProgramClient extends ActiveRecord
             );
         }
         parent::afterSave($insert, $changedAttributes);
+    }
+
+    /**
+     * @throws \Throwable
+     * @throws StaleObjectException
+     * @throws ServerErrorHttpException
+     */
+    public function afterDelete(): void
+    {
+        if (!ProgramFamilyHelper::safeUnLink($this->program_id, $this->client->family_id)) {
+            Yii::error(
+                "ProgramClient::afterDelete error ($this->program_id, $this->client_id)",
+                __METHOD__
+            );
+        }
+        parent::afterDelete();
     }
 
     /**

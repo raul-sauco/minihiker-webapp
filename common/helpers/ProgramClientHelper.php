@@ -6,6 +6,7 @@ use common\models\Client;
 use common\models\Program;
 use common\models\ProgramClient;
 use Yii;
+use yii\db\StaleObjectException;
 use yii\web\ServerErrorHttpException;
 
 /**
@@ -22,10 +23,10 @@ class ProgramClientHelper
      * program_family table.
      * @param integer $programId The id of the Program to link
      * @param integer $clientId The id of the Client to link
-     * @return bool
+     * @return ProgramClient|null
      * @throws ServerErrorHttpException
      */
-    public static function safeLink(int $programId, int $clientId): bool
+    public static function safeLink(int $programId, int $clientId): ?ProgramClient
     {
         Yii::debug(
             "Linking program $programId and client $clientId",
@@ -33,25 +34,24 @@ class ProgramClientHelper
         );
 
         if (Program::findOne($programId) === null) {
-            Yii::error(
-                "Trying to create a ProgramClient with program id $programId (null)",
-                __METHOD__);
-            return false;
+            $msg = "Trying to create a ProgramClient with program id $programId (null)";
+            Yii::error($msg,__METHOD__);
+            throw new ServerErrorHttpException($msg);
         }
 
         if (Client::findOne($clientId) === null) {
-            Yii::error(
-                "Trying to create a ProgramClient with client id $clientId (null)",
-                __METHOD__);
-            return false;
+            $msg = "Trying to create a ProgramClient with client id $clientId (null)";
+            Yii::error($msg,__METHOD__);
+            throw new ServerErrorHttpException($msg);
         }
 
-        if (ProgramClient::findOne(['program_id' => $programId, 'client_id' => $clientId]) !== null) {
+        if (($programClient = ProgramClient::findOne(['program_id' => $programId,
+                'client_id' => $clientId])) !== null) {
             Yii::warning(
-                'Trying to create an existing ProgramClient record',
+                "Trying to link not null ProgramClient p $programId c $clientId",
                 __METHOD__
             );
-            return false;
+            return $programClient;
         }
 
         // There were no errors, both models exists and the link does not
@@ -66,6 +66,55 @@ class ProgramClientHelper
             Yii::error($msg, __METHOD__);
             throw new ServerErrorHttpException($msg);
         }
+        return $programClient;
+    }
+
+
+    /**
+     * Unlinks a Program record and a Client record by deleting the corresponding
+     * entry on the program_client table.
+     * @param integer $programId
+     * @param integer $clientId
+     * @return boolean wheter the deletion was successful.
+     * @throws ServerErrorHttpException
+     * @throws \Throwable
+     * @throws StaleObjectException
+     */
+    public static function safeUnLink(int $programId, int $clientId): ?bool
+    {
+        Yii::debug(
+            "Unlinking Program $programId and client $clientId",
+            __METHOD__
+        );
+
+        if (Program::findOne($programId) === null) {
+            Yii::error(
+                "Trying to unlink a ProgramClient with program id $programId (null)",
+                __METHOD__);
+            return false;
+        }
+
+        if (Client::findOne($clientId) === null) {
+            Yii::error(
+                "Trying to unlink a ProgramClient with client id $clientId (null)",
+                __METHOD__);
+            return false;
+        }
+
+        if (($programClient = ProgramClient::findOne(['program_id' => $programId,
+                'client_id' => $clientId])) === null) {
+            Yii::warning('Trying to delete an null ProgramClient record, ' .
+                "Program $programId, Client $clientId." , __METHOD__);
+            return false;
+        }
+
+        // There were no errors, both models and the link exist
+        if (!$programClient->delete()) {
+            $msg = "Error unlinking Program $programId and Client $clientId";
+            Yii::error($msg, __METHOD__);
+            throw new ServerErrorHttpException($msg);
+        }
+
         return true;
     }
 }

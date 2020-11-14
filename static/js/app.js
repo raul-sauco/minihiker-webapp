@@ -274,7 +274,7 @@ $('#client-name_zh').focusout(function () {
     $clientNameInput = $('#client-name_zh');
 
     console.error(
-      "An error ocurred sending ajax request to " +
+      "An error occurred sending ajax request to " +
       $clientNameInput.attr('data-url') +
       " with parameters name: " +
       $clientNameInput.val());

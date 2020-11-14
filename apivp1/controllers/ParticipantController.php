@@ -5,6 +5,7 @@ namespace apivp1\controllers;
 use apivp1\models\Client;
 use apivp1\models\Program;
 use common\controllers\BaseController;
+use common\helpers\ProgramClientHelper;
 use common\models\ProgramClient;
 use Yii;
 use yii\base\InvalidConfigException;
@@ -92,16 +93,14 @@ class ParticipantController extends BaseController
      * @param $program_id
      * @return array|ProgramClient
      * @throws ForbiddenHttpException
+     * @throws ServerErrorHttpException
      */
     public function actionCreate ($client_id, $program_id)
     {
         $this->checkAccess('create', $client_id);
 
-        $programClient = new ProgramClient();
-        $programClient->program_id = $program_id;
-        $programClient->client_id = $client_id;
-
-        if (!$programClient->save()) {
+        // Calling ProgramClientHelper::safeLink checks also the family link.
+        if (($programClient = ProgramClientHelper::safeLink($program_id, $client_id)) === null) {
             Yii::$app->response->setStatusCode(422);
             return $programClient->errors;
         }
@@ -135,7 +134,8 @@ class ParticipantController extends BaseController
             );
         }
 
-        if (!$programClient->delete()) {
+        // ProgramClientHelper also checks family link.
+        if (!ProgramClientHelper::safeUnLink($program_id, $client_id)) {
             throw new ServerErrorHttpException(
                 Yii::t('yii', 'An internal server error occurred.')
             );
