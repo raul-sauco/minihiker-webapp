@@ -55,6 +55,19 @@ $this->params['breadcrumbs'][] = $this->title;
                 'value' => $model->family->category,
             ],
             [
+                'label' => Yii::t('app', 'Is Verify'),
+                'visible' => $model->user !== null,
+                'value' => static function ($data) {
+                    if ($data->user !== null) {
+                        return $data->user->is_verify ?
+                            Yii::t('app', 'Verified') :
+                            Yii::t('app', 'Not Verified');
+                    }
+                    // Non weapp users do not have an user account.
+                    return '';
+                },
+            ],
+            [
                 'label' => Yii::t('app', 'Membership Date'),
                 'visible' => !empty($model->family->membership_date),
                 'value' => $model->family->membership_date,
