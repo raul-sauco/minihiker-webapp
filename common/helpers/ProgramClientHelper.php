@@ -117,4 +117,23 @@ class ProgramClientHelper
 
         return true;
     }
+
+    /**
+     * Fix orphaned ProgramClients.
+     * @param Program $program
+     */
+    public static function fixedOrphanedProgramClients(Program $program): void
+    {
+        /** @var ProgramClient $programClient */
+        foreach ($program->getProgramClients()->each() as $programClient) {
+            if ($program->getProgramFamilies()
+                ->where(['family_id' => $programClient->client->family_id])
+                ->one() === null) {
+                Yii::warning(
+                    "Fixed orphaned ProgramClient p $program->id c $programClient->client_id",
+                    __METHOD__);
+                ProgramFamilyHelper::safeLink($program->id, $programClient->client->family_id);
+            }
+        }
+    }
 }

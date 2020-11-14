@@ -2,6 +2,7 @@
 
 namespace backend\controllers;
 
+use common\helpers\ProgramClientHelper;
 use common\helpers\ProgramHelper;
 use common\models\Client;
 use common\models\Program;
@@ -14,6 +15,7 @@ use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
+use yii\web\ServerErrorHttpException;
 
 /**
  * ProgramController implements the CRUD actions for Program model.
@@ -84,14 +86,18 @@ class ProgramController extends Controller
     /**
      * Displays a single Program model.
      *
-     * @param integer $id
+     * @param int $id
      * @return mixed
      * @throws NotFoundHttpException
+     * @throws ServerErrorHttpException
      */
-    public function actionView($id)
+    public function actionView(int $id)
     {
         $model = $this->findModel($id);
 
+        // Temporarily fix orphaned ProgramClients on view.
+        // Can be safely removed 2021-05 or adding integrity tests.
+        ProgramClientHelper::fixedOrphanedProgramClients($model);
         ProgramHelper::markUserViewedProgram($model);
 
         return $this->render('view', [
