@@ -131,7 +131,7 @@
 	<img src="https://static.yunhetong.com/www/saas/img/login/logo.svg" alt="" class="logo">
 	<div class="title">合同在线签章</div>
 	<div>
-		<div onclick="_sign()" class="last_btn">签署合同</div>
+		<div onclick="_sign()" class="last_btn" style="cursor:pointer">签署合同</div>
 	</div>
 </div>
 </body>
