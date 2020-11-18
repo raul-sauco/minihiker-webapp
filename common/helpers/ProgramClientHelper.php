@@ -6,6 +6,7 @@ use common\models\Client;
 use common\models\Program;
 use common\models\ProgramClient;
 use Yii;
+use yii\db\ActiveQuery;
 use yii\db\StaleObjectException;
 use yii\web\ServerErrorHttpException;
 
@@ -135,5 +136,19 @@ class ProgramClientHelper
                 ProgramFamilyHelper::safeLink($program->id, $programClient->client->family_id);
             }
         }
+    }
+
+    /**
+     * Return an ActiveQuery for ProgramClient records where the corresponding
+     * ProgramFamily record does not exist.
+     * @return ActiveQuery
+     */
+    public static function getOrphanedProgramClients(): ActiveQuery
+    {
+        $sql = 'select pc.* from program_client as pc, client as c ' .
+            'where pc.client_id=c.id and not exists(' .
+            'select 1 from program_family as pf where pf.family_id=c.family_id ' .
+            'and pf.program_id=pc.program_id)';
+        return ProgramClient::findBySql($sql);
     }
 }

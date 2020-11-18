@@ -146,7 +146,6 @@ class ProgramFamilyHelper
 
     /**
      * Return an ActiveQuery for ProgramFamily models where there are not related ProgramClient models.
-     * TODO figure out how this records happen. It should be fixed as of Nov 2020.
      * @return ActiveQuery
      */
     public static function getOrphanedProgramFamilies(): ActiveQuery
