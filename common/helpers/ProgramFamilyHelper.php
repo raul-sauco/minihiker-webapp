@@ -6,7 +6,9 @@ use common\models\Family;
 use common\models\Program;
 use common\models\ProgramClient;
 use common\models\ProgramFamily;
+use Throwable;
 use Yii;
+use yii\db\ActiveQuery;
 use yii\db\StaleObjectException;
 use yii\web\ServerErrorHttpException;
 
@@ -140,5 +142,40 @@ class ProgramFamilyHelper
             }
         }
         return false;
+    }
+
+    /**
+     * Return an ActiveQuery for ProgramFamily models where there are not related ProgramClient models.
+     * TODO figure out how this records happen. It should be fixed as of Nov 2020.
+     * @return ActiveQuery
+     */
+    public static function getOrphanedProgramFamilies(): ActiveQuery
+    {
+        $sql = 'select * from program_family as pf ' .
+            'where not exists(select 1 from program_client as pc, client as c ' .
+            'where pc.client_id=c.id and pc.program_id = pf.program_id and c.family_id=pf.family_id )';
+        return ProgramFamily::findBySql($sql);
+    }
+
+    /**
+     * @throws ServerErrorHttpException
+     */
+    public static function fixOrphanedProgramFamilies(): void
+    {
+        $count = 0;
+        /** @var ProgramFamily $pf */
+        foreach (self::getOrphanedProgramFamilies()->each() as $pf) {
+            try {
+                $pf->delete();
+                $count++;
+            } catch (Throwable $e) {
+                $msg = "Error deleting program $pf->program_id family $pf->family_id";
+                Yii::error($msg, __METHOD__);
+                throw new ServerErrorHttpException($msg);
+            }
+        }
+        Yii::debug(
+            "Deleted $count orphaned ProgramFamily records",
+            __METHOD__);
     }
 }

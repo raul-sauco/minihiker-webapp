@@ -7,4 +7,5 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="site-tests">
     <?= $this->render('_permissions') ?>
+    <?= $this->render('_program-family') ?>
 </div>
