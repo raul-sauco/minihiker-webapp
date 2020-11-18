@@ -26,6 +26,8 @@ use yii\db\ActiveRecord;
  * @property Program $program
  * @property ActiveQuery $payments
  * @property Family $family
+ * @property User $createdBy
+ * @property User $updatedBy
  */
 class ProgramFamily extends ActiveRecord
 {
@@ -108,5 +110,21 @@ class ProgramFamily extends ActiveRecord
     {
         return $this->program->getPayments()
             ->where(['family_id' => $this->family_id]);
+    }
+
+    /**
+     * @return ActiveQuery
+     */
+    public function getCreatedBy(): ActiveQuery
+    {
+        return $this->hasOne(User::class, ['id' => 'created_by']);
+    }
+
+    /**
+     * @return ActiveQuery
+     */
+    public function getUpdatedBy(): ActiveQuery
+    {
+        return $this->hasOne(User::class, ['id' => 'updated_by']);
     }
 }

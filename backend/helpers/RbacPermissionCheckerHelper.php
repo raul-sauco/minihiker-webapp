@@ -71,11 +71,11 @@ class RbacPermissionCheckerHelper
         }
 
         if (self::checkAccess($user, 'admin')) {
-            return "User $user->id is client with Admin permission";
+            return "User $user->id is client with 'Admin' permission";
         }
 
         if (self::checkAccess($user, 'user')) {
-            return "User $user->id is client with regular user permission";
+            return "User $user->id is client with regular 'user' permission";
         }
 
         return null;

@@ -41,6 +41,8 @@ use yii\web\IdentityInterface;
  *
  * @property ActiveQuery $programGroupViews
  * @property ActiveQuery $programGroupsViewed
+ * @property User $createdBy
+ * @property User $updatedBy
  */
 class User extends ActiveRecord implements IdentityInterface
 {
@@ -306,5 +308,21 @@ class User extends ActiveRecord implements IdentityInterface
     public function getProgramGroupsViewed()
     {
         return $this->hasMany(ProgramGroup::class, ['id' => 'program_group_id'])->viaTable('program_group_view', ['user_id' => 'id']);
+    }
+
+    /**
+     * @return ActiveQuery
+     */
+    public function getCreatedBy(): ActiveQuery
+    {
+        return $this->hasOne(__CLASS__, ['id' => 'created_by']);
+    }
+
+    /**
+     * @return ActiveQuery
+     */
+    public function getUpdatedBy(): ActiveQuery
+    {
+        return $this->hasOne(__CLASS__, ['id' => 'updated_by']);
     }
 }

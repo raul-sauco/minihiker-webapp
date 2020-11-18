@@ -1,18 +1,19 @@
 <?php
 
-use common\models\Program;
 use common\models\User;
 use yii\bootstrap\Html;
+use yii\db\ActiveRecord;
 use yii\web\View;
 
 /* @var $this View */
-/* @var $model Program */
+/* @var $model ActiveRecord */
 
 // Display conditionally, right now only admins see the info
-if ($model->created_by !== null && Yii::$app->user->can('admin')) {
+if ($model->created_at !== null && Yii::$app->user->can('admin')) {
     $output = '';
-    $created_by = Html::a(User::findOne($model->created_by)->username, 
-        ['/user/view', 'id' => $model->created_by]);
+    $created_by = $model->createdBy === null ? 'NULL' :
+        Html::a(User::findOne($model->created_by)->username,
+            ['/user/view', 'id' => $model->created_by]);
     $created_at = $model->created_at === null ? Yii::t('app', 'N/A') :
         Yii::$app->formatter->asDatetime($model->created_at);
     $output .= Yii::t('app', 'Created by {created_by} {created_at}. ', [

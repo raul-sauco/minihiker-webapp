@@ -13,6 +13,7 @@ use yii\bootstrap\Html;
         $error = RbacPermissionCheckerHelper::checkUserPermissions($user);
         if ($error !== null) {
             echo Html::tag('div', $error);
+            echo $this->render('/layouts/_createInfo', ['model' => $user]);
         }
     }
     ?>

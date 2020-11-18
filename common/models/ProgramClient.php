@@ -25,6 +25,8 @@ use yii\web\ServerErrorHttpException;
  *
  * @property Program $program
  * @property Client $client
+ * @property User $createdBy
+ * @property User $updatedBy
  */
 class ProgramClient extends ActiveRecord
 {
@@ -127,5 +129,21 @@ class ProgramClient extends ActiveRecord
     public function getClient(): ActiveQuery
     {
         return $this->hasOne(Client::class, ['id' => 'client_id']);
+    }
+
+    /**
+     * @return ActiveQuery
+     */
+    public function getCreatedBy(): ActiveQuery
+    {
+        return $this->hasOne(User::class, ['id' => 'created_by']);
+    }
+
+    /**
+     * @return ActiveQuery
+     */
+    public function getUpdatedBy(): ActiveQuery
+    {
+        return $this->hasOne(User::class, ['id' => 'updated_by']);
     }
 }
