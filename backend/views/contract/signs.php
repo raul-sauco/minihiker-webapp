@@ -71,6 +71,16 @@
                     alert(data);
                 }
             });
+            YHT.init(appid, tokenUnableListener);
+            YHT.signContract(
+                function successFun(url) {
+                    location.href = url;
+                },
+                function failFun(data) {
+                    console.log(data);
+                },
+                contractId
+            );
         };
 
         function _sign() {
