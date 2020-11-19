@@ -85,6 +85,8 @@ return [
     'Contract Title' => '合同标题',
     'Contract Touid' => '签约对象',
     'Contracts' => '合同',
+    'Contracts User Status 1' => '用户完成签署',
+    'Contracts Admin Status 1' => '公司完成签署',
     'Cost' => '应收款项',
     'Could not delete Image {id}' => '无法删除图片{id}',
     'Could not delete ProgramGroupImage {img_id}/{pgi_id}.' => '无法删除ProgramGroupImage {img_id} / {pgi_id}。',

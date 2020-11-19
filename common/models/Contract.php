@@ -87,13 +87,17 @@ class Contract extends \yii\db\ActiveRecord {
 	/**
 	 * @inheritdoc
 	 */
-	public static function getAttrStatus($name) {
-		$attr[0] = Yii::t('app', 'Contract Status 0');
-		$attr[1] = Yii::t('app', 'Contract Status 1');
-		$attr[2] = Yii::t('app', 'Contract Status 2');
-		$attr[3] = Yii::t('app', 'Contract Status 3');
+	public static function getAttrStatus($data) {
 
-		return $attr[ $name ];
+		if ($data->user_status==1&&$data->admin_status==0){
+			return Yii::t('app', 'Contracts User Status 1');
+		}
+		if ($data->user_status==0&&$data->admin_status==1){
+			return Yii::t('app', 'Contracts Admin Status 1');
+		}
+		return  Yii::t('app', 'Contract Status '.$data->status);
+
+
 	}
 	/**
 	 * @return ActiveQuery
