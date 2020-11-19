@@ -9,4 +9,5 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= $this->render('_permissions') ?>
     <?= $this->render('_program-family') ?>
     <?= $this->render('_program-client') ?>
+    <?= $this->render('_client') ?>
 </div>

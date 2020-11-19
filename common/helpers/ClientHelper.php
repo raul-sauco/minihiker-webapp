@@ -4,8 +4,10 @@ namespace common\helpers;
 
 use common\models\Client;
 use common\models\FamilyRole;
+use Throwable;
 use Yii;
 use yii\base\InvalidConfigException;
+use yii\db\ActiveQuery;
 use yii\db\StaleObjectException;
 
 /**
@@ -42,7 +44,7 @@ class ClientHelper
      * @param Client $client
      * @return string
      */
-    public static function getRole($client): string
+    public static function getRole(Client $client): string
     {
         if (empty($client->family_role_id)) {
             return '';
@@ -61,7 +63,7 @@ class ClientHelper
      * @param Client $client
      * @return string
      */
-    public static function getFamilyWechatId($client): string
+    public static function getFamilyWechatId(Client $client): string
     {
         return self::getFamilyGlobalAttribute($client, 'wechat_id');
     }
@@ -87,7 +89,7 @@ class ClientHelper
      * @param string $attr
      * @return string
      */
-    protected static function getFamilyGlobalAttribute($client, $attr): string
+    protected static function getFamilyGlobalAttribute(Client $client, string $attr): string
     {
         /** @var Client $mother */
         $mother = $client->family->getClients()->where(['family_role_id' => 3])->one();
@@ -135,7 +137,8 @@ class ClientHelper
      *
      * @param Client $client
      * @return bool true if all actions are performed without a problem, false otherwise
-     * @throws StaleObjectException|\Throwable
+     * @throws StaleObjectException
+     * @throws Throwable
      */
     public static function prepareForDeletion(Client $client): bool
     {
@@ -180,5 +183,14 @@ class ClientHelper
         }
 
         return true;
+    }
+
+    /**
+     * Return an ActiveQuery for Orphaned clients.
+     * @return ActiveQuery
+     */
+    public static function getOrphanedClients(): ActiveQuery
+    {
+        return Client::find()->where(['family_id' => null]);
     }
 }
