@@ -13,10 +13,14 @@ $count = $clientQuery->count();
 <div id="orphaned-clients">
     <?php
     if ($count > 0) {
-        echo Html::tag('h4', "$count Orphaned clients");
+        $button = Html::a('Fix it',
+            ['test/fix-orphaned-clients'],
+            ['class' => 'btn btn-small btn-primary']
+        );
+        echo Html::tag('h4', "$count Orphaned clients " . $button);
         /** @var Client $client */
         foreach ($clientQuery->each() as $client) {
-            $link = Html::a("Client $client->id",
+            $link = Html::a("Client $client->id (" . $client->getName() . ')',
                 ['client/view', 'id' => $client->id]);
             echo Html::beginTag('div', ['class' => 'orphaned-client']);
             echo Html::tag('div', "Orphaned $link");

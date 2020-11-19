@@ -10,6 +10,7 @@ use Yii;
 use yii\base\InvalidConfigException;
 use yii\db\ActiveQuery;
 use yii\db\StaleObjectException;
+use yii\web\ServerErrorHttpException;
 
 /**
  * Class ClientHelper
@@ -209,5 +210,50 @@ class ClientHelper
         $min = $client->created_at - 10;
         // https://stackoverflow.com/a/37941492/2557030
         return Family::find()->where(['between', 'created_at', $min, $max]);
+    }
+
+    /**
+     * Fix Orphaned clients created by bug #13.
+     * https://github.com/raul-sauco/minihiker-webapp/issues/13
+     * @throws ServerErrorHttpException
+     */
+    public static function fixOrphanedClients(): void
+    {
+        /** @var Client $client */
+        foreach (self::getOrphanedClients()->each() as $client) {
+            // If we find a possible family, mark it but do nothing.
+            $familyQuery = self::findOrphanedClientPossibleFamilies($client);
+            $count = $familyQuery->count();
+            if ($count > 0) {
+                $family = $familyQuery->one();
+                $notes = "\nFound $count possible matching family/ies like $family->id";
+                $notes .= "\nRequires manual update, will not create new family.";
+                $client->remarks .= $notes;
+            } else {
+                // No possible matches found, go ahead with the creation.
+                $family = new Family();
+                $family->name = $client->getName();
+                $family->avatar = Yii::$app->params['defaultAvatar'];
+                $family->membership_date = date('Y-m-d', $client->created_at);
+                $family->remarks = Yii::t('app',
+                    'Created automatically for openid {openid} on {date}',
+                    ['openid' => $client->openid, 'date' => date('Y-m-d')]);
+                $family->category = '非会员';
+                if (!$family->save()) {
+                    $msg = "There was an error creating a new Family for OpenID $client->openid";
+                    Yii::error($msg, __METHOD__);
+                    Yii::error($family->getErrors(), __METHOD__);
+                    throw new ServerErrorHttpException($msg);
+                }
+                $client->family_id = $family->id;
+                // Save the client.
+                if (!$client->save()) {
+                    $msg = "There was an error fixing orphaned client $client->id";
+                    Yii::error($msg, __METHOD__);
+                    Yii::error($client->getErrors(), __METHOD__);
+                    throw new ServerErrorHttpException($msg);
+                }
+            }
+        }
     }
 }
