@@ -67,6 +67,13 @@ class ClientHelper extends \common\helpers\ClientHelper
             }
         }
 
+        // Set the new user as the application user to have blame.
+        if (!Yii::$app->user->login($user)) {
+            Yii::warning(
+                "Could not automatically login user $user->id",
+                __METHOD__);
+        }
+
         // Create a Family to link with the client
         $family = new Family();
         $family->name = '未注册';
