@@ -38,8 +38,21 @@ $this->params['breadcrumbs'][] = $this->title;
 			],
 			[
 				'attribute' => 'status',
+				'format'    => 'raw',
 				'value'     => function ($data) {
-					return \common\models\Contract::getAttrStatus($data->status);
+					if ($data->user_status == 1 && $data->admin_status == 0) {
+						$textColor = 'text-primary';
+					} elseif ($data->user_status == 0 && $data->admin_status == 1) {
+						$textColor = 'text-success';
+					} elseif ($data->status == 1) {
+						$textColor = 'text-warning';
+					} elseif ($data->status == 2) {
+						$textColor = 'text-danger';
+					} else {
+						$textColor = 'text-muted';
+					}
+
+					return "<p class='{$textColor}'>" . \common\models\Contract::getAttrStatus($data) . "</p>";
 				},
 			],
 			'created_at:datetime',
