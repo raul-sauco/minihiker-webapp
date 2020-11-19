@@ -37,7 +37,7 @@ class ClientHelper extends \common\helpers\ClientHelper
     }
 
     /**
-     * Create a new Family/Client based on the data obtained from Wechat.     *
+     * Create a new Family/Client based on the data obtained from Wechat.
      * @param string $openid
      * @return Client
      * @throws ServerErrorHttpException
@@ -67,17 +67,6 @@ class ClientHelper extends \common\helpers\ClientHelper
             }
         }
 
-        // Create a Client to link to the user
-        $client = new Client();
-        $client->nickname = $user->username;
-        $client->openid = $openid;
-        $client->user_id = $user->id;
-        if (!$client->save()) {
-            Yii::error($client->getErrors(), __METHOD__);
-            throw new ServerErrorHttpException(
-                'There was an error creating a new Client.');
-        }
-
         // Create a Family to link with the client
         $family = new Family();
         $family->name = '未注册';
@@ -88,11 +77,33 @@ class ClientHelper extends \common\helpers\ClientHelper
             ['openid' => $openid, 'date' => date('Y-m-d')]);
         $family->category = '非会员';
         if (!$family->save()) {
+            $msg = "There was an error creating a new Family for OpenID $openid";
+            Yii::error($msg, __METHOD__);
             Yii::error($family->getErrors(), __METHOD__);
             throw new ServerErrorHttpException(
-                'There was an error creating a new Family.');
+                'There was an error creating a new Client.');
         }
+
+        // Create a Client to link to the user
+        $client = new Client();
+        $client->nickname = $user->username;
+        $client->openid = $openid;
+        $client->user_id = $user->id;
         $client->family_id = $family->id;
+
+        // Save the client.
+        if (!$client->save()) {
+            $msg = "There was an error creating a new Client for OpenID $openid";
+            Yii::error($msg, __METHOD__);
+            Yii::error($client->getErrors(), __METHOD__);
+            throw new ServerErrorHttpException(
+                'There was an error creating a new Client.');
+        }
+
+        // If we got here, all the data was created successfully.
+        Yii::debug(
+            "Created new client $client->id with user $client->user_id " .
+            "and family $client->family_id", __METHOD__);
         return $client;
     }
 
