@@ -37,6 +37,8 @@ $count = $clientQuery->count();
             echo $this->render('/layouts/_createInfo', ['model' => $client]);
             echo Html::endTag('div');
         }
+    } else {
+        echo Html::tag('h4', 'No orphaned Client records found');
     }
     ?>
 </div>
