@@ -2,10 +2,12 @@
 namespace common\helpers;
 
 use common\models\Family;
+use common\models\WxUnifiedPaymentOrder;
 use Throwable;
 use Yii;
 use yii\db\Exception;
 use yii\db\StaleObjectException;
+use yii\web\ServerErrorHttpException;
 
 /**
  * Helper functionality for Family model and FamilyController
@@ -14,18 +16,18 @@ use yii\db\StaleObjectException;
  */
 class FamilyHelper
 {
-    const TOTAL_DIGITS_ON_SERIAL_NUMBER = 6;
-    
+    public const TOTAL_DIGITS_ON_SERIAL_NUMBER = 6;
+
     /**
      * Takes a string representing the category and returns a
-     * string containing the next serial number to be assigned 
+     * string containing the next serial number to be assigned
      * on that category.
-     * 
+     *
      * @param $category string the category to generate for.
      * @return string|null The generated serial or null if no serials were
      * found on the given category.
      */
-    public static function generateSerialNumber($category)
+    public static function generateSerialNumber(string $category): ?string
     {
         $family = Family::find()   
             ->where(['category' => $category])
@@ -40,7 +42,7 @@ class FamilyHelper
             
         }
 
-        $helper = new FamilyHelper();
+        $helper = new self();
 
         return $helper->getNext($lastSerialNumber, $category);
     }
@@ -57,7 +59,7 @@ class FamilyHelper
      * @param $category string The category the family belongs to.
      * @return string The next corresponding serial number.
      */
-    protected function getNext(string $serialNumber, string $category)
+    protected function getNext(string $serialNumber, string $category): string
     {
         // The above behavior gives problems if a user changes an
         // existing family from one category to another.
@@ -67,19 +69,19 @@ class FamilyHelper
 
         $number = $this->extractNumber($serialNumber) + 1;
 
-        $digits = FamilyHelper::TOTAL_DIGITS_ON_SERIAL_NUMBER;
+        $digits = self::TOTAL_DIGITS_ON_SERIAL_NUMBER;
 
         return $letter . sprintf('%0'. $digits . 'd', ($number));
     }
-    
+
     /**
      * Takes in a serial number and returns the same number
      * padded with the correct number of 0s.
-     * 
+     *
      * @param string $serialNumber
      * @return string The serial number padded with 0s
      */
-    public static function padSerial ($serialNumber)
+    public static function padSerial (string $serialNumber): ?string
     {
         $pattern = '~^\w\d{1,6}$~';
         
@@ -95,24 +97,24 @@ class FamilyHelper
             
         }
 
-        $helper = new FamilyHelper();
+        $helper = new self();
 
         $letter = $helper->getLetter($serialNumber);
 
         $number = $helper->extractNumber($serialNumber);
 
-        $number = sprintf('%0'. FamilyHelper::TOTAL_DIGITS_ON_SERIAL_NUMBER . 'd', ($number));
+        $number = sprintf('%0'. self::TOTAL_DIGITS_ON_SERIAL_NUMBER . 'd', ($number));
 
         return $letter . $number;
     }
-    
+
     /**
      * Remove all non-digit characters from a string.
-     * 
+     *
      * @param string $serialNumber
      * @return integer The serial number with all non-digits removed from it.
      */
-    protected function extractNumber($serialNumber)
+    protected function extractNumber(string $serialNumber): int
     {
         // Find non digits 
         $pattern = '~\D~';
@@ -122,15 +124,15 @@ class FamilyHelper
         
         return preg_replace($pattern, $replacement, $serialNumber);
     }
-    
+
     /**
      * Return the first character of the serial number
      * corresponding to the letter.
-     * 
+     *
      * @param string $serialNumber
      * @return string The serial number's letter.
      */
-    protected function getLetter($serialNumber)
+    protected function getLetter(string $serialNumber): string
     {
         return $serialNumber[0];
     }
@@ -168,121 +170,99 @@ class FamilyHelper
      * @param Family $original
      * @param Family $duplicate
      * @return bool
+     * @throws ServerErrorHttpException
      */
-    public static function mergeFamilies(Family $original, Family $duplicate)
+    public static function mergeFamilies(Family $original, Family $duplicate): bool
     {
         $transaction = Yii::$app->db->beginTransaction();
+        if ($transaction === null) {
+            throw new ServerErrorHttpException(
+                'Could not initiate database transaction'
+            );
+        }
 
         $touched = false;
 
-        if (!empty($duplicate->membership_date)) {
-
-            if (empty($original->membership_date) || $original->membership_date > $duplicate->membership_date) {
-
-                $original->membership_date = $duplicate->membership_date;
-                $touched = true;
-
-            }
-
+        if (!empty($duplicate->membership_date &&
+                (empty($original->membership_date) ||
+                $original->membership_date > $duplicate->membership_date))) {
+            $original->membership_date = $duplicate->membership_date;
+            $touched = true;
         }
 
         if (!empty($duplicate->remarks)) {
-
             $original->remarks .= "\n$duplicate->remarks";
             $touched = true;
-
         }
 
         if ($touched && !$original->save()) {
-
-            Yii::error("Error saving family $original->id data", __METHOD__);
-
+            Yii::error("Error saving family $original->id data",
+                __METHOD__);
         }
 
         // Update related records
         foreach ($duplicate->clients as $client) {
-
             $client->family_id = $original->id;
             if (!$client->save()) {
-
                 Yii::error("Error saving Client $client->id", __METHOD__);
                 Yii::error($client->errors, __METHOD__);
                 $transaction->rollBack();
                 return false;
-
             }
-
         }
 
         foreach ($duplicate->expenses as $expense) {
-
             $expense->family_id = $original->id;
             if (!$expense->save()) {
-
                 Yii::error("Error saving Expense $expense->id", __METHOD__);
                 Yii::error($expense->errors, __METHOD__);
                 $transaction->rollBack();
                 return false;
-
             }
-
         }
 
         foreach ($duplicate->importErrors as $importError) {
-
             $importError->family_id = $original->id;
             if (!$importError->save()) {
-
                 Yii::error("Error saving ImportError $importError->id", __METHOD__);
                 Yii::error($importError->errors, __METHOD__);
                 $transaction->rollBack();
                 return false;
-
             }
-
         }
 
         foreach ($duplicate->payments as $payment) {
-
             $payment->family_id = $original->id;
             if (!$payment->save()) {
-
                 Yii::error("Error saving Payment $payment->id", __METHOD__);
                 Yii::error($payment->errors, __METHOD__);
                 $transaction->rollBack();
                 return false;
-
             }
-
         }
 
         foreach ($duplicate->programFamilies as $programFamily) {
 
             $programFamily->family_id = $original->id;
             if (!$programFamily->save()) {
-
-                Yii::error("Error saving ProgramFamily $programFamily->id", __METHOD__);
+                Yii::error("Error saving ProgramFamily " .
+                    "p $programFamily->program_id f $programFamily->family_id",
+                    __METHOD__);
                 Yii::error($programFamily->errors, __METHOD__);
                 $transaction->rollBack();
                 return false;
-
             }
-
         }
 
         foreach ($duplicate->wxUnifiedPaymentOrders as $wxUnifiedPaymentOrder) {
-
             $wxUnifiedPaymentOrder->family_id = $original->id;
             if (!$wxUnifiedPaymentOrder->save()) {
-
                 Yii::error("Error saving WxUnifiedPaymentOrder $wxUnifiedPaymentOrder->id",
                     __METHOD__);
                 Yii::error($wxUnifiedPaymentOrder->errors, __METHOD__);
                 $transaction->rollBack();
                 return false;
-
             }
-
         }
 
         try {
@@ -300,15 +280,33 @@ class FamilyHelper
         try {
             $transaction->commit();
         } catch (Exception $e) {
-
             Yii::error(
-                "Error committing transaction to merge families $original->id and $duplicate->id",
+                "Error committing transaction to merge families " .
+                "$original->id and $duplicate->id",
                 __METHOD__);
             return false;
-
         }
-
         return true;
+    }
 
+    /**
+     * Clean the database from all models that depend on this family.
+     * @param Family $family
+     * @throws ServerErrorHttpException
+     * @throws StaleObjectException
+     * @throws Throwable
+     */
+    public static function prepareForDeletion(Family $family): void
+    {
+        /** @var WxUnifiedPaymentOrder $order */
+        foreach ($family->getWxUnifiedPaymentOrders()->each() as $order) {
+            $order->family_id = null;
+            if (!$order->save()) {
+                $msg = "Error nullifying WxUnifiedPaymentOrder $order->id Family ID";
+                Yii::error($msg, __METHOD__);
+                throw new ServerErrorHttpException($msg);
+            }
+        }
+        // Delete programFamily records.
     }
 }

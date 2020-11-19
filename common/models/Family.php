@@ -2,12 +2,15 @@
 
 namespace common\models;
 
+use common\helpers\FamilyHelper;
 use Yii;
 use yii\base\InvalidConfigException;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
+use yii\db\StaleObjectException;
+use yii\web\ServerErrorHttpException;
 
 /**
  * This is the model class for table "family".
@@ -101,6 +104,19 @@ class Family extends ActiveRecord
             BlameableBehavior::class,
             TimestampBehavior::class,
         ];
+    }
+
+    /**
+     * Add some business logic to Family delete.
+     * @return bool
+     * @throws StaleObjectException
+     * @throws ServerErrorHttpException
+     * @throws \Throwable
+     */
+    public function beforeDelete(): bool
+    {
+        FamilyHelper::prepareForDeletion($this);
+        return parent::beforeDelete();
     }
 
     /**
