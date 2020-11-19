@@ -3,6 +3,7 @@
 namespace common\helpers;
 
 use common\models\Client;
+use common\models\Family;
 use common\models\FamilyRole;
 use Throwable;
 use Yii;
@@ -192,5 +193,21 @@ class ClientHelper
     public static function getOrphanedClients(): ActiveQuery
     {
         return Client::find()->where(['family_id' => null]);
+    }
+
+    /**
+     * Return all Family records that could be the orphaned client's intended Family.
+     *
+     * @param Client $client
+     * @return ActiveQuery
+     */
+    public static function findOrphanedClientPossibleFamilies(Client $client): ActiveQuery
+    {
+        // Define an interval to search on.
+        $seconds = 10;
+        $max = $client->created_at + $seconds;
+        $min = $client->created_at - 10;
+        // https://stackoverflow.com/a/37941492/2557030
+        return Family::find()->where(['between', 'created_at', $min, $max]);
     }
 }

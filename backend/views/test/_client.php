@@ -25,6 +25,11 @@ $count = $clientQuery->count();
                     ['user/view', 'id' => $client->user_id]);
                 echo Html::tag('div', "User $userLink");
             }
+            $possibleFamiliesQuery = ClientHelper::findOrphanedClientPossibleFamilies($client);
+            foreach ($possibleFamiliesQuery->each() as $possibleFamilyMatch) {
+                echo $this->render('_possible-family-match',
+                    ['family' => $possibleFamilyMatch]);
+            }
             echo $this->render('/layouts/_createInfo', ['model' => $client]);
             echo Html::endTag('div');
         }
