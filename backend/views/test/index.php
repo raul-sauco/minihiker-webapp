@@ -10,4 +10,5 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= $this->render('_program-family') ?>
     <?= $this->render('_program-client') ?>
     <?= $this->render('_client') ?>
+    <?= $this->render('_empty-families') ?>
 </div>
