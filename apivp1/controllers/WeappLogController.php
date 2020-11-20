@@ -26,6 +26,18 @@ class WeappLogController extends ActiveBaseController
     }
 
     /**
+     * Update the parent's behaviors to allow unauthorized access to creating
+     * weapp-logs.
+     * @return array
+     */
+    public function behaviors(): array
+    {
+        $behaviors = parent::behaviors();
+        $behaviors['authenticator']['optional'] = ['create'];
+        return $behaviors;
+    }
+
+    /**
      * @param string $action
      * @param null $model
      * @param array $params

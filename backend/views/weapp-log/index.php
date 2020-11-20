@@ -22,17 +22,11 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => [
             'id',
             'message',
+            'created_at:relativeTime',
             'extra:ntext',
             'level',
             'page',
             'method',
-            //'line',
-            //'timestamp',
-            //'created_at',
-            //'updated_at',
-            //'created_by',
-            //'updated_by',
-
             ['class' => 'yii\grid\ActionColumn'],
         ],
     ]); ?>
