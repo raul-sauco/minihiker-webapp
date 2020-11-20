@@ -32,9 +32,10 @@ $this->params['breadcrumbs'][] = $this->title;
         'model' => $model,
         'attributes' => [
             'message',
+            'created_at:relativeTime',
             'extra:ntext',
-            'res:ntext',
             'req:ntext',
+            'res:ntext',
             'level',
             'page',
             'method',
@@ -49,7 +50,6 @@ $this->params['breadcrumbs'][] = $this->title;
                 }
             ],
             'created_at:datetime',
-            'updated_at:relativeTime',
             [
                 'label' => Yii::t('app', 'Client'),
                 'value' => static function (WeappLog $model) {
