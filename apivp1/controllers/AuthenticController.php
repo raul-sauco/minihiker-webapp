@@ -68,7 +68,7 @@ class AuthenticController extends BaseController {
 		if (Yii::$app->user->identity->is_verify!=1) {
 			$transaction=Yii::$app->db->beginTransaction();
 			try {
-				//$this->checkUinfo($params);
+				$this->checkUinfo($params);
 				$params['is_verify'] = 1;
 				$model->setScenario(User::SCENARIO_UPDATE_SELF_ACCOUNT);
 				$model->load($params, '');
