@@ -8,7 +8,7 @@ return [
         '@bower' => '@vendor/bower-asset',
         '@npm'   => '@vendor/npm-asset',
         '@staticUrl' => $devEnv ? 'http://static.mh' : 'https://static.minihiker.com',
-        '@apiUrl' => $devEnv ? 'http://api.mh' : 'https://api.minihiker.com',
+        '@apiUrl' => $devEnv ? 'http://api.mh' : 'https://apiv2.minihiker.com',
         '@imgUrl' => '@staticUrl/img',
         '@cssUrl' => '@staticUrl/css',
         '@jsUrl' => '@staticUrl/js',

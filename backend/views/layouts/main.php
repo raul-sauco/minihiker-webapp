@@ -139,7 +139,7 @@ Modal::end();
 $this->registerJsVar(
     'apiurl',
     strpos(Url::base(true), 'localhost') ? 'http://localhost/mhapi/' :
-        'https://api.minihiker.com/'
+        'https://apiv2.minihiker.com/'
 );
 
 $this->registerJsVar(
