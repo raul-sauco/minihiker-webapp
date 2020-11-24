@@ -1,7 +1,9 @@
 <?php
 
 use common\helpers\WxPaymentHelper;
+use common\models\WxUnifiedPaymentOrder;
 use yii\helpers\Html;
+use yii\web\YiiAsset;
 use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
@@ -10,7 +12,7 @@ use yii\widgets\DetailView;
 $this->title = Yii::t('app', 'Wx Unified Payment Order') . ' - ' . $model->id;
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Wx Unified Payment Orders'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
-\yii\web\YiiAsset::register($this);
+YiiAsset::register($this);
 ?>
 <div class="wx-unified-payment-order-view">
 
@@ -47,7 +49,14 @@ $this->params['breadcrumbs'][] = $this->title;
                 'value' => empty($model->price_id) ? '' :
                     $model->price->getNamei18n()
             ],
-            'total_fee:currency',
+            [
+                'attribute' => 'total_fee',
+                'value' => static function($model) {
+                    // Total fee is in cents but we want to display rmb
+                    /** @var WxUnifiedPaymentOrder $feeInRmb */
+                    return Yii::$app->formatter->asCurrency($model->getOrderAmountRmb());
+                }
+            ],
             [
                 'label' => Yii::t('app', 'Status'),
                 'value' => WxPaymentHelper::getStatusLabel($model->status)

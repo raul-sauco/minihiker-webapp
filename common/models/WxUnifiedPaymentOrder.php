@@ -223,4 +223,14 @@ class WxUnifiedPaymentOrder extends ActiveRecord
     {
         return $this->hasOne(User::class, ['id' => 'updated_by']);
     }
+
+    /**
+     * Return the total paid on this order on RMB.
+     * @return float
+     */
+    public function getOrderAmountRmb(): float
+    {
+        // total_fee is in cents
+        return $this->total_fee / 100;
+    }
 }

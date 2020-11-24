@@ -44,7 +44,13 @@ $this->params['breadcrumbs'][] = $this->title;
                 },
                 'format' => 'html'
             ],
-            'total_fee:currency',
+            [
+                'attribute' => 'total_fee',
+                'value' => static function($data) {
+                    // Total fee is in cents but we want to display rmb
+                    return Yii::$app->formatter->asCurrency($data->getOrderAmountRmb());
+                }
+            ],
             [
                 'attribute' => 'status',
                 'value' => static function ($data) {

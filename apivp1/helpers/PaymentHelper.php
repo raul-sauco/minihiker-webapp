@@ -58,7 +58,7 @@ class PaymentHelper
         // Create and save a new payment.
         $payment = new Payment();
         $payment->family_id = $order->family_id;
-        $payment->amount = (float)$order->total_fee;
+        $payment->amount = $order->getOrderAmountRmb();
         $payment->date = date('Y-m-d');
         $payment->program_id = $order->price->program_id;
         $payment->remarks = Yii::t('app',
@@ -84,9 +84,10 @@ class PaymentHelper
         $programFamily->family_id = $family->id;
         $programFamily->program_id = $program->id;
         $programFamily->status = 7; // All done status, view mh app\helpers\ProgramHelper
+        // Do not automatically apply discounts, this could come later
         $programFamily->cost = $order->price->price;
-        $programFamily->final_cost = (int) $order->total_fee;
-        $programFamily->discount = $programFamily->cost - $programFamily->final_cost;
+        $programFamily->final_cost = $order->price->price;
+        $programFamily->discount = 0;
         $programFamily->remarks = Yii::t('app','Order {order}.', ['order' => $order->id]) .
             ' ' . Yii::t('app', 'Paid') . ' ' . $family->category;
 
