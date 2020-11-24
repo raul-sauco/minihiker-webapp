@@ -1,7 +1,6 @@
 <?php
 
 use common\helpers\WxPaymentHelper;
-use function foo\func;
 use yii\helpers\Html;
 use yii\grid\GridView;
 
@@ -19,7 +18,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
             [
                 'attribute' => 'id',
-                'value' => function ($data) {
+                'value' => static function ($data) {
                     return Html::a($data->id, ['view', 'id' => $data->id]);
                 },
                 'format' => 'html'
@@ -27,7 +26,7 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'attribute' => 'family_id',
                 'label' => Yii::t('app', 'Family'),
-                'value' => function ($data) {
+                'value' => static function ($data) {
                     if (!empty($data->family_id)) {
                         return Html::a($data->family->name, ['family/view', 'id' => $data->family_id]);
                     }
@@ -37,7 +36,7 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             [
                 'label' => Yii::t('app', 'Program'),
-                'value' => function ($data) {
+                'value' => static function ($data) {
                     if (!empty($data->price_id)) {
                         return Html::a($data->price->program->getNamei18n(), ['program/view', 'id' => $data->price->program_id]);
                     }
@@ -48,12 +47,12 @@ $this->params['breadcrumbs'][] = $this->title;
             'total_fee:currency',
             [
                 'attribute' => 'status',
-                'value' => function ($data) {
+                'value' => static function ($data) {
                     return WxPaymentHelper::getStatusLabel($data->status);
                 }
             ],
             'attach',
             'updated_at:datetime',
         ],
-    ]); ?>
+    ]) ?>
 </div>

@@ -79,6 +79,12 @@ class WxUnifiedPaymentOrder extends ActiveRecord
     // WX backend has confirmed successful payment
     public const STATUS_CONFIRMATION_SUCCESS = 4;
 
+    // After 12 hours the order was still waiting confirmation
+    public const STATUS_ORDER_EXPIRED = 5;
+
+    // The client cancelled the payment on the mini program
+    public const STATUS_CANCELLED_BY_CLIENT = 6;
+
     /**
      * {@inheritdoc}
      */
