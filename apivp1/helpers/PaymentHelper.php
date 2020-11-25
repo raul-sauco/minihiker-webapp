@@ -80,22 +80,30 @@ class PaymentHelper
         $programClient->status = 7;
 
         // Link the family with the program
-        $programFamily = new ProgramFamily();
-        $programFamily->family_id = $family->id;
-        $programFamily->program_id = $program->id;
-        $programFamily->status = 7; // All done status, view mh app\helpers\ProgramHelper
-        // Do not automatically apply discounts, this could come later
-        $programFamily->cost = $order->price->price;
-        $programFamily->final_cost = $order->price->price;
-        $programFamily->discount = 0;
-        $programFamily->remarks = Yii::t('app','Order {order}.', ['order' => $order->id]) .
-            ' ' . Yii::t('app', 'Paid') . ' ' . $family->category;
+        if (($programFamily = ProgramFamily::findOne([
+            'program_id' => $program->id,
+            'family_id' => $family->id
+        ])) === null) {
+            $programFamily = new ProgramFamily();
+            $programFamily->family_id = $family->id;
+            $programFamily->program_id = $program->id;
+            $programFamily->status = 7; // All done status, view mh app\helpers\ProgramHelper
+            // Do not automatically apply discounts, this could come later
+            $programFamily->cost = $order->price->price;
+            $programFamily->final_cost = $order->price->price;
+            $programFamily->discount = 0;
+            $programFamily->remarks = '';
+        }
+        $programFamily->remarks .= Yii::t('app','Order {order}.',
+            ['order' => $order->id]) . ' ' . Yii::t('app', 'Paid') .
+            ' ' . $family->category;
 
         if (!$programFamily->save()) {
             Yii::error(
                 "Error saving ProgramFamily for Wx Unified Payment Order $order->id",
                 __METHOD__
             );
+            Yii::error($programFamily->errors, __METHOD__);
         }
 
         return true;

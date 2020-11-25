@@ -21,6 +21,10 @@ return [
         'cache' => [
             'class' => 'yii\caching\FileCache',
         ],
+        'formatter' => [
+            'locale' => 'zh-CN',
+            'currencyCode' => 'CNY'
+        ],
         'i18n' => [
             'translations' => [
                 'app*' => [

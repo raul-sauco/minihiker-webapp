@@ -1,5 +1,11 @@
 <?php
 
+use apivp1\helpers\XmlParser;
+use common\models\User;
+use yii\caching\FileCache;
+use yii\log\FileTarget;
+use yii\web\JsonParser;
+use yii\web\JsonResponseFormatter;
 use yii\web\Response;
 
 $params = array_merge(
@@ -19,7 +25,7 @@ return [
     'controllerNamespace' => 'apivp1\controllers',
     'components' => [
         'cache' => [
-            'class' => 'yii\caching\FileCache',
+            'class' => FileCache::class,
         ],
         'errorHandler' => [
             'errorAction' => 'site/error',
@@ -28,7 +34,7 @@ return [
             'traceLevel' => YII_DEBUG ? 3 : 0,
             'targets' => [
                 [
-                    'class' => 'yii\log\FileTarget',
+                    'class' => FileTarget::class,
                     'levels' => ['error', 'warning'],
                 ],
             ],
@@ -36,14 +42,15 @@ return [
         'request' => [
             'csrfParam' => '_csrf-apivp1',
             'parsers' => [
-                'application/json' => 'yii\web\JsonParser'
+                'application/json' => JsonParser::class,
+                'text/xml' => XmlParser::class,
             ]
         ],
         'response' => [
             'format' => Response::FORMAT_JSON,
             'formatters' => [
                 Response::FORMAT_JSON => [
-                    'class' => '\yii\web\JsonResponseFormatter',
+                    'class' => JsonResponseFormatter::class,
                     'prettyPrint' => YII_DEBUG,
                     'encodeOptions' => JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE
                 ]
@@ -56,7 +63,7 @@ return [
             'rules' => $routes,
         ],
         'user' => [
-            'identityClass' => 'common\models\User',
+            'identityClass' => User::class,
             'enableAutoLogin' => false,
             'enableSession' => false,
             'loginUrl' => null
