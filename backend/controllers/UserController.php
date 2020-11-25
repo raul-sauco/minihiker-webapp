@@ -2,14 +2,14 @@
 
 namespace backend\controllers;
 
+use common\models\User;
 use common\models\UserSearch;
 use Yii;
-use common\models\User;
 use yii\db\StaleObjectException;
+use yii\filters\AccessControl;
+use yii\filters\VerbFilter;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
-use yii\filters\VerbFilter;
-use yii\filters\AccessControl;
 use yii\web\Response;
 
 /**

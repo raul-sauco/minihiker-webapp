@@ -179,7 +179,7 @@ class ContractController extends Controller {
 
 	public function actionSend($id){
 		$searchModel  = new UserSearch();
-		$dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+		$dataProvider = $searchModel->searchYHTUser(Yii::$app->request->queryParams);
 		if (Yii::$app->request->isPost) {
 			$params=Yii::$app->request->queryParams;
 			$cid=$params['cid'];
