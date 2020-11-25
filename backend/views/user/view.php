@@ -1,5 +1,7 @@
 <?php
 
+use common\helpers\UserHelper;
+use common\models\User;
 use yii\helpers\Html;
 use yii\widgets\DetailView;
 
@@ -7,25 +9,34 @@ use yii\widgets\DetailView;
 /* @var $model common\models\User */
 
 $this->title = $model->username;
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Users'), 'url' => ['index']];
+$this->params['breadcrumbs'][] = [
+    'label' => Yii::t('app', 'Users'),
+    'url' => ['index']
+];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="user-view">
-
+    <?= $this->render('/layouts/_createInfo', ['model' => $model]) ?>
     <p>
-        <?= Html::a(Yii::t('app', 'Update'), ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+        <?= Html::a(Yii::t('app', 'Update'),
+            ['update', 'id' => $model->id],
+            ['class' => 'btn btn-primary']
+        ) ?>
         <?php
-        if (Yii::$app->user->can('deleteUser') && $model->user_type !== \common\models\User::TYPE_SUSPENDED)
-
-        echo Html::a(Yii::t('app', 'Suspend'), ['suspend', 'id' => $model->id], [
-            'class' => 'btn btn-danger',
-            'data' => [
-                'confirm' => Yii::t('app', 'Are you sure you want to suspend this user?'),
-                'method' => 'post',
-            ],
-        ]) ?>
+        if ($model->user_type !== User::TYPE_SUSPENDED &&
+            Yii::$app->user->can('deleteUser')) {
+            echo Html::a(Yii::t('app', 'Suspend'),
+                ['suspend', 'id' => $model->id], [
+                'class' => 'btn btn-danger',
+                'data' => [
+                    'confirm' => Yii::t('app',
+                        'Are you sure you want to suspend this user?'),
+                    'method' => 'post',
+                ],
+            ]);
+        }
+        ?>
     </p>
-
     <?= DetailView::widget([
         'model' => $model,
         'attributes' => [
@@ -36,11 +47,13 @@ $this->params['breadcrumbs'][] = $this->title;
             'name_en',
             'birthdate:date',
         	[
-        			// 'title' => \Yii::t('app', 'Sex'),
-        			'attribute' => 'is_male',
-        			'value' => function ($model) {
-        					return $model->is_male?\Yii::t('app', 'Male'):\Yii::t('app', 'Female');
-    				}
+                'attribute' => 'is_male',
+                'label' => Yii::t('app', 'Gender'),
+                'value' => static function ($model) {
+                        return $model->is_male ?
+                            Yii::t('app', 'Male'):
+                            Yii::t('app', 'Female');
+                }
     		],
             'id_card_number',
             'passport_number',
@@ -51,11 +64,10 @@ $this->params['breadcrumbs'][] = $this->title;
             'place_of_birth',
             [
                 'attribute' => 'user_type',
-                'value' => function ($data) {
-                    return \common\helpers\UserHelper::getUserTypeLabel($data->user_type);
+                'value' => static function ($data) {
+                    return UserHelper::getUserTypeLabel($data->user_type);
                 }
             ],
         ],
     ]) ?>
-
 </div>

@@ -177,6 +177,7 @@ return [
     'Financial info' => '财务信息',
     'Finishing Before' => '结束时间',
     'Fix it' => '解决问题',
+    'Gender' => '性别',
     'Get' => 'GET',
     'Goods Tag' => '订单优惠标记',
     'Guide Name' => '向导名字',

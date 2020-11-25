@@ -2,13 +2,15 @@
 
 namespace backend\controllers;
 
+use common\models\UserSearch;
 use Yii;
 use common\models\User;
-use yii\data\ActiveDataProvider;
+use yii\db\StaleObjectException;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
+use yii\web\Response;
 
 /**
  * UserController implements the CRUD actions for User model.
@@ -18,11 +20,11 @@ class UserController extends Controller
     /**
      * @inheritdoc
      */
-    public function behaviors()
+    public function behaviors(): array
     {
         return [
         		'access' => [
-        				'class' => AccessControl::className(),
+        				'class' => AccessControl::class,
         				'rules' => [
         						[
         								'allow' => true,
@@ -52,7 +54,7 @@ class UserController extends Controller
         				],
         		],
             'verbs' => [
-                'class' => VerbFilter::className(),
+                'class' => VerbFilter::class,
                 'actions' => [
                     'delete' => ['POST'],
                 ],
@@ -62,23 +64,21 @@ class UserController extends Controller
 
     /**
      * Lists all User models.
-     *
+     * @param string $q
      * @return mixed
      */
-    public function actionIndex()
+    public function actionIndex(string $q = '')
     {
-        $dataProvider = new ActiveDataProvider([
-            'query' => User::find()->where(['not', ['user_type' => User::TYPE_SUSPENDED]]),
-        ]);
-
+        $searchModel = new UserSearch();
+        $dataProvider = $searchModel->search($q);
         return $this->render('index', [
             'dataProvider' => $dataProvider,
+            'q' => $q
         ]);
     }
 
     /**
      * Displays a single User model.
-     *
      * @param integer $id
      * @return mixed
      * @throws NotFoundHttpException
@@ -93,7 +93,6 @@ class UserController extends Controller
     /**
      * Creates a new User model.
      * If creation is successful, the browser will be redirected to the 'view' page.
-     *
      * @return mixed
      */
     public function actionCreate()
@@ -112,7 +111,6 @@ class UserController extends Controller
     /**
      * Updates an existing User model.
      * If update is successful, the browser will be redirected to the 'view' page.
-     *
      * @param integer $id
      * @return mixed
      * @throws NotFoundHttpException
@@ -133,56 +131,48 @@ class UserController extends Controller
     /**
      * Suspend an existing user, similar to deleting but it will keep the
      * database entry to preserve create/update logs.
-     *
      * @param $id
-     * @return \yii\web\Response
+     * @return Response
      * @throws NotFoundHttpException
      */
     public function actionSuspend($id)
     {
         $model = $this->findModel($id);
-
         $model->user_type = User::TYPE_SUSPENDED;
-
         if (!$model->save()) {
             Yii::error('Problem suspending user ' . $id, __METHOD__);
             Yii::error($model->getErrors(), __METHOD__);
         }
-
         return $this->redirect(['index']);
     }
 
     /**
      * Deletes an existing User model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
-     *
      * @param integer $id
      * @return mixed
      * @throws NotFoundHttpException
      * @throws \Throwable
-     * @throws \yii\db\StaleObjectException
+     * @throws StaleObjectException
      */
     public function actionDelete($id)
     {
         $this->findModel($id)->delete();
-
         return $this->redirect(['index']);
     }
 
     /**
      * Finds the User model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
-     *
      * @param integer $id
      * @return User the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
-    protected function findModel($id)
+    protected function findModel($id): User
     {
         if (($model = User::findOne($id)) !== null) {
             return $model;
         }
-
         throw new NotFoundHttpException(
             Yii::t('app', 'The requested page does not exist.'));
     }

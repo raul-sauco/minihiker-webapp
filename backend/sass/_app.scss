@@ -1,50 +1,39 @@
 @import "compass";
 @import "vars";
-
 header {
   font-size: $font-size-big;
   font-weight: bold;
 }
-
 #notification-window {
   position: fixed;
   top: 100px;
   text-align: center;
   width: 100%;
 }
-
 #notification-window > div {
   margin: 0 auto 0.3em auto;
   width: 50%;
 }
-
 #notification-window > .notification-message {
   display: none;
 }
-
 p.create-info {
   font-size: $font-size-small;
   color: $muted-text;
 }
-
 .fixed-position-save-button {
   position: fixed;
   top: 60px;
   right: 0;
   border-radius: 1em 0 0 1em;
 }
-
 table.index-search-table {
-
   @include background($color-grey-background);
-
   margin-bottom: 0;
-
   td.action-links {
     vertical-align: bottom;
   }
 }
-
 .loading-overlay {
   position: absolute;
   top: 0;
@@ -55,21 +44,17 @@ table.index-search-table {
   display: flex;
   justify-content: center;
   transition: visibility 1s;
-
   img {
     margin: auto;
   }
 }
-
 .material-card {
   padding: 2%;
   box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
 }
-
 .list-item {
   margin: 2% 0;
 }
-
 .index-page-search-box {
   margin: 20px 0;
   input.form-control {
@@ -80,5 +65,7 @@ table.index-search-table {
     border-top-right-radius: 2em;
     border-bottom-right-radius: 2em;
   }
-
+}
+.search-box {
+  padding-bottom: 1rem;
 }

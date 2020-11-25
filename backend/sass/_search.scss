@@ -1,85 +1,58 @@
 #search-index {
-	
-	#search-form-container {	
-		max-width: 100%;
-		margin: 0.5em 0;
-	}
-	
-	@media (min-width: $screen-sm-min) {
-	
-		#search-form-container {		
-			max-width: 80%;
-			margin: 0.6em 0;
-		}
-	
-	}
-	
-	@media (min-width: $screen-md-min) {
-	
-		#search-form-container {		
-			max-width: 70%;
-			margin: 0.7em 0;	
-		}	
-	
-	}
-	
-	@media (min-width: $screen-lg-min) {
-	
-		#search-form-container {		
-			max-width: 60%;
-			// margin: 0.8em 0;	
-		}	
-	
-	}
-	
-	@media (min-width: $screen-xl-min) {
-	
-		#search-form-container {		
-			max-width: 60%;	
-			// margin: 1em 0;	
-		}	
-	
-	}
-
-	.search-result {
-		
-		.search-result-header {
-			
-			a {			
-				text-decoration: underline;			
-			}
-			
-			.search-result-model {
-				font-size: 0.8em;		
-				color: $muted-text;
-			}
-		}
-		
-		.search-result-sub-header {
-		
-			font-size: 0.6em;
-			color: $muted-text;
-		}
-		
-		.search-result-body {
-			
-			font-size: 0.9em;
-			
-			.attribute-label {
-				font-size: 0.8em;		
-				color: $muted-text;
-			}
-		
-		}
-		
-		margin-bottom: 0.4em;
-		
-	}
-		
-	
-	.search-query-string {
-		// background-color: $search-highlight;
-		// @include border-radius (3px);
-		color: red;
-	}
+  #search-form-container {
+    max-width: 100%;
+    margin: 0.5em 0;
+  }
+  @media (min-width: $screen-sm-min) {
+    #search-form-container {
+      max-width: 80%;
+      margin: 0.6em 0;
+    }
+  }
+  @media (min-width: $screen-md-min) {
+    #search-form-container {
+      max-width: 70%;
+      margin: 0.7em 0;
+    }
+  }
+  @media (min-width: $screen-lg-min) {
+    #search-form-container {
+      max-width: 60%;
+      // margin: 0.8em 0;
+    }
+  }
+  @media (min-width: $screen-xl-min) {
+    #search-form-container {
+      max-width: 60%;
+      // margin: 1em 0;
+    }
+  }
+  .search-result {
+    .search-result-header {
+      a {
+        text-decoration: underline;
+      }
+      .search-result-model {
+        font-size: 0.8em;
+        color: $muted-text;
+      }
+    }
+    .search-result-sub-header {
+      font-size: 0.6em;
+      color: $muted-text;
+    }
+    .search-result-body {
+      font-size: 0.9em;
+      .attribute-label {
+        font-size: 0.8em;
+        color: $muted-text;
+      }
+    }
+    margin-bottom: 0.4em;
+  }
+  .search-query-string {
+    // background-color: $search-highlight;
+    // @include border-radius (3px);
+    color: red;
+  }
 }
