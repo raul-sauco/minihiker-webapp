@@ -64,6 +64,11 @@ class ContractController extends Controller {
 		$searchModel  = new ContractSearch();
 		$dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
+		// Implement #18 order by updated_at descending
+        $dataProvider->setSort([
+            'defaultOrder' => ['updated_at' => SORT_DESC]
+        ]);
+
 		//是否添加企业信息
 		$companyed=Company::find()->count();
 		return $this->render('index', [
