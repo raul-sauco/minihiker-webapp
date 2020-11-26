@@ -30,8 +30,8 @@ class ProgramGroupHelper
     {
         foreach ($programGroup->programs as $program) {
             // If any program's registration is open and the client limit has not been reached, return true
-            Yii::warning("Checking program $program->id with registration $program->registration_open and $program->registrations clients out of $program->client_limit");
-            if ($program->registration_open === 1 && (int)$program->client_limit > (int)$program->registrations) {
+            if ($program->registration_open === 1 &&
+                (int)$program->client_limit > (int)$program->registrations) {
                 return true;
             }
         }

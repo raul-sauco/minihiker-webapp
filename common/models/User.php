@@ -283,7 +283,7 @@ class User extends ActiveRecord implements IdentityInterface
         } else if ((int)$this->user_type === self::TYPE_USER) {
             $auth->assign($auth->getRole('user'), $this->id);
         } else if ((int)$this->user_type === self::TYPE_CLIENT) {
-            $auth->assign($auth->getRole('user'), $this->id);
+            $auth->assign($auth->getRole('client'), $this->id);
         } else if ((int)$this->user_type === self::TYPE_SUSPENDED) {
             Yii::debug("User $this->id is suspended, not assigning any role.", __METHOD__);
         } else {
