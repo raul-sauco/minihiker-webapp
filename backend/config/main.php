@@ -31,6 +31,9 @@ return [
     'language' => 'zh-CN',
     'modules' => [],
     'components' => [
+        'assetManager' => [
+            'appendTimestamp' => true,
+        ],
         'request' => [
             'csrfParam' => '_csrf-backend',
         ],
