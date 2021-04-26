@@ -17,7 +17,7 @@ use yii\web\Response;
  */
 class WxPaymentNotifyController extends Controller
 {
-    private $_verbs = ['POST','OPTIONS'];
+    private $_verbs = ['POST', 'OPTIONS'];
 
     /**
      * Handle WX backend payment notifications. Documentation is at:
@@ -48,7 +48,7 @@ class WxPaymentNotifyController extends Controller
      * If both those actions are successful it will update the order and return
      * success.
      */
-    public function actionCreate (): array
+    public function actionCreate(): array
     {
         // Get the parameters from the request
         // It will use app/helpers/XmlParser
@@ -68,7 +68,7 @@ class WxPaymentNotifyController extends Controller
         unset($payload['sign']);
         $sign = WxPaymentHelper::generateOrderSignature($payload);
 
-        if (strcmp($sign,$post['sign']) !== 0) {
+        if (strcmp($sign, $post['sign']) !== 0) {
 
             // The signature is not valid, refuse processing the request
 
@@ -92,10 +92,9 @@ class WxPaymentNotifyController extends Controller
         // Fetch the order related to this notification
         $order = WxUnifiedPaymentOrder::findOne((int)$order_no);
 
+        $log = new WxPaymentLog();
         if ($order === null) {
-
             // Create a log of the error
-            $log = new WxPaymentLog();
             $log->message = 'Notification failed. Order ' . $order_no . ' not found';
             $log->raw = Yii::$app->request->rawBody;
             $log->post = Json::encode($post);
@@ -111,14 +110,13 @@ class WxPaymentNotifyController extends Controller
 
 
         // Create a log of the update
-        $log = new WxPaymentLog();
 
         if (isset($post['result_code'])) {
 
-            $result = (string) $post['result_code'];
+            $result = (string)$post['result_code'];
             $order->notify_result_code = $result;
 
-            if (strcmp($result,'SUCCESS') === 0) {
+            if (strcmp($result, 'SUCCESS') === 0) {
 
                 $order->status = WxUnifiedPaymentOrder::STATUS_CONFIRMATION_SUCCESS;
                 $log->message = 'Order ' . $order->id . ' updated to STATUS_PAYMENT_CONFIRMED';
@@ -141,6 +139,22 @@ class WxPaymentNotifyController extends Controller
         // The simpler construct does not work well with CDATA conversion
         // $order->notify_return_code  = $post['return_code'] ?? '';
 
+        if (isset($post['transaction_id'])) {
+            $order->transaction_id = (string)$post['transaction_id'];
+        }
+
+        if (isset($post['time_end'])) {
+            $order->time_end = (string)$post['time_end'];
+        }
+
+        if (isset($post['bank_type'])) {
+            $order->bank_type = (string)$post['bank_type'];
+        }
+
+        if (isset($post['is_subscribe'])) {
+            $order->is_subscribe = (string)$post['is_subscribe'];
+        }
+
         if (isset($post['return_code'])) {
             $order->notify_return_code = (string)$post['return_code'];
         }
@@ -161,7 +175,7 @@ class WxPaymentNotifyController extends Controller
 
         if (!$order->save()) {
             $msg = 'Problem updating order ' . $order->id . ' to STATUS_PAYMENT_CONFIRMED';
-            Yii::error($msg,__METHOD__);
+            Yii::error($msg, __METHOD__);
             Yii::error($order->toArray(), __METHOD__);
             Yii::error($order->errors, __METHOD__);
             $log->message = $msg;

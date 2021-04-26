@@ -24,6 +24,10 @@ use yii\helpers\ArrayHelper;
  * @property string $body Simple description of the product sold
  * @property string|null $detail Detailed description of the product
  * @property string|null $attach Additional data, can be used as custom parameter
+ * @property string|null $transaction_id WeChat Pay order number
+ * @property string|null $time_end Payment completion time, the format is yyyyMMddHHmmss
+ * @property string|null $bank_type Bank type, use string type bank identification, see bank list for bank type
+ * @property string|null $is_subscribe Does the user follow the public account, Y-follow, N-not follow
  * @property string $out_trade_no Merchant order number
  * @property string|null $fee_type ISO 4217 currency code for the transaction i.e. CNY
  * @property float $total_fee Transaction amount
@@ -103,12 +107,13 @@ class WxUnifiedPaymentOrder extends ActiveRecord
             [['status', 'hidden', 'price_id', 'family_id', 'client_id', 'created_by', 'updated_by', 'created_at', 'updated_at'], 'integer'],
             [['detail', 'notify_xml'], 'string'],
             [['total_fee'], 'number'],
-            [['appid', 'mch_id', 'device_info', 'nonce_str', 'sign', 'sign_type', 'out_trade_no', 'goods_tag', 'product_id', 'limit_pay', 'prepay_sign', 'prepay_timestamp', 'notify_result_code', 'notify_return_code', 'notify_err_code'], 'string', 'max' => 32],
+            [['appid', 'mch_id', 'device_info', 'nonce_str', 'sign', 'sign_type', 'transaction_id', 'bank_type', 'out_trade_no', 'goods_tag', 'product_id', 'limit_pay', 'prepay_sign', 'prepay_timestamp', 'notify_result_code', 'notify_return_code', 'notify_err_code'], 'string', 'max' => 32],
             [['body', 'openid', 'notify_err_code_des'], 'string', 'max' => 128],
             [['attach'], 'string', 'max' => 127],
+            [['time_end', 'time_start', 'time_expire'], 'string', 'max' => 14],
+            [['is_subscribe'], 'string', 'max' => 1],
             [['fee_type', 'trade_type'], 'string', 'max' => 16],
             [['spbill_create_ip', 'prepay_id'], 'string', 'max' => 64],
-            [['time_start', 'time_expire'], 'string', 'max' => 14],
             [['notify_url', 'scene_info'], 'string', 'max' => 256],
             [['receipt'], 'string', 'max' => 8],
             [['client_id'], 'exist', 'skipOnError' => true, 'targetClass' => Client::class, 'targetAttribute' => ['client_id' => 'id']],
@@ -137,6 +142,10 @@ class WxUnifiedPaymentOrder extends ActiveRecord
             'body' => Yii::t('app', 'Body'),
             'detail' => Yii::t('app', 'Detail'),
             'attach' => Yii::t('app', 'Attach'),
+            'transaction_id' => Yii::t('app', 'Transaction ID'),
+            'time_end' => Yii::t('app', 'Time End'),
+            'bank_type' => Yii::t('app', 'Bank Type'),
+            'is_subscribe' => Yii::t('app', 'Is Subscribe'),
             'out_trade_no' => Yii::t('app', 'Out Trade No'),
             'fee_type' => Yii::t('app', 'Fee Type'),
             'total_fee' => Yii::t('app', 'Total Fee'),
