@@ -1,9 +1,13 @@
+@import "vars";
+
 div.program-group-links {
   margin-bottom: 0.7em;
 }
+
 div.program-view-links {
   position: fixed;
   bottom: 0.3em;
+
   a {
     text-align: center;
     padding: 0.2em 1em 0.2em 0.5em;
@@ -13,82 +17,97 @@ div.program-view-links {
     border-radius: 0 80em 0 0;
   }
 }
+
 div.program-view {
   header.summary {
     margin-bottom: 0.7em;
   }
 }
+
 table.program-view-table {
   tr.shaded-row {
     background-color: #f9f9f9;
   }
+
   & > thead > tr > th, & > tbody > tr > td {
     text-align: center;
     vertical-align: middle;
   }
 }
+
 table#program-export-table {
   & > thead > tr > th, & > tbody > tr > td {
     text-align: center;
     vertical-align: middle;
   }
+
   .column-header-wrapper {
     display: flex;
     justify-content: center;
     align-items: center;
+
     input {
       margin: 0 0 0 8px;
     }
   }
+
   .table-export-ignore {
     background-color: #eee;
     color: #bbb;
   }
 }
+
 td.program-view-client-remarks-cell,
 td.program-view-family-status-cell {
   p:last-child {
     margin-bottom: 0;
   }
 }
+
 .client-name-display-is-kid {
   color: $muted-text;
   font-size: $font-size-small;
 }
+
 @mixin row-status($color) {
-  @include background-image(
-    linear-gradient(
-      lighten($color, 20%),
-      lighten($color, 45%),
-      lighten($color, 20%)));
+  background-image: linear-gradient(lighten($color, 20%), lighten($color, 45%), lighten($color, 20%));
 }
+
 .status-urgent-problem {
   @include row-status($color-urgent-problem);
 }
+
 .status-problem {
   @include row-status($color-problem);
 }
+
 .status-requires-attention {
   @include row-status($color-requires-attention);
 }
+
 .status-waiting {
   @include row-status($color-waiting);
 }
+
 .status-processing {
   @include row-status($color-processing);
 }
+
 .status-almost-done {
   @include row-status($color-almost-done);
 }
+
 .status-all-ready {
   @include row-status($color-all-ready);
 }
+
 #program-prices-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding-bottom: 0.3rem;
 }
+
 #program-price-form-loading-container {
   height: 200px;
   width: 100%;
@@ -96,8 +115,10 @@ td.program-view-family-status-cell {
   justify-content: space-around;
   align-items: center;
 }
+
 #program-prices-container {
   padding-bottom: 0.5rem;
+
   .program-price-container {
     position: relative;
     display: flex;
@@ -105,22 +126,27 @@ td.program-view-family-status-cell {
     align-items: center;
     padding: 0.3rem 0;
     border-bottom: 1px solid $border-color;
+
     &:first-child {
       border-top: 1px solid $border-color;
     }
+
     .program-price-details {
       flex-grow: 1;
     }
+
     .update-program-price-button {
       margin-right: 0.3rem;
     }
   }
 }
+
 .program-index table.table-striped tr.program-index-has-unanswered {
-  box-shadow:  inset 0 0 2px $color-urgent-problem;
+  box-shadow: inset 0 0 2px $color-urgent-problem;
   background-color: rgba(255, 26, 26, 0.1);
 }
+
 .program-index table.table-striped tr.program-index-has-update {
-  box-shadow:  inset 0 0 2px $color-processing;
+  box-shadow: inset 0 0 2px $color-processing;
   background-color: lighten($color-processing, 25%);
 }

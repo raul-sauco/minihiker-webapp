@@ -1,23 +1,19 @@
 .client-search {
-	
-	margin-bottom: 0.7em;
-	
-	#client-index-search-box {
-	
-		.form-control:first-child {
-			@include border-radius (2em 0 0 2em);
-		}
-		
-		.input-group-addon:last-child {
-			@include border-radius (0 2em 2em 0);
-		}
-	
-	}
-	
+  margin-bottom: 0.7em;
+
+  #client-index-search-box {
+    .form-control:first-child {
+      border-radius: 2em 0 0 2em;
+    }
+
+    .input-group-addon:last-child {
+      border-radius: 0 2em 2em 0;
+    }
+  }
 }
 
 .client-form {
-	.hidden-field {
-		display: none;
-	}
+  .hidden-field {
+    display: none;
+  }
 }

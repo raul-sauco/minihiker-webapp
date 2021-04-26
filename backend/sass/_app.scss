@@ -1,4 +1,3 @@
-@import "compass";
 @import "vars";
 header {
   font-size: $font-size-big;
@@ -28,7 +27,7 @@ p.create-info {
   border-radius: 1em 0 0 1em;
 }
 table.index-search-table {
-  @include background($color-grey-background);
+  background-color: $color-grey-background;
   margin-bottom: 0;
   td.action-links {
     vertical-align: bottom;

@@ -56,22 +56,18 @@ class ClientHelper extends \common\helpers\ClientHelper
                 'There was an error creating a new Client->user.');
         }
 
-        if (($clientRole = Yii::$app->authManager->getRole('client')) !== null) {
-            try {
-                Yii::$app->authManager->assign($clientRole, $user->id);
-            } catch (\Exception $exception) {
-                Yii::error($exception->getMessage(), __METHOD__);
-                throw new ServerErrorHttpException(
-                    'There was an error assigning permissions to the new user'
-                );
-            }
-        }
-
         // Set the new user as the application user to have blame.
         if (!Yii::$app->user->login($user)) {
             Yii::warning(
                 "Could not automatically login user $user->id",
                 __METHOD__);
+        }
+
+        if (!Yii::$app->user->can('client')) {
+            Yii::error(
+                "Automatically generated user $user->id does not have client permission.",
+                __METHOD__
+            );
         }
 
         // Create a Family to link with the client

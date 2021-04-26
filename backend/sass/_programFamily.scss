@@ -1,5 +1,7 @@
+@import "vars";
+
 div.program-family-form {
-  @include background($color-grey-background);
-  @include box-shadow($border-shadow);
+  background-color: $color-grey-background;
+  box-shadow: $border-shadow;
   padding: $default-spacing;
 }

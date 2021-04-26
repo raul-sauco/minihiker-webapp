@@ -113,15 +113,7 @@ $this->beginPage()
     </div>
 </div>
 
-<footer class="footer">
-    <div class="container-fluid">
-    
-        <p class="pull-left">&copy; <?= Yii::t('app', 'Mini Hiker')?> <?= date('Y') ?></p>
-
-        <p class="pull-right"><?= Yii::powered() ?></p>
-        
-    </div>
-</footer>
+<?= $this->render('_footer') ?>
 
 <div id="notification-window">
 </div>
