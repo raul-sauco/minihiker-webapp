@@ -14,6 +14,8 @@ use yii\helpers\ArrayHelper;
  *
  * @property int $id
  * @property int $status Current status of the order
+ * @property string|null $trade_state WeChat Pay order actual status
+ * @property string|null $trade_state_desc Description of the current query order status and guidance for the next step
  * @property int|null $hidden
  * @property string $appid appid of the app that originates the request
  * @property string $mch_id Wx merchant id for Minihiker
@@ -31,6 +33,8 @@ use yii\helpers\ArrayHelper;
  * @property string $out_trade_no Merchant order number
  * @property string|null $fee_type ISO 4217 currency code for the transaction i.e. CNY
  * @property float $total_fee Transaction amount
+ * @property int|null $cash_fee Cash payment amount The cash payment amount of the order, refer to the payment amount for details
+ * @property string|null $cash_fee_type Currency type, a three-letter code conforming to the ISO 4217 standard, default RMB: CNY
  * @property string $spbill_create_ip IP of the machine calling Wx payment API
  * @property string|null $time_start Order generation time, formatted as yyyyMMddHHmmss
  * @property string|null $time_expire Order expiration time, format yyyyMMddHHmmss, more than 1 minute and less than 2 hours after generation time
@@ -62,32 +66,46 @@ use yii\helpers\ArrayHelper;
  * @property User $createdBy
  * @property Family $family
  * @property ProgramPrice $price
+ * @property-read float $orderAmountRmb
  * @property User $updatedBy
  */
 class WxUnifiedPaymentOrder extends ActiveRecord
 {
-    // Order has been created and sent to WX backend, waiting prepay id
+    /** @var int Order has been created and sent to WX backend, waiting prepay id */
     public const STATUS_CREATED = 0;
-
-    // WX backend returned an error, order has been cancelled
+    /** @var int WX backend returned an error, order has been cancelled */
     public const STATUS_PREPAY_ERROR = 1;
-
-    // WX backend returned success, pre-order has been created
-    // Waiting for user to confirm payment on Mini-app
+    /** @var int WX backend returned success, pre-order has been created
+     * Waiting for user to confirm payment on Mini-app */
     public const STATUS_WAITING_CONFIRMATION = 2;
-
-    // WX backend notified of an error confirming payment
-    // Order has been cancelled while waiting for confirmation
+    /** @var int WX backend notified of an error confirming payment
+     * Order has been cancelled while waiting for confirmation */
     public const STATUS_CONFIRMATION_ERROR = 3;
-
-    // WX backend has confirmed successful payment
+    /** @var int Client has confirmed payment, waiting to charge account */
     public const STATUS_CONFIRMATION_SUCCESS = 4;
-
-    // After 12 hours the order was still waiting confirmation
+    /** @var int After 12 hours the order was still waiting confirmation */
     public const STATUS_ORDER_EXPIRED = 5;
-
-    // The client cancelled the payment on the mini program
+    /** @var int The client cancelled the payment on the mini program */
     public const STATUS_CANCELLED_BY_CLIENT = 6;
+    /** @var int Transfer has been refunded */
+    public const STATUS_REFUNDED = 7;
+    /** @var int Transfer is unpaid */
+    public const STATUS_NOT_PAY = 8;
+    /** @var int Transfer is closed */
+    public const STATUS_CLOSED = 9;
+    /** @var int Transfer has been cancelled (card payments) */
+    public const STATUS_REVOKED = 10;
+    /** @var int The user is paying */
+    public const STATUS_USER_PAYING = 11;
+    /** @var int Payment failed (other reasons, such as the bank failed to return) */
+    public const STATUS_PAY_ERROR = 12;
+    /** @var int Received, waiting for deduction */
+    public const STATUS_ACCEPT = 13;
+    /** @var int payment successful */
+    public const STATUS_SUCCESS = 14;
+
+    /** @var int Reserved for unexpected errors, status needs to be looked into */
+    public const STATUS_UNDEFINED_ERROR = 100;
 
     /**
      * {@inheritdoc}
@@ -104,17 +122,17 @@ class WxUnifiedPaymentOrder extends ActiveRecord
     {
         return [
             [['status', 'appid', 'mch_id', 'nonce_str', 'body', 'out_trade_no', 'total_fee', 'spbill_create_ip', 'notify_url', 'trade_type', 'openid'], 'required'],
-            [['status', 'hidden', 'price_id', 'family_id', 'client_id', 'created_by', 'updated_by', 'created_at', 'updated_at'], 'integer'],
+            [['status', 'hidden', 'cash_fee', 'price_id', 'family_id', 'client_id', 'created_by', 'updated_by', 'created_at', 'updated_at'], 'integer'],
             [['detail', 'notify_xml'], 'string'],
             [['total_fee'], 'number'],
-            [['appid', 'mch_id', 'device_info', 'nonce_str', 'sign', 'sign_type', 'transaction_id', 'bank_type', 'out_trade_no', 'goods_tag', 'product_id', 'limit_pay', 'prepay_sign', 'prepay_timestamp', 'notify_result_code', 'notify_return_code', 'notify_err_code'], 'string', 'max' => 32],
+            [['trade_state', 'appid', 'mch_id', 'device_info', 'nonce_str', 'sign', 'sign_type', 'transaction_id', 'bank_type', 'out_trade_no', 'goods_tag', 'product_id', 'limit_pay', 'prepay_sign', 'prepay_timestamp', 'notify_result_code', 'notify_return_code', 'notify_err_code'], 'string', 'max' => 32],
             [['body', 'openid', 'notify_err_code_des'], 'string', 'max' => 128],
             [['attach'], 'string', 'max' => 127],
             [['time_end', 'time_start', 'time_expire'], 'string', 'max' => 14],
             [['is_subscribe'], 'string', 'max' => 1],
-            [['fee_type', 'trade_type'], 'string', 'max' => 16],
+            [['fee_type', 'cash_fee_type', 'trade_type'], 'string', 'max' => 16],
             [['spbill_create_ip', 'prepay_id'], 'string', 'max' => 64],
-            [['notify_url', 'scene_info'], 'string', 'max' => 256],
+            [['trade_state_desc', 'notify_url', 'scene_info'], 'string', 'max' => 256],
             [['receipt'], 'string', 'max' => 8],
             [['client_id'], 'exist', 'skipOnError' => true, 'targetClass' => Client::class, 'targetAttribute' => ['client_id' => 'id']],
             [['created_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['created_by' => 'id']],
@@ -132,6 +150,8 @@ class WxUnifiedPaymentOrder extends ActiveRecord
         return [
             'id' => Yii::t('app', 'ID'),
             'status' => Yii::t('app', 'Status'),
+            'trade_state' => Yii::t('app', 'Trade State'),
+            'trade_state_desc' => Yii::t('app', 'Trade State Desc'),
             'hidden' => Yii::t('app', 'Hidden'),
             'appid' => Yii::t('app', 'Appid'),
             'mch_id' => Yii::t('app', 'Mch ID'),
@@ -149,6 +169,8 @@ class WxUnifiedPaymentOrder extends ActiveRecord
             'out_trade_no' => Yii::t('app', 'Out Trade No'),
             'fee_type' => Yii::t('app', 'Fee Type'),
             'total_fee' => Yii::t('app', 'Total Fee'),
+            'cash_fee' => Yii::t('app', 'Cash Fee'),
+            'cash_fee_type' => Yii::t('app', 'Cash Fee Type'),
             'spbill_create_ip' => Yii::t('app', 'Spbill Create Ip'),
             'time_start' => Yii::t('app', 'Time Start'),
             'time_expire' => Yii::t('app', 'Time Expire'),

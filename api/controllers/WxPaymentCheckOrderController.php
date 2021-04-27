@@ -72,13 +72,13 @@ class WxPaymentCheckOrderController extends \common\controllers\ActiveBaseContro
             );
         }
 
-        $response = WxPaymentHelper::checkOrderStatus($order);
-        if ($response === null) {
+        $order = WxPaymentHelper::updateOrderStatus($order);
+        if ($order === null) {
             return [
                 'error' => true,
                 'message' => 'Got null response'
             ];
         }
-        return $response;
+        return $order;
     }
 }

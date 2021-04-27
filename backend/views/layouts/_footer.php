@@ -62,6 +62,15 @@ use yii\helpers\Url;
                 </li>
             </ul>
         </div>
+        <div class="footer-column">
+            <ul class="list-unstyled">
+                <li><?= Yii::t('app', 'Weapp Pay') ?></li>
+                <li><?= Html::a(
+                        Yii::t('app', 'List Unified payment orders'),
+                        ['/wx-unified-payment-order/index']) ?>
+                </li>
+            </ul>
+        </div>
     </nav>
     <div class="copyright-notice">&copy;
         <?= Yii::t('app', 'Mini Hiker') ?>

@@ -4,6 +4,7 @@ namespace common\helpers;
 
 use common\models\WxPaymentLog;
 use common\models\WxUnifiedPaymentOrder;
+use SimpleXMLElement;
 use Yii;
 use yii\base\Exception;
 use yii\db\ActiveQuery;
@@ -23,16 +24,39 @@ class WxPaymentHelper
      * @param int $i The status
      * @return string The label for the order status
      */
-    public static function getStatusLabel (int $i): string
+    public static function getStatusLabel(int $i): string
     {
         $labels = [
-            0 => Yii::t('app', 'Order Created'),
-            1 => Yii::t('app', 'Error generating prepay ID'),
-            2 => Yii::t('app', 'Waiting for user confirmation'),
-            3 => Yii::t('app', 'Confirmation error'),
-            4 => Yii::t('app', 'Payment confirmed'),
-            5 => Yii::t('app', 'Order expired'),
-            6 => Yii::t('app', 'Payment cancelled by client'),
+            WxUnifiedPaymentOrder::STATUS_CREATED
+            => Yii::t('app', 'Order Created'),
+            WxUnifiedPaymentOrder::STATUS_PREPAY_ERROR
+            => Yii::t('app', 'Error generating prepay ID'),
+            WxUnifiedPaymentOrder::STATUS_WAITING_CONFIRMATION
+            => Yii::t('app', 'Waiting for user confirmation'),
+            WxUnifiedPaymentOrder::STATUS_CONFIRMATION_ERROR
+            => Yii::t('app', 'Confirmation error'),
+            WxUnifiedPaymentOrder::STATUS_CONFIRMATION_SUCCESS
+            => Yii::t('app', 'Payment confirmed'),
+            WxUnifiedPaymentOrder::STATUS_ORDER_EXPIRED
+            => Yii::t('app', 'Order expired'),
+            WxUnifiedPaymentOrder::STATUS_CANCELLED_BY_CLIENT
+            => Yii::t('app', 'Payment cancelled by client'),
+            WxUnifiedPaymentOrder::STATUS_REFUNDED
+            => Yii::t('app', 'Transfer refunded'),
+            WxUnifiedPaymentOrder::STATUS_NOT_PAY
+            => Yii::t('app', 'Transfer is unpaid'),
+            WxUnifiedPaymentOrder::STATUS_CLOSED
+            => Yii::t('app', 'Transfer is closed'),
+            WxUnifiedPaymentOrder::STATUS_REVOKED
+            => Yii::t('app', 'Transfer revoked'),
+            WxUnifiedPaymentOrder::STATUS_USER_PAYING
+            => Yii::t('app', 'The user is paying'),
+            WxUnifiedPaymentOrder::STATUS_PAY_ERROR
+            => Yii::t('app', 'Payment failed'),
+            WxUnifiedPaymentOrder::STATUS_ACCEPT
+            => Yii::t('app', 'Transfer received, awaiting deduction'),
+            WxUnifiedPaymentOrder::STATUS_SUCCESS
+            => Yii::t('app', 'Payment successful'),
         ];
 
         return $labels[$i];
@@ -92,9 +116,12 @@ class WxPaymentHelper
      * </xml>
      *
      * @param WxUnifiedPaymentOrder $order
+     * @return WxUnifiedPaymentOrder|null
      * @throws Exception
+     * @throws ServerErrorHttpException
+     * @throws \Exception
      */
-    public static function checkOrderStatus(WxUnifiedPaymentOrder $order): ?string
+    public static function updateOrderStatus(WxUnifiedPaymentOrder $order): ?WxUnifiedPaymentOrder
     {
         // Log intention of sending the request.
         $xml = WxPaymentHelper::generateCheckOrderStatusXml($order);
@@ -105,15 +132,135 @@ class WxPaymentHelper
         $log->message = 'Requesting current order status from Wx API';
         $log->raw = $xml;
         $log->headers = Json::encode(Yii::$app->request->headers);
-        $log->notes .= 'Request URL: ' . $url ;
+        $log->notes .= 'Request URL: ' . $url;
         if (!$log->save()) {
             Yii::warning($log->errors, __METHOD__);
         }
 
         // Send the request
         $xmlResponse = self::sendXMLRequest($url, $xml);
-        // TODO update the order
-        return $xmlResponse;
+        if ($xmlResponse === null
+            || !self::isSuccessXMLResponse($xmlResponse)
+            || !self::isValidXMLSignature($xmlResponse)) {
+            return null;
+        }
+        $xmlElem = new SimpleXMLElement($xmlResponse);
+        if (!empty($xmlElem->is_subscribe)) {
+            $order->is_subscribe = (string)$xmlElem->is_subscribe;
+        }
+        if (!empty($xmlElem->bank_type)) {
+            $order->bank_type = (string)$xmlElem->bank_type;
+        }
+        if (!empty($xmlElem->time_end)) {
+            $order->time_end = (string)$xmlElem->time_end;
+        }
+        if (!empty($xmlElem->trade_state)) {
+            $order->trade_state = (string)$xmlElem->trade_state;
+            $order->status = self::getOrderStatus((string)$xmlElem->trade_state);
+        }
+        if (!empty($xmlElem->trade_state_desc)) {
+            $order->trade_state_desc = (string)$xmlElem->trade_state_desc;
+        }
+        if (!empty($xmlElem->cash_fee)) {
+            $order->cash_fee = (string)$xmlElem->cash_fee;
+        }
+        if (!empty($xmlElem->cash_fee_type)) {
+            $order->cash_fee_type = (string)$xmlElem->cash_fee_type;
+        }
+        if (!empty($xmlElem->transaction_id)
+            && (empty($order->transaction_id)
+                || $xmlElem->transaction_id !== $order->transaction_id)) {
+            $order->transaction_id = (string)$xmlElem->transaction_id;
+        }
+        if (!$order->save()) {
+            Yii::debug(["Error updating order $order->id", $order->errors], __METHOD__);
+        }
+        return $order;
+    }
+
+    /**
+     * Get the corresponding value of a WxUnifiedPaymentOrder status given the
+     * trade_state value of the WeChat Pay API response.
+     *
+     * The response can take the following values:
+     *
+     * SUCCESS--支付成功
+     * REFUND--转入退款
+     * NOTPAY--未支付
+     * CLOSED--已关闭
+     * REVOKED--已撤销(刷卡支付)
+     * USERPAYING--用户支付中
+     * PAYERROR--支付失败(其他原因，如银行返回失败)
+     * ACCEPT--已接收，等待扣款
+     *
+     * Documentation is here:
+     * @link https://pay.weixin.qq.com/wiki/doc/api/wxa/wxa_api.php?chapter=9_2
+     *
+     * @param string $tradeState
+     * @return int
+     */
+    protected static function getOrderStatus(string $tradeState): int
+    {
+        switch ($tradeState) {
+            case 'SUCCESS':
+                return WxUnifiedPaymentOrder::STATUS_CONFIRMATION_SUCCESS;
+            case 'REFUND':
+                return WxUnifiedPaymentOrder::STATUS_REFUNDED;
+            case 'NOTPAY':
+                return WxUnifiedPaymentOrder::STATUS_NOT_PAY;
+            case 'CLOSED':
+                return WxUnifiedPaymentOrder::STATUS_CLOSED;
+            case 'REVOKED':
+                return WxUnifiedPaymentOrder::STATUS_REVOKED;
+            case 'USERPAYING':
+                return WxUnifiedPaymentOrder::STATUS_USER_PAYING;
+            case 'PAYERROR':
+                return WxUnifiedPaymentOrder::STATUS_PAY_ERROR;
+            case 'ACCEPT':
+                return WxUnifiedPaymentOrder::STATUS_ACCEPT;
+            default:
+                return WxUnifiedPaymentOrder::STATUS_UNDEFINED_ERROR;
+        }
+    }
+
+    /**
+     * Return whether a XML string returned by the Wechat API contains a
+     * success response.
+     *
+     * The success response will be formatted as follows:
+     *
+     * <xml>
+     *   <return_code><![CDATA[SUCCESS]]></return_code>
+     *   <return_msg><![CDATA[OK]]></return_msg>
+     *   <result_code><![CDATA[SUCCESS]]></result_code>
+     *   ...
+     * </xml>
+     *
+     * @throws \Exception
+     */
+    protected static function isSuccessXMLResponse(string $xmlResponse): bool
+    {
+        $xmlElem = new SimpleXMLElement($xmlResponse);
+        return strcmp($xmlElem->return_code, 'SUCCESS') === 0
+            && strcmp($xmlElem->result_code, 'SUCCESS') === 0;
+    }
+
+    /**
+     * Validate the signature of an XML response. Documentation is here:
+     * @link https://pay.weixin.qq.com/wiki/doc/api/wxa/wxa_api.php?chapter=4_3
+     *
+     * @param string $xml
+     * @return bool
+     */
+    protected static function isValidXMLSignature(string $xml): bool
+    {
+        $xmlElem = simplexml_load_string($xml, "SimpleXMLElement", LIBXML_NOCDATA);
+        $json = json_encode($xmlElem);
+        $array = json_decode($json, TRUE);
+        $payload = $array;
+        unset($payload['sign']);
+        $sign = self::generateOrderSignature($payload);
+        return strcmp($sign, $array['sign']) === 0;
     }
 
     /**
@@ -179,16 +326,10 @@ class WxPaymentHelper
         $wxResponse = curl_exec($ch);
         $log->message = 'Received response from WxPay';
         $log->raw = $wxResponse;
-        if (!$log->save()) {
-            Yii::warning($log->errors, __METHOD__);
-        }
+        $log->save();
         if (!$wxResponse) {
-            $error_msg = 'No response from WxPayment API';
-            $log->message = $error_msg;
-            if (!$log->save()) {
-                Yii::warning($log->errors, __METHOD__);
-            }
-//            throw new ServerErrorHttpException($error_msg);
+            $log->message = 'No response from WxPayment API';
+            $log->save();
             return null;
         }
         return $wxResponse;
@@ -223,10 +364,10 @@ class WxPaymentHelper
      * @return string
      * @throws Exception
      */
-    protected static function generateNonceStr ($length = 32): string
+    protected static function generateNonceStr($length = 32): string
     {
         $str = Yii::$app->security->generateRandomString($length);
-        return str_replace(['_','-'], '', $str);
+        return str_replace(['_', '-'], '', $str);
     }
 
     /**

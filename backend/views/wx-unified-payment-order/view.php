@@ -39,6 +39,8 @@ WxPaymentOrderAsset::register($this);
                 'label' => Yii::t('app', 'Status'),
                 'value' => WxPaymentHelper::getStatusLabel($model->status),
             ],
+            'trade_state',
+            'trade_state_desc',
             [
                 'label' => Yii::t('app', 'Family'),
                 'value' => empty($model->family_id) ? '' :
@@ -65,10 +67,6 @@ WxPaymentOrderAsset::register($this);
                     return Yii::$app->formatter->asCurrency($model->getOrderAmountRmb());
                 }
             ],
-            [
-                'label' => Yii::t('app', 'Status'),
-                'value' => WxPaymentHelper::getStatusLabel($model->status)
-            ],
             'appid',
             'mch_id',
             'device_info',
@@ -83,6 +81,8 @@ WxPaymentOrderAsset::register($this);
             'bank_type',
             'is_subscribe',
             'fee_type',
+            'cash_fee',
+            'cash_fee_type',
             'spbill_create_ip',
             'time_start',
             'time_expire',
