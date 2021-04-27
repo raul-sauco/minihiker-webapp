@@ -1,36 +1,44 @@
 <?php
 
+use backend\assets\WxPaymentOrderAsset;
 use common\helpers\WxPaymentHelper;
 use common\models\WxUnifiedPaymentOrder;
 use yii\helpers\Html;
-use yii\web\YiiAsset;
 use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
 /* @var $model common\models\WxUnifiedPaymentOrder */
 
 $this->title = Yii::t('app', 'Wx Unified Payment Order') . ' - ' . $model->id;
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Wx Unified Payment Orders'), 'url' => ['index']];
+$this->params['breadcrumbs'][] = [
+    'label' => Yii::t('app', 'Wx Unified Payment Orders'),
+    'url' => ['index']
+];
 $this->params['breadcrumbs'][] = $this->title;
-YiiAsset::register($this);
+WxPaymentOrderAsset::register($this);
 ?>
 <div class="wx-unified-payment-order-view">
 
     <p>
-        <?= Html::a(Yii::t('app', 'Update'), ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a(Yii::t('app', 'Delete'), ['delete', 'id' => $model->id], [
-            'class' => 'btn btn-danger',
-            'data' => [
-                'confirm' => Yii::t('app', 'Are you sure you want to delete this item?'),
-                'method' => 'post',
-            ],
-        ]) ?>
+        <?= Html::a(
+            Yii::t('app', 'Update'),
+            ['update', 'id' => $model->id],
+            ['class' => 'btn btn-primary'])
+        ?>
+        <button class="btn btn-success" id="check-order-status-button"
+                data-order-id="<?= $model->id ?>">
+            <?= Yii::t('app', 'Check status') ?>
+        </button>
     </p>
 
     <?= DetailView::widget([
         'model' => $model,
         'attributes' => [
             // 'id',
+            [
+                'label' => Yii::t('app', 'Status'),
+                'value' => WxPaymentHelper::getStatusLabel($model->status),
+            ],
             [
                 'label' => Yii::t('app', 'Family'),
                 'value' => empty($model->family_id) ? '' :
@@ -51,7 +59,7 @@ YiiAsset::register($this);
             ],
             [
                 'attribute' => 'total_fee',
-                'value' => static function($model) {
+                'value' => static function ($model) {
                     // Total fee is in cents but we want to display rmb
                     /** @var WxUnifiedPaymentOrder $feeInRmb */
                     return Yii::$app->formatter->asCurrency($model->getOrderAmountRmb());
@@ -71,10 +79,14 @@ YiiAsset::register($this);
             'detail:ntext',
             'attach',
             'out_trade_no',
+            'transaction_id',
+            'bank_type',
+            'is_subscribe',
             'fee_type',
             'spbill_create_ip',
             'time_start',
             'time_expire',
+            'time_end',
             'goods_tag',
             'notify_url:url',
             'trade_type',

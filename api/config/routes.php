@@ -34,4 +34,5 @@ return [
     ['class' => UrlRule::class, 'controller' => 'program-price'],
     ['class' => UrlRule::class, 'controller' => 'program-search', 'pluralize' => false],
     ['class' => UrlRule::class, 'controller' => 'qa'],
+    ['class' => UrlRule::class, 'controller' => 'wx-payment-check-order'],
 ];

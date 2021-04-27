@@ -80,7 +80,7 @@ class WxPaymentHelper extends \common\helpers\WxPaymentHelper
 
         $order->attach = self::generateOrderAttach();
 
-        $order->nonce_str = self::generateOrderNonceStr();
+        $order->nonce_str = self::generateNonceStr(20);
 
         $order->sign_type = 'MD5';
 
@@ -133,18 +133,6 @@ class WxPaymentHelper extends \common\helpers\WxPaymentHelper
     }
 
     /**
-     * Generate a 32 character length pseudo-random string.
-     *
-     * @return string
-     * @throws Exception
-     */
-    private static function generateOrderNonceStr (): string
-    {
-        $str = Yii::$app->security->generateRandomString(20);
-        return str_replace(['_','-'], '', $str);
-    }
-
-    /**
      * Generate the attach field for a Wx unified payment order.
      *
      * @return string
@@ -186,71 +174,18 @@ class WxPaymentHelper extends \common\helpers\WxPaymentHelper
         // iterate over the attributes and get rid of nulls
         $attrs = [];
         foreach ($all_attrs as $name => $value) {
-
             if (!empty($order->getAttribute($name))) {
-
                 $attrs[$name] = $value;
-
             }
         }
 
-        // Create the xml element and add the tags
-        $xml = '<xml>';
-
-        foreach ($attrs as $name => $value) {
-
-            $xml .= "<$name>$value</$name>";
-
-        }
-
-        // Add the signature to the XML
-        $sign = self::generateOrderSignature($attrs);
-        $xml .= "<sign>$sign</sign>";
-
-        $xml .= '</xml>';
-
-        return $xml;
-    }
-
-    /**
-     * Generate the expected signature as detailed on
-     * https://pay.weixin.qq.com/wiki/doc/api/wxa/wxa_api.php?chapter=4_3
-     *
-     * @param $attrs [] The content to be signed
-     * @return mixed
-     */
-    public static function generateOrderSignature ($attrs)
-    {
-        // Order the keys alphabetically, as expected by the api
-        ksort($attrs);
-
-        // Empty signature string
-        $string = '';
-
-        // Iterate over the array, no values will be empty
-        foreach ($attrs as $name => $value) {
-
-            $string .= "&$name=$value";
-
-        }
-
-        // trim the first &
-        // $tring = preg_replace('/^&/', '', $tring);
-        $string = ltrim($string, '&');
-
-        $key = strtolower(Yii::$app->params['wechat_mch_secret_key']);
-
-        // Add the wechat secret key
-        $string .= '&key=' . $key;
-
-        // Generate the signature and return it
-        return strtoupper(md5($string));
+        return self::attrToXml($attrs);
     }
 
     /**
      * Generate the WxUnifiedPayment order body.
      * The body has a maximum length of 128 character.
-     * https://pay.weixin.qq.com/wiki/doc/api/wxa/wxa_api.php?chapter=9_1&index=1
+     * @link https://pay.weixin.qq.com/wiki/doc/api/wxa/wxa_api.php?chapter=9_1&index=1
      *
      * @param $priceId
      * @return string

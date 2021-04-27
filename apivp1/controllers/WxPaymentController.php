@@ -22,7 +22,7 @@ use yii\web\UnauthorizedHttpException;
  */
 class WxPaymentController extends BaseController
 {
-    protected $_verbs = ['POST','OPTIONS'];
+    protected $_verbs = ['POST', 'OPTIONS'];
 
     /**
      * Preprocess a wx payment order. This method expects two parameters:
@@ -35,8 +35,9 @@ class WxPaymentController extends BaseController
      * @return array
      * @throws Exception
      * @throws ServerErrorHttpException
+     * @throws \Exception
      */
-    public function actionCreate () : array
+    public function actionCreate(): array
     {
         $post = Yii::$app->request->post();
 
@@ -76,114 +77,18 @@ class WxPaymentController extends BaseController
         $log->raw = $xml;
         $log->headers = Json::encode(Yii::$app->request->headers);
         $log->notes = 'Origin IP: ' . Yii::$app->request->getUserIP() . "\n";
-        $log->notes .= 'Request URL: ' . $url ;
+        $log->notes .= 'Request URL: ' . $url;
         if (!$log->save()) {
             Yii::warning($log->errors, __METHOD__);
         }
 
-        // Create a new log instance
-        $log = new WxPaymentLog();
-
-        // Send the request
-
-        if (!function_exists('curl_version')) {
-            $log->message = 'This server does not have curl';
-            if (!$log->save()) {
-                Yii::warning($log->errors, __METHOD__);
-            }
-            throw new ServerErrorHttpException(
-                'This server does not have an updated version of curl'
-            );
-        }
-
-        $ch = curl_init($url);
-        curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $xml);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: text/xml'));
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-
-        $wx_response = curl_exec($ch);
-
-        $log->message = 'Received response from WxPay';
-        $log->raw = $wx_response;
-        if (!$log->save()) {
-            Yii::warning($log->errors, __METHOD__);
-        }
-
-        if ($wx_response) {
-
-            $xml_elem = new SimpleXMLElement($wx_response);
-            $return_code = $xml_elem->return_code;
-
-            if (strcmp($return_code, 'SUCCESS') === 0) {
-
-                // If return_code is 'SUCCESS' we can check the result
-                $result_code = $xml_elem->result_code;
-
-                if (strcmp($result_code,'SUCCESS') === 0) {
-
-                    // Both result_code and return_code are good, we have prepay_id
-                    $prepay_id = (string)$xml_elem->prepay_id;
-                    $log->message = 'WxPayment request SUCCESS, prepay_id: ' . $prepay_id;
-                    if (!$log->save()) {
-                        Yii::warning($log->errors, __METHOD__);
-                    }
-
-                    $attrs = [
-                        'appId' => $order->appid,
-                        'timeStamp' => time(),
-                        'nonceStr' => $order->nonce_str,
-                        'package' => 'prepay_id=' . $prepay_id,
-                        'signType' => $order->sign_type
-                    ];
-
-                    $sign = WxPaymentHelper::generateOrderSignature($attrs);
-                    $order->prepay_id = $prepay_id;
-                    $order->prepay_sign = $sign;
-                    $order->prepay_timestamp = (string)time();
-                    $order->status = WxUnifiedPaymentOrder::STATUS_WAITING_CONFIRMATION;
-                    if (!$order->save()) {
-                        Yii::error(
-                            'Error updating order ' . $order->id .
-                              ' to STATUS_WAITING_CONFIRMATION.',
-                            __METHOD__
-                        );
-                        Yii::error($order->errors, __METHOD__);
-                    }
-
-                    $attrs['paySign'] = $sign;
-
-                    return $attrs;
-
-                }
-
-                $error_msg = 'WxPayment API result_code: FAIL';
-                $log->message = $error_msg;
-                $log->notes = "WxPay API err_code: $xml_elem->err_code, $xml_elem->err_code_des.";
-                if (!$log->save()) {
-                    Yii::warning($log->errors, __METHOD__);
-                }
-
-                $order->status = WxUnifiedPaymentOrder::STATUS_PREPAY_ERROR;
-                if (!$order->save()) {
-                    Yii::error(
-                        'Error updating order ' . $order->id . ' to STATUS_PREPAY_ERROR.',
-                        __METHOD__
-                    );
-                    Yii::error($order->errors, __METHOD__);
-                }
-
-                throw new ServerErrorHttpException($error_msg);
-
-            }
-
-            $error_msg = 'WxPayment API return_code: FAIL';
+        $xmlElem = new SimpleXMLElement(WxPaymentHelper::sendXMLRequest($url, $xml));
+        if ($xmlElem === null) {
+            $error_msg = 'No response from WxPayment API';
             $log->message = $error_msg;
-            $log->notes = $xml_elem->return_msg;
             if (!$log->save()) {
                 Yii::warning($log->errors, __METHOD__);
             }
-
             $order->status = WxUnifiedPaymentOrder::STATUS_PREPAY_ERROR;
             if (!$order->save()) {
                 Yii::error(
@@ -192,17 +97,55 @@ class WxPaymentController extends BaseController
                 );
                 Yii::error($order->errors, __METHOD__);
             }
-
             throw new ServerErrorHttpException($error_msg);
-
         }
+        // We have a valid SimpleXMLElement
+        $return_code = $xmlElem->return_code;
 
-        $error_msg = 'No response from WxPayment API';
-        $log->message = $error_msg;
+        if (strcmp($return_code, 'SUCCESS') === 0) {
+            // If return_code is 'SUCCESS' we can check the result
+            $result_code = $xmlElem->result_code;
+            if (strcmp($result_code, 'SUCCESS') === 0) {
+                // Both result_code and return_code are good, we have prepay_id
+                $prepay_id = (string)$xmlElem->prepay_id;
+                $log->message = 'WxPayment request SUCCESS, prepay_id: ' . $prepay_id;
+                if (!$log->save()) {
+                    Yii::warning($log->errors, __METHOD__);
+                }
+                $attrs = [
+                    'appId' => $order->appid,
+                    'timeStamp' => time(),
+                    'nonceStr' => $order->nonce_str,
+                    'package' => 'prepay_id=' . $prepay_id,
+                    'signType' => $order->sign_type
+                ];
+                $sign = WxPaymentHelper::generateOrderSignature($attrs);
+                $order->prepay_id = $prepay_id;
+                $order->prepay_sign = $sign;
+                $order->prepay_timestamp = (string)time();
+                $order->status = WxUnifiedPaymentOrder::STATUS_WAITING_CONFIRMATION;
+                if (!$order->save()) {
+                    Yii::error(
+                        'Error updating order ' . $order->id .
+                        ' to STATUS_WAITING_CONFIRMATION.',
+                        __METHOD__
+                    );
+                    Yii::error($order->errors, __METHOD__);
+                }
+                $attrs['paySign'] = $sign;
+                return $attrs;
+            }
+            $error_msg = 'WxPayment API result_code: FAIL';
+            $log->message = $error_msg;
+            $log->notes = "WxPay API err_code: $xmlElem->err_code, $xmlElem->err_code_des.";
+        } else {
+            $error_msg = 'WxPayment API return_code: FAIL';
+            $log->message = $error_msg;
+            $log->notes = $xmlElem->return_msg;
+        }
         if (!$log->save()) {
             Yii::warning($log->errors, __METHOD__);
         }
-
         $order->status = WxUnifiedPaymentOrder::STATUS_PREPAY_ERROR;
         if (!$order->save()) {
             Yii::error(
@@ -211,7 +154,6 @@ class WxPaymentController extends BaseController
             );
             Yii::error($order->errors, __METHOD__);
         }
-
         throw new ServerErrorHttpException($error_msg);
     }
 }
