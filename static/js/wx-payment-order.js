@@ -27,8 +27,7 @@ function checkOrderStatus(id) {
     headers: Mh.globalData.requestHeaders,
     success: res => {
       // If successful will get a string
-      console.log(res);
-      $modalContent.html(`Success, got info`);
+      location.reload();
     },
     error: err => {
       console.error(err);

@@ -140,8 +140,8 @@ class WxPaymentHelper
         // Send the request
         $xmlResponse = self::sendXMLRequest($url, $xml);
         if ($xmlResponse === null
-            || !self::isSuccessXMLResponse($xmlResponse)
-            || !self::isValidXMLSignature($xmlResponse)) {
+            || !self::isSuccessXMLResponse($xmlResponse)) {
+//            || !self::isValidXMLSignature($xmlResponse)) { TODO enable signature check.
             return null;
         }
         $xmlElem = new SimpleXMLElement($xmlResponse);
