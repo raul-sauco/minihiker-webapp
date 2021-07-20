@@ -1,7 +1,9 @@
 <?php
+
 namespace common\fixtures;
 
 use common\models\AuthItemChild;
+use yii\base\InvalidConfigException;
 use yii\test\ActiveFixture;
 
 /**
@@ -11,4 +13,13 @@ use yii\test\ActiveFixture;
 class AuthItemChildFixture extends ActiveFixture
 {
     public $modelClass = AuthItemChild::class;
+
+    /**
+     * @throws InvalidConfigException
+     */
+    public function init()
+    {
+        parent::init();
+        $this->dataFile = codecept_data_dir('auth_item_child.php');
+    }
 }

@@ -2,21 +2,19 @@
 
 namespace common\fixtures;
 
-use common\models\ProgramGroup;
+use common\models\ProgramPeriod;
 use yii\base\InvalidConfigException;
 use yii\test\ActiveFixture;
 
 /**
- * Class ProgramGroupFixture
+ * Class ProgramPeriodFixture
  * @package common\fixtures
  */
-class ProgramGroupFixture extends ActiveFixture
+class ProgramPeriodFixture extends ActiveFixture
 {
-    public $modelClass = ProgramGroup::class;
+    public $modelClass = ProgramPeriod::class;
 
     public $depends = [
-        LocationFixture::class,
-        ProgramTypeFixture::class,
         UserFixture::class,
     ];
 
@@ -26,6 +24,6 @@ class ProgramGroupFixture extends ActiveFixture
     public function init()
     {
         parent::init();
-        $this->dataFile = codecept_data_dir('program_group.php');
+        $this->dataFile = codecept_data_dir('program_period.php');
     }
 }
