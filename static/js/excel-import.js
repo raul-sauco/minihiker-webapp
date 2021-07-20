@@ -744,7 +744,7 @@ const app = new Vue({
         data.wechat = row.cells[15].value.substr(0, 64);
       }
       const remarks = row.cells[5].value;
-      if (remarks.includes('会员')) {
+      if (remarks && remarks.includes('会员')) {
         if (remarks.includes('非会员')) {
           data.category = '非会员';
         } else {
@@ -783,6 +783,7 @@ const app = new Vue({
               `Error obtaining row ${row.index} family id`, family);
           }
         } catch (error) {
+          console.error(`Failed to create family for row ${row.index}`, error);
           throw new Error(`Failed to create family for row ${row.index}`);
         }
       }
@@ -878,13 +879,16 @@ const app = new Vue({
      */
     uploadProgramFamily: async function (row) {
       const url = this.url + 'program-families';
+      const now = new Date();
+      const date = now.getFullYear() + '年' + (now.getMonth() + 1) + '月' + now.getDate() + '日';
+      const remarks = (row.cells[5].value ? row.cells[5].value + '(表格上传数据)' : '表格上传数据') + date;
       const data = {
         program_id: row.programId,
         family_id: row.familyId,
         cost: +row.cells[4].value,
         final_cost: +row.cells[3].value,
         status: 7,
-        remarks: row.cells[5].value
+        remarks,
       };
       const geturl = `${url}/${data.program_id}/${data.family_id}`;
       let res;
@@ -1020,7 +1024,7 @@ const app = new Vue({
         remarks += '到' + data.wechat + '在' + date;
       }
       let category = null;
-      if (row.cells[5].value.includes('会员')) {
+      if (row.cells[5].value && row.cells[5].value.includes('会员')) {
         if (row.cells[5].value.includes('非会员')) {
           category = '非会员';
         } else {
