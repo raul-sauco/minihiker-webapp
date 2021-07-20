@@ -60,3 +60,37 @@ wxapiv1
 vendor/                  contains dependent 3rd-party packages
 environments/            contains environment-based overrides
 ```
+
+# Example apache configuration for development in a Ubuntu machine.
+
+## Create a `VirtualHost` entry for each independent application, for example, for the public API
+
+```apacheconf
+<VirtualHost wxapi.mh:80>
+     ServerAdmin webmaster@example.com
+     DocumentRoot /var/www/html/mh-apivp1
+     ServerName wxapi.minihiker.com
+     ServerAlias minihiker-wxapi.com
+     
+    <Directory "/var/www/html/mh-apivp1">
+        # use mod_rewrite for pretty URL support
+        RewriteEngine on
+        # If a directory or a file exists, use the request directly
+        RewriteCond %{REQUEST_FILENAME} !-f
+        RewriteCond %{REQUEST_FILENAME} !-d
+        # Otherwise forward the request to index.php
+        RewriteRule . index.php
+
+        # use index.php as index file
+        DirectoryIndex index.php
+        Require all granted
+
+    </Directory>
+</VirtualHost>
+```
+
+Add the corresponding entry on the hosts file, i.e. `/etc/hosts` if running Ubuntu.
+
+```apacheconf
+127.0.0.1       wxapi.mh
+```
