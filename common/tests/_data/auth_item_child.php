@@ -6,14 +6,15 @@ $adminItems = [
     'deleteLocation',
     'deleteProgram',
     'deleteSupplier',
-    'listUsers','viewUser','updateUsers','createUser', 'deleteUser',
+    'listUsers', 'viewUser', 'updateUsers', 'createUser', 'deleteUser',
     'user'
 ];
 
 $userItems = [
-    'listClients','viewClient','createClient','updateClient','deleteClient',
-    'listFamilies','viewFamily','createFamily','updateFamily',
-    'listPrograms','viewProgram','createProgram','updateProgram',
+    'listClients', 'viewClient', 'createClient', 'updateClient', 'deleteClient',
+    'listFamilies', 'viewFamily', 'createFamily', 'updateFamily',
+    'viewIndex', 'viewMan',
+    'listPrograms', 'viewProgram', 'createProgram', 'updateProgram',
 ];
 
 $clientItems = [

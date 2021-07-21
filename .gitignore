@@ -38,6 +38,7 @@ phpunit.phar
 /frontend/web/index.php
 /frontend/web/index-test.php
 /frontend/web/robots.txt
+/frontend/web/assets
 /frontend/web/css
 /frontend/web/img
 /frontend/web/js/jhtapi.js
@@ -50,6 +51,9 @@ phpunit.phar
 /backend/web/img
 /backend/web/js
 /backend/web/contract
+
+/runtime/*
+_support/
 
 # rsync files
 /publish

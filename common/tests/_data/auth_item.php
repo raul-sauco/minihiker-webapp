@@ -1,10 +1,11 @@
 <?php
 
-$roles = ['admin','user','client'];
+$roles = ['admin', 'user', 'client'];
 
 $permissions = [
     'listClients', 'viewClient', 'createClient', 'updateClient', 'deleteClient',
     'listFamilies', 'viewFamily', 'createFamily', 'updateFamily', 'deleteFamily',
+    'viewIndex', 'viewMan',
     'listPrograms', 'viewProgram', 'createProgram', 'updateProgram', 'deleteProgram',
 ];
 

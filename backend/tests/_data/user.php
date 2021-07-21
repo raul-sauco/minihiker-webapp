@@ -1,5 +1,18 @@
 <?php
+
+use common\models\User;
+
 return [
+    [
+        'id' => 1,
+        'username' => 'user-1',
+        'auth_key' => 'user-1-auth-key',
+        'password' => '$2y$13$90kDTNrheUbenbIyNAxww.m7B9TBL2KjnR7w2.RDbIdL9Z4dtqXkC',
+        'created_at' => '1392559490',
+        'updated_at' => '1392559490',
+        'access_token' => 'test-access-token',
+        'user_type' => User::TYPE_ADMIN,
+    ],
     [
         'username' => 'erau',
         'auth_key' => 'tUu1qHcde0diwUol3xeI-18MuHkkprQI',
@@ -10,7 +23,7 @@ return [
         'created_at' => '1392559490',
         'updated_at' => '1392559490',
         'access_token' => 'test-access-token',
-        'user_type' => \common\models\User::TYPE_ADMIN,
+        'user_type' => User::TYPE_ADMIN,
 //        'email' => 'sfriesen@jenkins.info',
     ],
 ];

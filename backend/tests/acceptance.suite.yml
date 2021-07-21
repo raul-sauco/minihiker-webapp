@@ -1,0 +1,12 @@
+suite_namespace: backend\tests\acceptance
+actor: AcceptanceTester
+modules:
+    enabled:
+        - WebDriver:
+            url: http://backend.mh
+            browser: chrome
+            capabilities:
+                chromeOptions:
+                    w3c: false
+        - Yii2:
+            part: orm
