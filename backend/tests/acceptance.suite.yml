@@ -6,6 +6,10 @@ modules:
             url: http://backend.mh
             browser: chrome
             capabilities:
+                browserName: "chrome"
+                javascriptEnabled: true,
+                webStorageEnabled: true,
+                nativeEvents: true
                 chromeOptions:
                     w3c: false
         - Yii2:

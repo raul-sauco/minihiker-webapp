@@ -2,7 +2,6 @@
 
 namespace api\search;
 
-use api\models\Location;
 use api\models\Program;
 use api\models\ProgramType;
 use yii\data\ActiveDataProvider;
@@ -24,8 +23,8 @@ class ProgramSearch
     public static function search($params): ActiveDataProvider
     {
         $query = Program::find()->joinWith('programGroup pg')
-            ->where(['>=', 'start_date', $params['start-date']])
-            ->andWhere(['<=', 'end_date', $params['end-date']]);
+            ->where(['start_date' => $params['start-date']])
+            ->andWhere(['end_date' => $params['end-date']]);
 
         if ($query->count() > 1) {
             $backupQuery = clone $query;
