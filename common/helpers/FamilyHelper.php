@@ -1,4 +1,5 @@
 <?php
+
 namespace common\helpers;
 
 use common\models\Family;
@@ -11,8 +12,6 @@ use yii\web\ServerErrorHttpException;
 
 /**
  * Helper functionality for Family model and FamilyController
- *
- * @author Raul Sauco
  */
 class FamilyHelper
 {
@@ -29,17 +28,17 @@ class FamilyHelper
      */
     public static function generateSerialNumber(string $category): ?string
     {
-        $family = Family::find()   
+        $family = Family::find()
             ->where(['category' => $category])
             ->orderBy('serial_number DESC')
             ->one();
-        
+
         $lastSerialNumber = $family->serial_number;
-        
+
         if ($lastSerialNumber === null) {
-            
+
             return null;
-            
+
         }
 
         $helper = new self();
@@ -71,7 +70,7 @@ class FamilyHelper
 
         $digits = self::TOTAL_DIGITS_ON_SERIAL_NUMBER;
 
-        return $letter . sprintf('%0'. $digits . 'd', ($number));
+        return $letter . sprintf('%0' . $digits . 'd', ($number));
     }
 
     /**
@@ -81,20 +80,20 @@ class FamilyHelper
      * @param string $serialNumber
      * @return string The serial number padded with 0s
      */
-    public static function padSerial (string $serialNumber): ?string
+    public static function padSerial(string $serialNumber): ?string
     {
         $pattern = '~^\w\d{1,6}$~';
-        
+
         if (!preg_match($pattern, $serialNumber)) {
-            
+
             Yii::error(
                 Yii::t('app', 'Wrong parameter serial number {serialNumber}.' .
                     'This parameter can only be one character followed by 1 to 6 digits.',
                     ['serialNumber' => $serialNumber])
-                ,__METHOD__);
-            
+                , __METHOD__);
+
             return null;
-            
+
         }
 
         $helper = new self();
@@ -103,7 +102,7 @@ class FamilyHelper
 
         $number = $helper->extractNumber($serialNumber);
 
-        $number = sprintf('%0'. self::TOTAL_DIGITS_ON_SERIAL_NUMBER . 'd', ($number));
+        $number = sprintf('%0' . self::TOTAL_DIGITS_ON_SERIAL_NUMBER . 'd', ($number));
 
         return $letter . $number;
     }
@@ -118,10 +117,10 @@ class FamilyHelper
     {
         // Find non digits 
         $pattern = '~\D~';
-        
+
         // Replace with nothing
         $replacement = '';
-        
+
         return preg_replace($pattern, $replacement, $serialNumber);
     }
 
@@ -148,8 +147,7 @@ class FamilyHelper
     {
         $number = str_pad($family->id, 6, 0, STR_PAD_LEFT);
 
-        switch ($family->category)
-        {
+        switch ($family->category) {
             case '会员' :
                 $letter = 'A';
                 break;
@@ -184,7 +182,7 @@ class FamilyHelper
         $touched = false;
 
         if (!empty($duplicate->membership_date &&
-                (empty($original->membership_date) ||
+            (empty($original->membership_date) ||
                 $original->membership_date > $duplicate->membership_date))) {
             $original->membership_date = $duplicate->membership_date;
             $touched = true;
@@ -242,7 +240,7 @@ class FamilyHelper
         }
 
         foreach ($duplicate->programFamilies as $programFamily) {
-
+            // TODO extract this logic into a method that properly handles edge cases
             $programFamily->family_id = $original->id;
             if (!$programFamily->save()) {
                 Yii::error("Error saving ProgramFamily " .
