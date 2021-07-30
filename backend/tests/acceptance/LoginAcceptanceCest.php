@@ -27,15 +27,14 @@ class LoginCest
     {
         $I->amOnPage(Url::toRoute('/site/login'));
         $I->see('Login', 'h1');
-
         $I->amGoingTo('try to login with correct credentials');
         $I->fillField('input[name="LoginForm[username]"]', 'user-1');
         $I->fillField('input[name="LoginForm[password]"]', 'password');
         $I->click('login-button');
         $I->wait(1);
         $I->expectTo('see user info');
-        $I->see('退出(user-1)');
+        $I->see('Logout (user-1)');
         $I->expectTo('see the main page text');
-        $I->see('我们的客户是谁？');
+        $I->see('Who are our clients?');
     }
 }

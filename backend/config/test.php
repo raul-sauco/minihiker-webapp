@@ -1,6 +1,7 @@
 <?php
 return [
     'id' => 'app-backend-tests',
+    'language' => 'en-US',
     'components' => [
         'assetManager' => [
             'basePath' => __DIR__ . '/../web/assets',
