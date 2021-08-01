@@ -3,6 +3,7 @@
 namespace common\helpers;
 
 use common\models\Family;
+use common\models\ProgramFamily;
 use common\models\WxUnifiedPaymentOrder;
 use Throwable;
 use Yii;
@@ -164,7 +165,6 @@ class FamilyHelper
 
     /**
      * Merge a family record's data into another and delete the duplicate.
-     *
      * @param Family $original
      * @param Family $duplicate
      * @return bool
@@ -200,10 +200,7 @@ class FamilyHelper
 
         // Update related records
         foreach ($duplicate->clients as $client) {
-            $client->family_id = $original->id;
-            if (!$client->save()) {
-                Yii::error("Error saving Client $client->id", __METHOD__);
-                Yii::error($client->errors, __METHOD__);
+            if (!ClientHelper::migrateClientToFamily($client, $original)) {
                 $transaction->rollBack();
                 return false;
             }
@@ -240,13 +237,7 @@ class FamilyHelper
         }
 
         foreach ($duplicate->programFamilies as $programFamily) {
-            // TODO extract this logic into a method that properly handles edge cases
-            $programFamily->family_id = $original->id;
-            if (!$programFamily->save()) {
-                Yii::error("Error saving ProgramFamily " .
-                    "p $programFamily->program_id f $programFamily->family_id",
-                    __METHOD__);
-                Yii::error($programFamily->errors, __METHOD__);
+            if (!ProgramFamilyHelper::migrateProgramFamilyToNewFamily($programFamily, $original)) {
                 $transaction->rollBack();
                 return false;
             }
@@ -306,5 +297,15 @@ class FamilyHelper
             }
         }
         // Delete programFamily records.
+        /** @var ProgramFamily $programFamily */
+        foreach ($family->getProgramFamilies()->each() as $programFamily) {
+            if (!$programFamily->delete()) {
+                Yii::error(
+                    "Error deleting ProgramFamily $programFamily->program_id, " .
+                    "$programFamily->family_id",
+                    __METHOD__
+                );
+            }
+        }
     }
 }

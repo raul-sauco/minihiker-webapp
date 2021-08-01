@@ -15,7 +15,7 @@ class ProgramClientFixture extends ActiveFixture
     public $modelClass = ProgramClient::class;
 
     public $depends = [
-        FamilyFixture::class,
+        ClientFixture::class,
         ProgramFixture::class,
         UserFixture::class,
     ];
