@@ -123,8 +123,8 @@ $this->params['breadcrumbs'][] = $this->title;
                     return $data->program->getNamei18n();
                 }
             ],
-            'remarks',
-            'cost',
+            'remarks:ntext',
+            'cost:currency:cny',
             'discount',
             'final_cost',
             [

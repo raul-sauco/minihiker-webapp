@@ -217,10 +217,59 @@ class ProgramFamilyHelper
     public static function mergeProgramFamilyRecords(
         ProgramFamily $original, ProgramFamily $duplicate): bool
     {
-        // todo complete implementation
+
+        $remarks = empty(trim($original->remarks)) ? $original->remarks . "\n" : '';
+        $remarks .= Yii::t('app', 'Merged with family {family} on {date}', [
+                'family' => $duplicate->family_id,
+                'date' => date('Y-m-d'),
+            ]);
+        if (!empty(trim($duplicate->remarks))) {
+            $remarks .= $duplicate->remarks . "\n";
+        }
+        $remarks .= self::mergeFinancialData($original, $duplicate);
         if (!$duplicate->delete()) {
             return false;
         }
+//        $original->remarks = preg_replace('/^\s+/', '', $remarks);
+        $original->remarks = ltrim($remarks, "\n");
+        if (!$original->save()) {
+            Yii::error(["Error saving ProgramFamily " .
+                "p $original->program_id f $original->family_id", $original->errors],
+                __METHOD__);
+            return false;
+        }
         return true;
+    }
+
+    /**
+     * Merge financial information for two ProgramFamily records.
+     * @param ProgramFamily $original
+     * @param ProgramFamily $duplicate
+     * @return string
+     */
+    private static function mergeFinancialData(ProgramFamily $original, ProgramFamily $duplicate): string
+    {
+        $remarks = '';
+        $attrs = ['cost', 'discount', 'final_cost'];
+        foreach ($attrs as $attr) {
+            $base = $original->getAttribute($attr);
+            $new = $duplicate->getAttribute($attr);
+            if ($base !== null) {
+                if ($new !== null) {
+                    if ($base !== $new) {
+                        $remarks .= "\n" . Yii::t('app',
+                            'Conflicting {attr} value {value}', [
+                                'attr' => $original->getAttributeLabel($attr),
+                                'value' => $new,
+                            ]);
+                    }
+                    // If base === new, no need to do anything
+                }
+                // If $new is null, no need to do anything
+            } elseif ($new !== null) {
+                $original->setAttribute($attr, $new);
+            }
+        }
+        return $remarks;
     }
 }
