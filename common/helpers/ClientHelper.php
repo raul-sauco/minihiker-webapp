@@ -256,4 +256,23 @@ class ClientHelper
             }
         }
     }
+
+    /**
+     * Migrate a client from their current family to a new one.
+     * ProgramClients point to the client and will be updated correctly.
+     * ProgramFamily records from the duplicate family will be deleted.
+     * @param Client $client
+     * @param Family $family
+     * @return bool
+     */
+    public static function migrateClientToFamily(Client $client, Family $family): bool
+    {
+        $client->family_id = $family->id;
+        if (!$client->save()) {
+            Yii::error("Error saving Client $client->id", __METHOD__);
+            Yii::error($client->errors, __METHOD__);
+            return false;
+        }
+        return true;
+    }
 }

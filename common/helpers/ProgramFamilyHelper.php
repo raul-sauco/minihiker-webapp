@@ -48,7 +48,7 @@ class ProgramFamilyHelper
             return false;
         }
         if (ProgramFamily::findOne([
-            'program_id' => $program->id, 'family_id' => $family->id]) !== null) {
+                'program_id' => $program->id, 'family_id' => $family->id]) !== null) {
             Yii::info(
                 "Already existing ProgramFamily ($programId,$familyId)",
                 __METHOD__
@@ -176,5 +176,100 @@ class ProgramFamilyHelper
         Yii::debug(
             "Deleted $count orphaned ProgramFamily records",
             __METHOD__);
+    }
+
+    /**
+     * Migrate a ProgramFamily record from their current family to a new one. It will try to preserve
+     * as much of the information as possible.
+     * @param ProgramFamily $programFamily
+     * @param Family $family
+     * @return bool whether migration was successful
+     * @throws StaleObjectException
+     * @throws Throwable
+     */
+    public static function migrateProgramFamilyToNewFamily(
+        ProgramFamily $programFamily, Family $family): bool
+    {
+        if (($originalProgramFamily = ProgramFamily::findOne([
+                'program_id' => $programFamily->program_id,
+                'family_id' => $family->id])) !== null) {
+            return self::mergeProgramFamilyRecords($originalProgramFamily, $programFamily);
+        }
+        // The original family did not have a link with this program
+        $programFamily->family_id = $family->id;
+        if (!$programFamily->save()) {
+            Yii::error("Error saving ProgramFamily " .
+                "p $programFamily->program_id f $programFamily->family_id",
+                __METHOD__);
+            Yii::error($programFamily->errors, __METHOD__);
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * @param ProgramFamily $original
+     * @param ProgramFamily $duplicate
+     * @return bool whether merge was successful
+     * @throws StaleObjectException
+     * @throws Throwable
+     */
+    public static function mergeProgramFamilyRecords(
+        ProgramFamily $original, ProgramFamily $duplicate): bool
+    {
+
+        $remarks = empty(trim($original->remarks)) ? $original->remarks . "\n" : '';
+        $remarks .= Yii::t('app', 'Merged with family {family} on {date}', [
+                'family' => $duplicate->family_id,
+                'date' => date('Y-m-d'),
+            ]);
+        if (!empty(trim($duplicate->remarks))) {
+            $remarks .= $duplicate->remarks . "\n";
+        }
+        $remarks .= self::mergeFinancialData($original, $duplicate);
+        if (!$duplicate->delete()) {
+            return false;
+        }
+//        $original->remarks = preg_replace('/^\s+/', '', $remarks);
+        $original->remarks = ltrim($remarks, "\n");
+        if (!$original->save()) {
+            Yii::error(["Error saving ProgramFamily " .
+                "p $original->program_id f $original->family_id", $original->errors],
+                __METHOD__);
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Merge financial information for two ProgramFamily records.
+     * @param ProgramFamily $original
+     * @param ProgramFamily $duplicate
+     * @return string
+     */
+    private static function mergeFinancialData(ProgramFamily $original, ProgramFamily $duplicate): string
+    {
+        $remarks = '';
+        $attrs = ['cost', 'discount', 'final_cost'];
+        foreach ($attrs as $attr) {
+            $base = $original->getAttribute($attr);
+            $new = $duplicate->getAttribute($attr);
+            if ($base !== null) {
+                if ($new !== null) {
+                    if ($base !== $new) {
+                        $remarks .= "\n" . Yii::t('app',
+                            'Conflicting {attr} value {value}', [
+                                'attr' => $original->getAttributeLabel($attr),
+                                'value' => $new,
+                            ]);
+                    }
+                    // If base === new, no need to do anything
+                }
+                // If $new is null, no need to do anything
+            } elseif ($new !== null) {
+                $original->setAttribute($attr, $new);
+            }
+        }
+        return $remarks;
     }
 }

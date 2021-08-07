@@ -3,14 +3,15 @@
 namespace backend\controllers;
 
 use common\helpers\FamilyHelper;
-use Yii;
 use common\models\Family;
 use common\models\FamilySearch;
+use Yii;
+use yii\data\ActiveDataProvider;
 use yii\filters\AccessControl;
+use yii\filters\VerbFilter;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
-use yii\filters\VerbFilter;
-use yii\data\ActiveDataProvider;
+use yii\web\Response;
 
 /**
  * FamilyController implements the CRUD actions for Family model.
@@ -20,7 +21,7 @@ class FamilyController extends Controller
     /**
      * @inheritdoc
      */
-    public function behaviors()
+    public function behaviors(): array
     {
         return [
             'access' => [
@@ -33,7 +34,7 @@ class FamilyController extends Controller
                     ],
                     [
                         'allow' => true,
-                        'actions' => ['view','merge-search'],
+                        'actions' => ['view', 'merge-search'],
                         'roles' => ['viewFamily'],
                     ],
                     [
@@ -43,7 +44,7 @@ class FamilyController extends Controller
                     ],
                     [
                         'allow' => true,
-                        'actions' => ['update','merge-confirm'],
+                        'actions' => ['update', 'merge-confirm'],
                         'roles' => ['updateFamily'],
                     ],
                     [
@@ -64,13 +65,12 @@ class FamilyController extends Controller
 
     /**
      * Lists all Family models.
-     * @return mixed
+     * @return string
      */
-    public function actionIndex()
+    public function actionIndex(): string
     {
         $searchModel = new FamilySearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
@@ -80,13 +80,12 @@ class FamilyController extends Controller
     /**
      *  a single Family model.
      * @param integer $id
-     * @return mixed
+     * @return string
      * @throws NotFoundHttpException
      */
-    public function actionView($id)
+    public function actionView(int $id): string
     {
         $model = $this->findModel($id);
-        
         return $this->render('view', [
             'model' => $model,
             'programFamilyDataProvider' => new ActiveDataProvider([
@@ -107,15 +106,12 @@ class FamilyController extends Controller
     public function actionMergeSearch($id, $q = null): string
     {
         $model = $this->findModel($id);
-
         // Set default query if null
         if ($q === null) {
             $q = $model->name;
         }
-
         $searchModel = new FamilySearch();
         $searchDataProvider = $searchModel->searchByQuery($q, $id);
-
         return $this->render('merge/search', [
             'model' => $model,
             'searchDataProvider' => $searchDataProvider,
@@ -128,20 +124,17 @@ class FamilyController extends Controller
      *
      * @param $id
      * @param $dup
-     * @return string
+     * @return Response|string
      * @throws NotFoundHttpException
+     * @throws yii\web\ServerErrorHttpException
      */
     public function actionMergeConfirm($id, $dup)
     {
         $original = $this->findModel($id);
         $duplicate = $this->findModel($dup);
-
         if (Yii::$app->request->isPost && FamilyHelper::mergeFamilies($original, $duplicate)) {
-
             return $this->redirect(['view', 'id' => $original->id]);
-
         }
-
         return $this->render('merge/confirm', [
             'original' => $original,
             'duplicate' => $duplicate
@@ -151,18 +144,14 @@ class FamilyController extends Controller
     /**
      * Creates a new Family model.
      * If creation is successful, the browser will be redirected to the 'view' page.
-     * @return mixed
+     * @return Response|string
      */
     public function actionCreate()
     {
         $model = new Family();
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {            
-            
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
-            
         }
-
         return $this->render('create', [
             'model' => $model,
         ]);
@@ -172,17 +161,15 @@ class FamilyController extends Controller
      * Updates an existing Family model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param integer $id
-     * @return mixed
+     * @return Response|string
      * @throws NotFoundHttpException
      */
-    public function actionUpdate($id)
+    public function actionUpdate(int $id)
     {
         $model = $this->findModel($id);
-
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
         }
-
         return $this->render('update', [
             'model' => $model,
         ]);
@@ -192,15 +179,14 @@ class FamilyController extends Controller
      * Deletes an existing Family model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param integer $id
-     * @return mixed
+     * @return Response
      * @throws NotFoundHttpException
      * @throws \Throwable
-     * @throws \yii\db\StaleObjectException
+     * @throws yii\db\StaleObjectException
      */
-    public function actionDelete($id)
+    public function actionDelete(int $id): Response
     {
         $this->findModel($id)->delete();
-
         return $this->redirect(['index']);
     }
 
@@ -211,12 +197,11 @@ class FamilyController extends Controller
      * @return Family the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
-    protected function findModel($id)
+    protected function findModel(int $id): Family
     {
         if (($model = Family::findOne($id)) !== null) {
             return $model;
         }
-
         throw new NotFoundHttpException(
             Yii::t('app', 'The requested page does not exist.'));
     }

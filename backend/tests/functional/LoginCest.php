@@ -7,26 +7,25 @@ use common\fixtures\UserFixture;
 
 /**
  * Class LoginCest
+ * @package backend\tests\functional
  */
 class LoginCest
 {
     /**
      * Load fixtures before db transaction begin
      * Called in _before()
-     * @see \Codeception\Module\Yii2::_before()
-     * @see \Codeception\Module\Yii2::loadFixtures()
      * @return array
      */
-    public function _fixtures()
+    public function _fixtures(): array
     {
         return [
             'user' => [
-                'class' => UserFixture::className(),
+                'class' => UserFixture::class,
                 'dataFile' => codecept_data_dir() . 'login_data.php'
             ]
         ];
     }
-    
+
     /**
      * @param FunctionalTester $I
      */
@@ -37,7 +36,7 @@ class LoginCest
         $I->fillField('Password', 'password_0');
         $I->click('login-button');
 
-        $I->see('退出(erau)', 'form button[type=submit]');
+        $I->see('Logout (erau)', 'form button[type=submit]');
         $I->dontSeeLink('Login');
         $I->dontSeeLink('Signup');
     }

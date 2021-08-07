@@ -5,6 +5,7 @@ namespace backend\tests\acceptance;
 use backend\tests\AcceptanceTester;
 use common\fixtures\ProgramFixture;
 use common\models\Program;
+use Yii;
 use yii\helpers\Url as Url;
 
 /**
@@ -33,7 +34,7 @@ class ProgramAcceptanceCest
         $I->click('login-button');
         $I->wait(1);
         $I->expectTo('see the main page text');
-        $I->see('我们的客户是谁？');
+        $I->see('Who are our clients?');
     }
 
     /**
@@ -46,7 +47,7 @@ class ProgramAcceptanceCest
         $program = Program::findOne(1);
         $I->amOnPage(Url::toRoute('/program/index'));
         $I->waitForText($program->getNamei18n(), 3);
-        $I->see('2017年5月21日');
+        $I->see(Yii::$app->formatter->asDate('2017-05-21'));
     }
 
     /**
@@ -59,9 +60,9 @@ class ProgramAcceptanceCest
         $program = Program::findOne(1);
         $I->amOnPage(Url::toRoute('/program/1'));
         $I->waitForText($program->getNamei18n(), 3);
-        $I->click('删除');
+        $I->click('Delete');
         $I->acceptPopup();
-        $I->waitForText('项目', 3);
+        $I->waitForText('Programs', 3);
         $I->dontSee($program->getNamei18n());
     }
 }
