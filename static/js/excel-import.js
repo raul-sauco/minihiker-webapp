@@ -583,6 +583,32 @@ const app = new Vue({
       }
       this.markProgramMatchFound(row, program);
       this.dismissModal();
+      this.checkMatchingProgramNames(row, program);
+    },
+    /**
+     * Iterate over all the rows, for rows that are not ready, if the program name matches the
+     * currently selected row's program name, update it's selected program value to the same one.
+     * @param row
+     * @param program
+     */
+    checkMatchingProgramNames: function (row, program) {
+      let matches = 0;
+      this.sheet.forEach((r) => {
+        if (
+          r.index !== row.index &&
+          r.status !== "info-row" &&
+          r.status !== "ready" &&
+          r.cells[0].value === row.cells[0].value
+        ) {
+          matches++;
+          this.markProgramMatchFound(r, program);
+        }
+      });
+      if (Mh.debug && matches > 0) {
+        console.debug(
+          `Found ${matches} matching program names, updating all rows`
+        );
+      }
     },
     /**
      * Evaluate what info to display for this cell in the
