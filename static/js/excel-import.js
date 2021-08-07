@@ -1,6 +1,5 @@
-
 const app = new Vue({
-  el: '#excel-import-container',
+  el: "#excel-import-container",
   data: {
     url: Mh.globalData.apiurl,
     spinner: Mh.globalData.spinner20,
@@ -8,9 +7,9 @@ const app = new Vue({
     formatDate: Mh.methods.formatDate,
     requestHeaders: {
       headers: {
-        'content-type': 'application/json',
-        'Authorization': `Bearer ${Mh.globalData.accesstoken}`
-      }
+        "content-type": "application/json",
+        Authorization: `Bearer ${Mh.globalData.accesstoken}`,
+      },
     },
     columns: 41,
     sheet: null,
@@ -19,38 +18,40 @@ const app = new Vue({
       title: null,
       content: null,
       client: null,
-      row: null
+      row: null,
     },
     clientType: {
       kid: {
-        name: 'client',
-        cells: [6,7,8,9,10,11,12],
-        idCell: 10
+        name: "client",
+        cells: [6, 7, 8, 9, 10, 11, 12],
+        idCell: 10,
       },
       parent1: {
-        name: 'parent1',
-        cells: [13,14,15,16,17,18,19],
-        idCell: 17
+        name: "parent1",
+        cells: [13, 14, 15, 16, 17, 18, 19],
+        idCell: 17,
       },
       parent2: {
-        name: 'parent2',
-        cells: [20,21,22,23,24,25,26],
-        idCell: 24
+        name: "parent2",
+        cells: [20, 21, 22, 23, 24, 25, 26],
+        idCell: 24,
       },
       parent3: {
-        name: 'parent3',
-        cells: [27,28,29,30,31,32,33],
-        idCell: 31
+        name: "parent3",
+        cells: [27, 28, 29, 30, 31, 32, 33],
+        idCell: 31,
       },
       parent4: {
-        name: 'parent4',
-        cells: [34,35,36,37,38,39,40],
-        idCell: 38
-      }
-    }
+        name: "parent4",
+        cells: [34, 35, 36, 37, 38, 39, 40],
+        idCell: 38,
+      },
+    },
   },
-  mounted () {
-    if (Mh.debug) { console.debug('excel-import.js mounted'); }
+  mounted() {
+    if (Mh.debug) {
+      console.debug("excel-import.js mounted");
+    }
   },
   methods: {
     /**
@@ -58,32 +59,31 @@ const app = new Vue({
      * @param e
      */
     handleFile: function (e) {
-      const files = e.target.files, f = files[0];
+      const files = e.target.files,
+        f = files[0];
       const reader = new FileReader();
       reader.onload = (e) => {
         const data = new Uint8Array(e.target.result);
         const workbook = XLSX.read(data, {
-          type: 'array',
-          dates: true
+          type: "array",
+          dates: true,
         });
 
         if (Mh.debug) {
           const sheetCount = workbook.SheetNames.length;
-          console.debug('Workbook has ' + sheetCount + ' sheet/s');
+          console.debug("Workbook has " + sheetCount + " sheet/s");
           // TODO notify the user that we only work with one sheet
         }
 
         const sheet = workbook.Sheets[workbook.SheetNames[0]];
         const sheetJson = XLSX.utils.sheet_to_json(sheet, {
-          header:1,
-          raw: false
+          header: 1,
+          raw: false,
         });
 
         this.addSheetData(sheetJson);
-
       };
       reader.readAsArrayBuffer(f);
-
     },
     /**
      * Add the data extracted from the excel sheet[0] to the
@@ -93,7 +93,7 @@ const app = new Vue({
     addSheetData: function (sheetJson) {
       const rows = [];
       let r = 0;
-      sheetJson.forEach( rowJson => {
+      sheetJson.forEach((rowJson) => {
         const rowContent = this.generateRow(rowJson, r);
         if (rowContent !== null) {
           rows.push(rowContent);
@@ -121,15 +121,15 @@ const app = new Vue({
           row: rowIndex,
           col,
           value: rowJson[col],
-          status: 'loading'
+          status: "loading",
         });
       }
       const row = {
         index: rowIndex,
-        status: 'loading',
+        status: "loading",
         client: null,
         familyId: null,
-        cells
+        cells,
       };
       if (empty) {
         return null;
@@ -143,8 +143,14 @@ const app = new Vue({
      */
     processRow: function (row) {
       const infoMessages = [
-        'CRM上传数据模板','项目名称*','生日*','护照号','项目开始时间*','项目结束时间*',
-        '项目收款*','备注'
+        "CRM上传数据模板",
+        "项目名称*",
+        "生日*",
+        "护照号",
+        "项目开始时间*",
+        "项目结束时间*",
+        "项目收款*",
+        "备注",
       ];
 
       if (infoMessages.includes(row.cells[0].value)) {
@@ -170,23 +176,28 @@ const app = new Vue({
     fetchRowProgram: function (row) {
       const startDate = this.formatDate(row.cells[1].value);
       const endDate = this.formatDate(row.cells[2].value);
-      const url = this.url + 'program-search?' +
+      const url =
+        this.url +
+        "program-search?" +
         `name=${row.cells[0].value}` +
         `&start-date=${startDate}` +
         `&end-date=${endDate}` +
-        '&expand=programGroup.type,programPeriod';
-      axios.get(url, this.requestHeaders).then(res => {
-        if (!res.data || !res.data.length) {
+        "&expand=programGroup.type,programPeriod";
+      axios
+        .get(url, this.requestHeaders)
+        .then((res) => {
+          if (!res.data || !res.data.length) {
+            this.markProgramMatchNotFound(row);
+          } else if (res.data.length === 1) {
+            this.markProgramMatchFound(row, res.data[0]);
+          } else {
+            this.markProgramMatchFoundMultiple(row, res.data);
+          }
+        })
+        .catch((err) => {
           this.markProgramMatchNotFound(row);
-        } else if (res.data.length === 1) {
-          this.markProgramMatchFound(row, res.data[0]);
-        } else {
-          this.markProgramMatchFoundMultiple(row, res.data);
-        }
-      }).catch(err => {
-        this.markProgramMatchNotFound(row);
-        console.error(err);
-      });
+          console.error(err);
+        });
     },
     /**
      * Find data in the server to match client's data in the
@@ -196,17 +207,13 @@ const app = new Vue({
     fetchRowClients: function (row) {
       // Fetch participant
       this.fetchRowClient(row, this.clientType.kid);
-      // Fetch parents
-      [1,2,3,4].forEach(i => {
-        this.fetchRowClient(row, this.clientType[`parent${i}`])
-      });
     },
     /**
      * Try to find one client in the server given it's ID
      * @param row
      * @param type the type of client to fetch for
      */
-    fetchRowClient: async function (row, type) {
+    fetchRowClient: function (row, type) {
       const name = row.cells[type.cells[0]].value;
       const id = row.cells[type.idCell].value;
       const passportIndex = type.idCell + 1;
@@ -220,34 +227,62 @@ const app = new Vue({
         if (passport) {
           url += `&passport=${passport}`;
         }
-        if (type.name === 'client') {
+        if (type.name === "client") {
           if (row.cells[type.cells[2]].value) {
-            url += '&role=' + Mh.methods.getFamilyRoleId(row.cells[type.cells[2]].value);
+            url +=
+              "&role=" +
+              Mh.methods.getFamilyRoleId(row.cells[type.cells[2]].value);
           }
-        } else if (row.cells[type.cells[3]].value) {
-          url += '&role=' + Mh.methods.getFamilyRoleId(row.cells[type.cells[3]].value);
+        } else {
+          // We are dealing with a parent row, add family-id if found
+          if (row.familyId) {
+            url += `&family-id=${row.familyId}`;
+          }
+          // If the sheet has role data for this parent, add it to the request
+          if (row.cells[type.cells[3]].value) {
+            url +=
+              "&role=" +
+              Mh.methods.getFamilyRoleId(row.cells[type.cells[3]].value);
+          }
         }
-        axios.get(url, this.requestHeaders).then(res => {
-          if (!res.data || !res.data.length) {
-            this.markClientNotFound(row, type);
-          } else if (res.data.length === 1) {
-            this.markClientMatchFound(row, res.data[0], type);
-          } else {
-            if (Mh.debug) {
-              console.debug(`Found ${res.data.length} clients for row ${row.index}`);
+
+        axios
+          .get(url, this.requestHeaders)
+          .then((res) => {
+            if (!res.data || !res.data.length) {
+              this.markClientNotFound(row, type);
+            } else if (res.data.length === 1) {
+              this.markClientMatchFound(row, res.data[0], type);
+            } else {
+              if (Mh.debug) {
+                console.debug(
+                  `Found ${res.data.length} clients for row ${row.index}`
+                );
+              }
+              this.markClientMatchFoundMultiple(row, res.data, type);
             }
-            this.markClientMatchFoundMultiple(row, res.data, type);
-          }
-        }).catch(err => {
-          console.error(err);
-          this.markClientNotFound(row, type);
-        });
+          })
+          .catch((err) => {
+            console.error(err);
+            this.markClientNotFound(row, type);
+          });
       } else {
         // If there is no ID, mark the cells as inactive
-        type.cells.forEach(cell => {
-          row.cells[cell].status = 'inactive';
+        type.cells.forEach((cell) => {
+          row.cells[cell].status = "inactive";
         });
       }
+    },
+    /**
+     * Fetch all the parents for a row using the information found on the sheet.
+     * This operation takes place after we try to find the client to have the family-id
+     * available in case it is found.
+     * @param row
+     */
+    fetchRowParents: function (row) {
+      [1, 2, 3, 4].forEach((i) => {
+        this.fetchRowClient(row, this.clientType[`parent${i}`]);
+      });
     },
     /**
      * Check if we have enough information to mark the
@@ -257,9 +292,9 @@ const app = new Vue({
     markCanUploadRow: function (row) {
       // We need a program and we need to wait for the client request
       if (row.program && (row.client || row.client === null)) {
-        row.status = 'can-upload';;
-        [3,4,5].forEach(cell => {
-          row.cells[cell].status = 'can-upload';
+        row.status = "can-upload";
+        [3, 4, 5].forEach((cell) => {
+          row.cells[cell].status = "can-upload";
         });
       }
     },
@@ -267,14 +302,14 @@ const app = new Vue({
      * Update the UI to reflect that we found a
      * program for this row
      * @param row
-     * @param program 
+     * @param program
      */
     markProgramMatchFound: function (row, program) {
-      row.programId = program.id
+      row.programId = program.id;
       row.program = program;
       this.markCanUploadRow(row);
-      [0,1,2].forEach(cell => {
-        this.sheet[row.index].cells[cell].status = 'ready';
+      [0, 1, 2].forEach((cell) => {
+        this.sheet[row.index].cells[cell].status = "ready";
       });
     },
     /**
@@ -284,12 +319,12 @@ const app = new Vue({
      * @param programData
      */
     markProgramMatchFoundMultiple: function (row, programData) {
-      row.status = 'needs-action';
+      row.status = "needs-action";
       row.programId = null;
       row.program = null;
       row.programs = programData;
-      [0,1,2,3,4,5].forEach(cell => {
-        row.cells[cell].status = 'needs-action';
+      [0, 1, 2, 3, 4, 5].forEach((cell) => {
+        row.cells[cell].status = "needs-action";
       });
     },
     /**
@@ -299,10 +334,11 @@ const app = new Vue({
      * @param type the type of client found
      */
     markClientMatchFound: function (row, clientData, type) {
-      if (type.name === 'client') {
+      if (type.name === "client") {
         row.familyId = clientData.family_id;
-        row.clientId = clientData.id
+        row.clientId = clientData.id;
         row.client = clientData;
+        this.fetchRowParents(row);
         this.markCanUploadRow(row);
         this.checkContactData(row);
       } else {
@@ -314,8 +350,8 @@ const app = new Vue({
       }
 
       // Update cell status
-      type.cells.forEach(cell => {
-        row.cells[cell].status = 'ready';
+      type.cells.forEach((cell) => {
+        row.cells[cell].status = "ready";
       });
     },
     /**
@@ -325,13 +361,13 @@ const app = new Vue({
      * @param data
      * @param type
      */
-    markClientMatchFoundMultiple: function(row, data, type) {
-      row.status = 'needs-action';
+    markClientMatchFoundMultiple: function (row, data, type) {
+      row.status = "needs-action";
       if (!row.clients) {
         row.clients = {};
       }
-      type.cells.forEach(cell => {
-        row.cells[cell].status = 'needs-action';
+      type.cells.forEach((cell) => {
+        row.cells[cell].status = "needs-action";
       });
       row.clients[type.name] = data;
     },
@@ -342,29 +378,31 @@ const app = new Vue({
      */
     markClientNotFound: function (row, type) {
       // If we couldn't find a client, show that we will create it
-      type.cells.forEach(cell => {
-        row.cells[cell].status = 'can-upload';
+      type.cells.forEach((cell) => {
+        row.cells[cell].status = "can-upload";
       });
-      // If we didn't find the participant, mark row client null
-      if (type.name === 'client') {
+      // If we didn't find the participant, mark row client null and try to find parent info
+      if (type.name === "client") {
         row.client = null;
+        this.fetchRowParents(row);
       }
     },
     /**
      * Update the UI to reflect that we did not find
      * a program for this row
      * @param row
+     * @param programData
      */
     markProgramMatchNotFound: function (row, programData) {
       row.programId = null;
       row.program = null;
       row.programs = programData;
-      row.status = 'error';
-      [0,1,2].forEach(cell => {
-        row.cells[cell].status = 'error';
+      row.status = "error";
+      [0, 1, 2].forEach((cell) => {
+        row.cells[cell].status = "error";
       });
-      [3,4,5].forEach(cell => {
-        row.cells[cell].status = 'none';
+      [3, 4, 5].forEach((cell) => {
+        row.cells[cell].status = "none";
       });
     },
     /**
@@ -372,10 +410,10 @@ const app = new Vue({
      * @param row
      */
     markRowAsInfo: function (row) {
-      row.status = 'info-row';
+      row.status = "info-row";
       // Iterate over the old row cells to create the new one
-      row.cells.forEach( cell => {
-        cell.status = 'inactive'
+      row.cells.forEach((cell) => {
+        cell.status = "inactive";
       });
       return row;
     },
@@ -384,9 +422,9 @@ const app = new Vue({
      * @param row
      */
     markRowAsReady: function (row) {
-      row.status = 'ready';
-      row.cells.forEach(cell => {
-        cell.status = 'none';
+      row.status = "ready";
+      row.cells.forEach((cell) => {
+        cell.status = "none";
       });
     },
     /**
@@ -395,9 +433,9 @@ const app = new Vue({
      * @param row
      */
     markRowHasUploadError: function (row) {
-      row.status = 'upload-error';
-      row.cells.forEach(cell => {
-        cell.status = 'none';
+      row.status = "upload-error";
+      row.cells.forEach((cell) => {
+        cell.status = "none";
       });
     },
     /**
@@ -407,17 +445,17 @@ const app = new Vue({
      */
     getGlyphiconClass: function (row) {
       const gly = {
-        'can-upload': 'upload',
-        'info-row': 'info-sign',
-        'error': 'remove',
-        'upload-error': 'remove',
-        'needs-action': 'warning-sign',
-        'ready': 'ok'
+        "can-upload": "upload",
+        "info-row": "info-sign",
+        error: "remove",
+        "upload-error": "remove",
+        "needs-action": "warning-sign",
+        ready: "ok",
       };
       if (!gly[row.status]) {
-        return '';
+        return "";
       }
-      return 'glyphicon-' + gly[row.status];
+      return "glyphicon-" + gly[row.status];
     },
     /**
      * Display more information about the current state of the
@@ -426,9 +464,11 @@ const app = new Vue({
      * @param row
      */
     showCellDetails: function (cell, row) {
-      if (cell.status !== 'inactive' &&
-          cell.status !== 'none' &&
-          cell.status !== 'info') {
+      if (
+        cell.status !== "inactive" &&
+        cell.status !== "none" &&
+        cell.status !== "info"
+      ) {
         const c = cell.col;
         if (c === 0 || c === 1 || c === 2) {
           this.showProgramInfo(row);
@@ -443,10 +483,12 @@ const app = new Vue({
         } else if (this.clientType.parent4.cells.includes(c)) {
           this.showClientInfo(row, this.clientType.parent4);
         } else {
-          console.warn('Unrecognized cell type', cell);
+          console.warn("Unrecognized cell type", cell);
         }
       } else if (Mh.debug) {
-        console.debug(`No details for ${cell.status} cell ${cell.col}:${cell.row}`);
+        console.debug(
+          `No details for ${cell.status} cell ${cell.col}:${cell.row}`
+        );
       }
     },
     /**
@@ -454,9 +496,9 @@ const app = new Vue({
      * @param row
      */
     handleRowStatusCellClick: function (row) {
-      if (row.status === 'can-upload') {
+      if (row.status === "can-upload") {
         this.uploadRow(row);
-      } else if (row.status === 'upload-error') {
+      } else if (row.status === "upload-error") {
         this.showUploadErrorsInModal(row);
       } else if (Mh.debug) {
         console.debug(`Clicked inactive status-cell in row ${row.index}`);
@@ -470,17 +512,17 @@ const app = new Vue({
     showUploadErrorsInModal: function (row) {
       this.modal = {
         visible: true,
-        title: '服务器错误',
-        content: 'upload-error',
-        row
-      }
+        title: "服务器错误",
+        content: "upload-error",
+        row,
+      };
     },
     /**
      * Display a modal with info about the program that
      * matches the row data
      * @param row
      */
-    showProgramInfo: function(row) {
+    showProgramInfo: function (row) {
       if (row.program && row.programId) {
         this.showProgramInModal(row.program);
       } else if (row.programs && row.programs.length > 0) {
@@ -496,9 +538,9 @@ const app = new Vue({
     showProgramInModal: function (program) {
       this.modal = {
         visible: true,
-        title: '项目细节',
-        content: 'program-info',
-        programs: [program]
+        title: "项目细节",
+        content: "program-info",
+        programs: [program],
       };
     },
     /**
@@ -508,16 +550,14 @@ const app = new Vue({
      */
     showSelectProgramModal: function (row) {
       if (Mh.debug) {
-        console.debug(
-          `Showing select program modal for row ${row.index}`
-        );
+        console.debug(`Showing select program modal for row ${row.index}`);
       }
       this.modal = {
         visible: true,
-        title: '选择项目',
-        content: 'select-program',
+        title: "选择项目",
+        content: "select-program",
         row: row,
-        programs: row.programs
+        programs: row.programs,
       };
     },
     /**
@@ -527,8 +567,8 @@ const app = new Vue({
     showNoProgramFoundModal: function () {
       this.modal = {
         visible: true,
-        title: '未找到项目',
-        content: 'program-not-found'
+        title: "未找到项目",
+        content: "program-not-found",
       };
     },
     /**
@@ -565,15 +605,13 @@ const app = new Vue({
      */
     showClientInModal: function (client) {
       if (Mh.debug) {
-        console.debug(
-          `Showing information for client ${client.id}`
-        );
+        console.debug(`Showing information for client ${client.id}`);
       }
       this.modal = {
         visible: true,
-        title: '客户细节',
-        content: 'client-info',
-        client: client
+        title: "客户细节",
+        content: "client-info",
+        client: client,
       };
     },
     /**
@@ -590,11 +628,11 @@ const app = new Vue({
       }
       this.modal = {
         visible: true,
-        title: '选择客户',
-        content: 'select-client',
+        title: "选择客户",
+        content: "select-client",
         row: row,
-        type: type
-      }
+        type: type,
+      };
     },
     /**
      * Display a modal to inform that we did not find
@@ -603,8 +641,8 @@ const app = new Vue({
     showNoClientFoundModal: function () {
       this.modal = {
         visible: true,
-        title: '未找到客户',
-        content: 'client-not-found'
+        title: "未找到客户",
+        content: "client-not-found",
       };
     },
     /**
@@ -617,8 +655,10 @@ const app = new Vue({
      */
     selectClient(row, type, client) {
       if (Mh.debug) {
-        console.debug(`User selected client ${client.id} "${client.name_zh}"` +
-          `for type ${type.name} and row ${row.index}`);
+        console.debug(
+          `User selected client ${client.id} "${client.name_zh}"` +
+            `for type ${type.name} and row ${row.index}`
+        );
       }
       // Delegate to mark client found function
       this.markClientMatchFound(row, client, type);
@@ -629,23 +669,25 @@ const app = new Vue({
      */
     showHelpModal: function () {
       this.modal = {
-        title: '帮助页面',
-        content: 'help',
-        visible: true
+        title: "帮助页面",
+        content: "help",
+        visible: true,
       };
     },
     /**
      * Dismiss the application modal
      */
     dismissModal: function () {
-      if (Mh.debug) { console.debug('Dismissing modal'); }
+      if (Mh.debug) {
+        console.debug("Dismissing modal");
+      }
       this.modal = {
         visible: false,
         title: null,
         content: null,
         client: null,
         row: null,
-        programs: null
+        programs: null,
       };
     },
     /**
@@ -653,9 +695,11 @@ const app = new Vue({
      * can-upload
      */
     uploadAllRows: function () {
-      if (Mh.debug) { console.debug('Uploading all rows'); }
-      this.sheet.forEach(row => {
-        if (row.status === 'can-upload') {
+      if (Mh.debug) {
+        console.debug("Uploading all rows");
+      }
+      this.sheet.forEach((row) => {
+        if (row.status === "can-upload") {
           this.uploadRow(row).then(() => {
             if (Mh.debug) {
               console.debug(`Uploaded row ${row.index}`);
@@ -669,43 +713,45 @@ const app = new Vue({
      * @param row
      */
     uploadRow: async function (row) {
-      if (Mh.debug) { console.debug(`Uploading row ${row.index}`); }
-      if (row.status !== 'can-upload') {
+      if (Mh.debug) {
+        console.debug(`Uploading row ${row.index}`);
+      }
+      if (row.status !== "can-upload") {
         this.modal = {
           visible: true,
-          title: '行尚未准备好上载',
-          content: 'row-not-ready-to-upload',
-          row
+          title: "行尚未准备好上载",
+          content: "row-not-ready-to-upload",
+          row,
         };
-        throw new Error (`Row ${row.index} is not ready to upload`);
+        throw new Error(`Row ${row.index} is not ready to upload`);
       }
-      row.status = 'loading';
+      row.status = "loading";
       // If we didn't find an existing client, upload it
       if (row.client === null) {
         row.client = await this.uploadClient(row);
       }
       if (!row.client) {
-        const msg = '无法上传行客户端数据';
+        const msg = "无法上传行客户端数据";
         row.error = msg;
         this.markRowHasUploadError(row);
         throw new Error(msg);
       }
       if (!row.programId) {
-        const msg = '缺少行项目ID';
+        const msg = "缺少行项目ID";
         row.error = msg;
         this.markRowHasUploadError(row);
         throw new Error(msg);
       }
       const programFamily = await this.uploadProgramFamily(row);
       if (!programFamily) {
-        const msg = '无法上载项目-家庭数据';
+        const msg = "无法上载项目-家庭数据";
         row.error = msg;
         this.markRowHasUploadError(row);
         throw new Error(msg);
       }
       const programClient = await this.uploadProgramClient(row);
       if (!programClient) {
-        const msg = '无法上载项目-客户数据';
+        const msg = "无法上载项目-客户数据";
         row.error = msg;
         this.markRowHasUploadError(row);
         throw new Error(msg);
@@ -731,33 +777,34 @@ const app = new Vue({
     uploadFamily: async function (row) {
       // Find the client's name to create family name
       const index = this.clientType.kid.cells[0];
-      const name = row.cells[index].value + '家庭';
+      const name = row.cells[index].value + "家庭";
       if (!name) {
         throw new Error(`Could not determine family name for row ${row.index}`);
       }
-      const url = this.url + 'families';
-      const data = {name: name.trim().substr(0,12)};
+      const url = this.url + "families";
+      const data = { name: name.trim().substr(0, 12) };
       if (row.cells[14].value) {
-        data.phone = row.cells[14].value.substr(0,18);
+        data.phone = row.cells[14].value.substr(0, 18);
       }
       if (row.cells[15].value) {
         data.wechat = row.cells[15].value.substr(0, 64);
       }
       const remarks = row.cells[5].value;
-      if (remarks && remarks.includes('会员')) {
-        if (remarks.includes('非会员')) {
-          data.category = '非会员';
+      if (remarks && remarks.includes("会员")) {
+        if (remarks.includes("非会员")) {
+          data.category = "非会员";
         } else {
-          data.category = '会员';
+          data.category = "会员";
         }
       }
       let res;
       try {
-        res = await axios.post(url,data,this.requestHeaders);
+        res = await axios.post(url, data, this.requestHeaders);
         if (Mh.debug) {
           console.debug(
             `Created new Family with id ${res.data.id} for row ${row.index}`,
-            res);
+            res
+          );
         }
         return res.data;
       } catch (error) {
@@ -779,15 +826,14 @@ const app = new Vue({
           if (family && family.id) {
             row.familyId = family.id;
           } else {
-            console.error(
-              `Error obtaining row ${row.index} family id`, family);
+            console.error(`Error obtaining row ${row.index} family id`, family);
           }
         } catch (error) {
           console.error(`Failed to create family for row ${row.index}`, error);
           throw new Error(`Failed to create family for row ${row.index}`);
         }
       }
-      const url = this.url + 'clients';
+      const url = this.url + "clients";
       const data = {
         name_zh: row.cells[6].value,
         family_id: row.familyId,
@@ -795,22 +841,24 @@ const app = new Vue({
         family_role_id: 1,
         id_card_number: row.cells[10].value,
         passport_number: row.cells[11].value || null,
-        passport_expire_date: this.formatDate(row.cells[12].value)
+        passport_expire_date: this.formatDate(row.cells[12].value),
       };
       if (row.cells[7] && row.cells[7].value) {
-        data.is_male = row.cells[7].value.trim() === '男';
+        data.is_male = row.cells[7].value.trim() === "男";
       }
       try {
-        const res = await axios.post(url,data,this.requestHeaders);
+        const res = await axios.post(url, data, this.requestHeaders);
         if (Mh.debug) {
           console.debug(
             `Created new Client with id ${res.data.id} for row ${row.index}`,
-            res.data);
+            res.data
+          );
         }
         return res.data;
       } catch (error) {
-        const msg = `Error ${error.response.status} creating Client ` +
-        `for row ${row.index}`;
+        const msg =
+          `Error ${error.response.status} creating Client ` +
+          `for row ${row.index}`;
         console.error(msg, error);
         throw new Error(msg);
       }
@@ -821,7 +869,7 @@ const app = new Vue({
      */
     uploadParents: async function (row) {
       let success = true;
-      [1,2,3,4].forEach(async i => {
+      [1, 2, 3, 4].forEach(async (i) => {
         const index = `parent${i}`;
         const idCell = this.clientType[index].idCell;
         const id = row.cells[idCell].value;
@@ -846,17 +894,19 @@ const app = new Vue({
       const indexes = this.clientType[index].cells;
       const data = {
         family_id: row.familyId,
-        name_zh: cells[indexes[0]].value.substr(0,12),
+        name_zh: cells[indexes[0]].value.substr(0, 12),
         phone: cells[indexes[1]].value || null,
         wechat: cells[indexes[2]].value || null,
         id_card_number: cells[indexes[4]].value,
         passport_number: cells[indexes[5]].value || null,
-        passport_expire_date: this.formatDate(cells[indexes[6]].value)
+        passport_expire_date: this.formatDate(cells[indexes[6]].value),
       };
       if (cells[indexes[3]].value) {
-        data.family_role_id = Mh.methods.getFamilyRoleId(cells[indexes[3]].value);
+        data.family_role_id = Mh.methods.getFamilyRoleId(
+          cells[indexes[3]].value
+        );
       }
-      const url = this.url + 'clients';
+      const url = this.url + "clients";
       try {
         const res = await axios.post(url, data, this.requestHeaders);
         row[index] = res.data;
@@ -865,7 +915,8 @@ const app = new Vue({
         }
         return res.data;
       } catch (error) {
-        const message = `Error ${error.response.status} ` +
+        const message =
+          `Error ${error.response.status} ` +
           `uploading ${index} for row ${row.index}`;
         console.error(message, error);
         throw new Error(message);
@@ -878,10 +929,19 @@ const app = new Vue({
      * @returns {Promise<void>}
      */
     uploadProgramFamily: async function (row) {
-      const url = this.url + 'program-families';
+      const url = this.url + "program-families";
       const now = new Date();
-      const date = now.getFullYear() + '年' + (now.getMonth() + 1) + '月' + now.getDate() + '日';
-      const remarks = (row.cells[5].value ? row.cells[5].value + '(表格上传数据)' : '表格上传数据') + date;
+      const date =
+        now.getFullYear() +
+        "年" +
+        (now.getMonth() + 1) +
+        "月" +
+        now.getDate() +
+        "日";
+      const remarks =
+        (row.cells[5].value
+          ? row.cells[5].value + "(表格上传数据)"
+          : "表格上传数据") + date;
       const data = {
         program_id: row.programId,
         family_id: row.familyId,
@@ -902,8 +962,10 @@ const app = new Vue({
             );
           }
         } else {
-          console.error(`Error ${error.response.status} trying to read ` +
-            `ProgramFamily for row ${row.index}`);
+          console.error(
+            `Error ${error.response.status} trying to read ` +
+              `ProgramFamily for row ${row.index}`
+          );
         }
       }
       if (res && res.data) {
@@ -915,7 +977,9 @@ const app = new Vue({
         return res.data;
       } catch (error) {
         console.error(
-          `Error posting program family data for row ${row.index}`, error);
+          `Error posting program family data for row ${row.index}`,
+          error
+        );
       }
     },
     /**
@@ -925,12 +989,12 @@ const app = new Vue({
      * @returns {Promise<void>}
      */
     uploadProgramClient: async function (row) {
-      const url = this.url + 'program-clients';
+      const url = this.url + "program-clients";
       const data = {
         program_id: row.programId,
         client_id: row.client.id,
         status: 7,
-        remarks: '表格上传数据'
+        remarks: "表格上传数据",
       };
       const geturl = `${url}/${data.program_id}/${data.client_id}`;
       let res;
@@ -943,8 +1007,10 @@ const app = new Vue({
               `No ProgramClient found for ${data.program_id}:${data.client_id}`
             );
           } else {
-            console.error(`Error ${error.response.status} trying to read ` +
-              `ProgramClient for row ${row.index}`);
+            console.error(
+              `Error ${error.response.status} trying to read ` +
+                `ProgramClient for row ${row.index}`
+            );
           }
         }
       }
@@ -957,7 +1023,9 @@ const app = new Vue({
         return res.data;
       } catch (error) {
         console.error(
-          `Error posting program family data for row ${row.index}`, error);
+          `Error posting program family data for row ${row.index}`,
+          error
+        );
       }
     },
     /**
@@ -966,13 +1034,13 @@ const app = new Vue({
      * @returns {Promise<*>}
      */
     uploadPayment: async function (row) {
-      const url = this.url + 'payments';
+      const url = this.url + "payments";
       const data = {
         family_id: row.familyId,
         amount: +row.cells[3].value,
-        date: new Date().toJSON().substr(0,10),
+        date: new Date().toJSON().substr(0, 10),
         program_id: row.programId,
-        remarks: '表格上传数据'
+        remarks: "表格上传数据",
       };
       try {
         const res = await axios.post(url, data, this.requestHeaders);
@@ -984,7 +1052,9 @@ const app = new Vue({
         row.error = error.response.message;
         console.error(
           `Payment upload failed with status ${error.response.status}` +
-          ` for row ${row.index}`, error);
+            ` for row ${row.index}`,
+          error
+        );
         return null;
       }
     },
@@ -999,9 +1069,15 @@ const app = new Vue({
     checkContactData: async function (row) {
       // Create a date string to inform on when the change happened
       const now = new Date();
-      const date = now.getFullYear() + '年' + (now.getMonth() + 1) + '月' + now.getDate() + '日';
+      const date =
+        now.getFullYear() +
+        "年" +
+        (now.getMonth() + 1) +
+        "月" +
+        now.getDate() +
+        "日";
       // Fetch the family from the server to check current values
-      const url = this.url + 'families/' + row.client.family_id;
+      const url = this.url + "families/" + row.client.family_id;
       const familyRequest = await axios.get(url, this.requestHeaders);
       // Check server values vs spreadsheet row values
       const family = familyRequest.data;
@@ -1009,41 +1085,41 @@ const app = new Vue({
       let remarks = family.remarks;
       if (row.cells[14].value && row.cells[14].value !== family.phone) {
         data.phone = row.cells[14].value;
-        remarks += '\n\n更新了电话号码';
+        remarks += "\n\n更新了电话号码";
         if (family.phone) {
-          remarks += '从' + family.phone;
+          remarks += "从" + family.phone;
         }
-        remarks += '到' + data.phone + '在' + date;
+        remarks += "到" + data.phone + "在" + date;
       }
       if (row.cells[15].value && row.cells[15].value !== family.wechat) {
         data.wechat = row.cells[15].value;
-        remarks += '\n\n更新了微信';
+        remarks += "\n\n更新了微信";
         if (family.wechat) {
-          remarks += '从' + family.wechat;
+          remarks += "从" + family.wechat;
         }
-        remarks += '到' + data.wechat + '在' + date;
+        remarks += "到" + data.wechat + "在" + date;
       }
       let category = null;
-      if (row.cells[5].value && row.cells[5].value.includes('会员')) {
-        if (row.cells[5].value.includes('非会员')) {
-          category = '非会员';
+      if (row.cells[5].value && row.cells[5].value.includes("会员")) {
+        if (row.cells[5].value.includes("非会员")) {
+          category = "非会员";
         } else {
-          category = '会员';
+          category = "会员";
         }
       }
       if (category && family.category !== category) {
         data.category = category;
-        remarks += '\n\n更新了会员情况';
+        remarks += "\n\n更新了会员情况";
         if (family.category) {
-          remarks += '从' + family.category;
+          remarks += "从" + family.category;
         }
-        remarks += '到' + data.category + '在' + date;
+        remarks += "到" + data.category + "在" + date;
       }
       // If some of the values didn't match, data will have properties
       if (!_.isEmpty(data)) {
         data.remarks = remarks;
         const res = await axios.patch(url, data, this.requestHeaders);
       }
-    }
-  },  // End of Vue methods
+    },
+  }, // End of Vue methods
 });

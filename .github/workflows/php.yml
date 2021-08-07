@@ -17,6 +17,13 @@ jobs:
     - name: Validate composer.json and composer.lock
       run: composer validate --strict
 
+    - name: Setup PHP Action
+      uses: shivammathur/setup-php@2.12.0
+      with:
+        php-version: '7.1'
+    #    tools: pecl
+        extensions: mbstring, imagick, intl, PDO, mysqli, SimpleXML, xml
+
     - name: Cache Composer packages
       id: composer-cache
       uses: actions/cache@v2

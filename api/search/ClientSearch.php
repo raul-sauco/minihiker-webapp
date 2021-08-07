@@ -24,9 +24,7 @@ class ClientSearch
                     Yii::t('app', 'Missing required parameters')
                 );
         }
-
         $query = Client::find();
-
         if (!empty($params['id'])) {
             $query->where(['id_card_number' => $params['id']]);
         } elseif (!empty($params['passport'])) {
@@ -34,11 +32,12 @@ class ClientSearch
         } else {
             $query->where(['like', 'name_zh', $params['name']]);
         }
-
         if (!empty($params['role'])) {
             ClientHelper::assignRoleIfNull($query, $params['role']);
         }
-
+        if (!empty($params['family-id']))  {
+            $query->andWhere(['family_id' => $params['family-id']]);
+        }
         return new ActiveDataProvider([
             'query' => $query
         ]);
