@@ -789,7 +789,7 @@ const app = new Vue({
       }
       row.payment = payment;
       try {
-        const success = await this.uploadParents(row);
+        await this.uploadParents(row);
       } catch (error) {
         console.error(error);
       }
@@ -894,15 +894,26 @@ const app = new Vue({
      * @param row
      */
     uploadParents: async function (row) {
+      if (Mh.debug) {
+        console.log(`Uploading parents for row ${row.index}`);
+      }
       let success = true;
-      [1, 2, 3, 4].forEach(async (i) => {
+      [1, 2, 3, 4].forEach((i) => {
         const index = `parent${i}`;
-        const idCell = this.clientType[index].idCell;
-        const id = row.cells[idCell].value;
-        if (id && !row[index]) {
+        const nameCellIndex = this.clientType[index].cells[0];
+        const name = row.cells[nameCellIndex].value;
+        // Upload any parent data that wasn't found and has a value on the name field
+        if (
+          !row[index] && // Check that the parent does not exist already
+          name && // A name value is required
+          row.cells[nameCellIndex].status === "can-upload" // Check that the parent can be uploaded
+        ) {
           try {
-            const parent = await this.uploadOneParent(row, index);
+            this.uploadOneParent(row, index);
           } catch (error) {
+            console.error(
+              `Error uploading row ${row.index} ${this.clientType[index].name}`
+            );
             success = false;
           }
         }
@@ -923,9 +934,9 @@ const app = new Vue({
         name_zh: cells[indexes[0]].value.substr(0, 12),
         phone: cells[indexes[1]].value || null,
         wechat: cells[indexes[2]].value || null,
-        id_card_number: cells[indexes[4]].value,
+        id_card_number: cells[indexes[4]].value || null,
         passport_number: cells[indexes[5]].value || null,
-        passport_expire_date: this.formatDate(cells[indexes[6]].value),
+        passport_expire_date: this.formatDate(cells[indexes[6]].value) || null,
       };
       if (cells[indexes[3]].value) {
         data.family_role_id = Mh.methods.getFamilyRoleId(
