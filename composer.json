@@ -1,21 +1,18 @@
 {
-  "name": "yiisoft/yii2-app-advanced",
-  "description": "Yii 2 Advanced Project Template",
+  "name": "raul-sauco/minihiker-webapp",
+  "description": "CRM backend for Minihiker Outdoor Education",
   "keywords": [
-    "yii2",
-    "framework",
-    "advanced",
-    "project template"
+    "OED",
+    "Beijing",
+    "China",
+    "CRM"
   ],
-  "homepage": "http://www.yiiframework.com/",
-  "type": "project",
-  "license": "BSD-3-Clause",
+  "homepage": "https://backend.minihiker.com/",
+  "type": "customer-relationship-management",
+  "license": "MIT",
   "support": {
-    "issues": "https://github.com/yiisoft/yii2/issues?state=open",
-    "forum": "http://www.yiiframework.com/forum/",
-    "wiki": "http://www.yiiframework.com/wiki/",
-    "irc": "irc://irc.freenode.net/yii",
-    "source": "https://github.com/yiisoft/yii2"
+    "issues": "https://github.com/raul-sauco/minihiker-webapp/issues?q=is%3Aopen",
+    "source": "https://github.com/raul-sauco/minihiker-webapp"
   },
   "minimum-stability": "stable",
   "require": {
@@ -37,7 +34,7 @@
     "ext-libxml": "*"
   },
   "require-dev": {
-    "roave/security-advisories": "dev-master",
+    "roave/security-advisories": "dev-latest",
     "yiisoft/yii2-debug": "~2.1.0",
     "yiisoft/yii2-gii": "~2.1.0",
     "yiisoft/yii2-faker": "~2.0.0",
@@ -55,6 +52,9 @@
     "process-timeout": 1800,
     "fxp-asset": {
       "enabled": false
+    },
+    "allow-plugins": {
+      "yiisoft/yii2-composer": true
     }
   },
   "repositories": [
