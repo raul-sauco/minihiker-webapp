@@ -68,8 +68,8 @@ class ProgramSearchCest
         $I->seeResponseCodeIs(200);
         $I->seeResponseIsJson();
         $I->seeResponseContainsJson([
-//            'id' => 1,
-//            'name' => 'PG1'
+            'id' => 1,
+            'name' => 'PG1'
         ]);
         $I->dontSeeResponseContains('created_at');
     }

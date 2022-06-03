@@ -3,9 +3,10 @@ return [
     'components' => [
         'db' => [
             'class' => 'yii\db\Connection',
-            'dsn' => 'mysql:host=localhost;dbname=yii2advanced',
-            'username' => 'root',
-            'password' => '',
+            // From running applications access the service name in the network
+            'dsn' => 'mysql:host=mhdb:3306;dbname=mhdb',
+            'username' => 'mh_user',
+            'password' => 'password',
             'charset' => 'utf8',
         ],
         'mailer' => [
