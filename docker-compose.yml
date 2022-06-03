@@ -1,38 +1,130 @@
-version: '3.2'
+version: '3.9'
 
 services:
-
-  frontend:
-    build: frontend
+  mhdb:
+    image: mariadb:10.6.4
     ports:
-      - 20080:80
+      - "34107:3306"
+    restart: always
+    environment:
+      - MARIADB_ROOT_PASSWORD=password
+      - MARIADB_DATABASE=mhdb
+      - MARIADB_USER=mh_user
+      - MARIADB_PASSWORD=password
+    networks:
+      mh:
+        aliases:
+          - mhdb
+    healthcheck:
+      test: [ "CMD-SHELL", "mysqladmin ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  mhdbtest:
+    image: mariadb:10.6.4
+    ports:
+      - "34106:3306"
+    restart: always
+    environment:
+      - MARIADB_ROOT_PASSWORD=password
+      - MARIADB_DATABASE=mh_test
+      - MARIADB_USER=mh_test_user
+      - MARIADB_PASSWORD=password
+    networks:
+      mh:
+        aliases:
+          - mhdbtest
+    healthcheck:
+      test: [ "CMD-SHELL", "mysqladmin ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build: api
+    ports:
+      - "24180:80"
     volumes:
       # Re-use local composer cache via host-volume
       - ~/.composer-docker/cache:/root/.composer/cache:delegated
       # Mount source-code for development
       - ./:/app
+    depends_on:
+      - mhdb
+      - mhdbtest
+    networks:
+      mh:
+        aliases:
+          - mh-api
+
+  apiv1:
+    build: apivp1
+    ports:
+      - "24181:80"
+    volumes:
+      # Re-use local composer cache via host-volume
+      - ~/.composer-docker/cache:/root/.composer/cache:delegated
+      # Mount source-code for development
+      - ./:/app
+    depends_on:
+      - mhdb
+      - mhdbtest
+    networks:
+      mh:
+        aliases:
+          - mh-apivp1
 
   backend:
     build: backend
     ports:
-      - 21080:80
+      - "24182:80"
     volumes:
       # Re-use local composer cache via host-volume
       - ~/.composer-docker/cache:/root/.composer/cache:delegated
       # Mount source-code for development
       - ./:/app
+    depends_on:
+      - mhdb
+      - mhdbtest
+    networks:
+      mh:
+        aliases:
+          - mh-backend
 
-  mysql:
-    image: mysql:5.7
-    environment:
-      - MYSQL_ROOT_PASSWORD=verysecret
-      - MYSQL_DATABASE=yii2advanced
-      - MYSQL_USER=yii2advanced
-      - MYSQL_PASSWORD=secret
+  frontend:
+    build: frontend
+    ports:
+      - "24183:80"
+    volumes:
+      # Re-use local composer cache via host-volume
+      - ~/.composer-docker/cache:/root/.composer/cache:delegated
+      # Mount source-code for development
+      - ./:/app
+    depends_on:
+      - mhdb
+      - mhdbtest
+    networks:
+      mh:
+        aliases:
+          - mh-frontend
 
-  #pgsql:
-  #  image: postgres:9.5
-  #  environment:
-  #    - POSTGRES_DB=yii2advanced
-  #    - POSTGRES_USER=yii2advanced
-  #    - POSTGRES_PASSWORD=secret
+  static:
+    build: static
+    ports:
+      - "24184:80"
+    volumes:
+      # Mount static resources folder
+      - ./static:/usr/local/apache2/htdocs/
+    networks:
+      mh:
+        aliases:
+          - mh-static
+
+networks:
+  mh:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 174.19.198.0/24
