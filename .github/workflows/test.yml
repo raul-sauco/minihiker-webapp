@@ -1,0 +1,43 @@
+name: Codeception Tests
+on:
+  push:
+    branches:
+      - main
+      - dev
+  pull_request:
+    branches:
+      - main
+      - dev
+jobs:
+  codecept-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Init environment
+        run: php init --env=Development --overwrite=All
+      - name: Validate composer.json and composer.lock
+        run: composer validate --strict
+      - name: Install Dependencies
+        run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress
+      - name: Start services
+        run: docker-compose up -d
+      - name: Check containers health
+        run: docker ps -a
+      - name: Install mysql-client
+        run: sudo apt-get install -y mysql-client
+      - name: Wait for containers
+        run: sleep 10
+      - name: Check containers health after delay
+        run: docker ps -a
+      - name: Verify test database connection from host
+        run: mysql --host 127.0.0.1 --port 34106 --protocol=tcp -umh_test_user -ppassword -e "SHOW DATABASES"
+      - name: Import schema and migrations to the test database
+        run: |
+          mysql --host 127.0.0.1 --port 34106 -umh_test_user -ppassword --database mh_test < data/schema.sql
+          mysql --host 127.0.0.1 --port 34106 -umh_test_user -ppassword --database mh_test < data/migration.sql
+      - name: Migrate database
+        run: ./yii_test migrate --interactive=0
+      - name: Execute tests
+        run: vendor/bin/codecept run
+      - name: Clean up services
+        run: docker-compose down
