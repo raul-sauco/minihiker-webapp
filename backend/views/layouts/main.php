@@ -1,16 +1,18 @@
 <?php
 
-/* @var $this \yii\web\View */
+/* @var $this View */
+
 /* @var $content string */
 
+use backend\assets\BackendAsset;
 use common\models\User;
 use yii\bootstrap\Html;
 use yii\bootstrap\Modal;
 use yii\bootstrap\Nav;
 use yii\bootstrap\NavBar;
 use yii\helpers\Url;
+use yii\web\View;
 use yii\widgets\Breadcrumbs;
-use backend\assets\BackendAsset;
 
 BackendAsset::register($this);
 $user = Yii::$app->user;
@@ -32,7 +34,7 @@ $this->beginPage()
 <div class="wrap">
     <?php
     NavBar::begin([
-        'brandLabel' => Yii::t('app' , 'Mini Hiker'),
+        'brandLabel' => Yii::t('app', 'Mini Hiker'),
         'brandUrl' => Yii::$app->homeUrl,
         'options' => [
             'class' => 'navbar-inverse navbar-fixed-top',
@@ -58,12 +60,12 @@ $this->beginPage()
                 'visible' => $user->can('listClients')
             ],
             [
-                'label' => Yii::t('app', 'Families'), 
+                'label' => Yii::t('app', 'Families'),
                 'url' => ['/family'],
                 'visible' => $user->can('listFamilies')
             ],
             [
-                'label' => Yii::t('app', 'Locations'), 
+                'label' => Yii::t('app', 'Locations'),
                 'url' => ['/location'],
                 'visible' => $user->can('listLocations')
             ],
@@ -73,30 +75,30 @@ $this->beginPage()
                 'visible' => $user->can('listPrograms')
             ],
             [
-                'label' => Yii::t('app', 'Users'), 
+                'label' => Yii::t('app', 'Users'),
                 'url' => ['/user'],
                 'visible' => $user->can('listUsers')
             ],
-	        [
-		        'label' => Yii::t('app', 'Contract'),
-		        'url' => ['/contracts'],
-		        //'visible' => $user->can('listContract')
-	        ],
+            [
+                'label' => Yii::t('app', 'Contract'),
+                'url' => ['/contracts'],
+                //'visible' => $user->can('listContract')
+            ],
             Yii::$app->user->isGuest ? (
-                ['label' => Yii::t('app', 'Login'), 'url' => ['/site/login']]
+            ['label' => Yii::t('app', 'Login'), 'url' => ['/site/login']]
             ) : (
                 '<li>'
                 . Html::beginForm(['/site/logout'], 'post')
                 . Html::submitButton(
-                		Yii::t('app', 'Logout ({username})', 
-                				['username' => Yii::$app->user->identity->username]),
+                    Yii::t('app', 'Logout ({username})',
+                        ['username' => Yii::$app->user->identity->username]),
                     ['class' => 'btn btn-link logout']
                 )
                 . Html::endForm()
                 . '</li>'
             ),
             [
-                'label' => Html::icon('question-sign'), 
+                'label' => Html::icon('question-sign'),
                 'url' => ['/site/man'],
                 'visible' => $user->can('viewMan')
             ],
@@ -129,18 +131,12 @@ echo Html::tag('div', '', ['id' => 'modalContent']);
 Modal::end();
 
 $this->registerJsVar(
-    'apiurl',
-    strpos(Url::base(true), 'localhost') ? 'http://localhost/mhapi/' :
-        'https://apiv2.minihiker.com/'
-);
-
-$this->registerJsVar(
     'baseurl',
     Url::to('@web') . '/'
 );
 
 $this->registerJsVar(
-        'loading20',
+    'loading20',
     Html::img('@web/img/loading_20.gif', [
         'alt' => 'loading...',
         'class' => 'loading-spinner loading-spinner-20'

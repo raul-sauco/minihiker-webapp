@@ -1,5 +1,12 @@
 <?php
 return [
+    'aliases' => [
+        '@staticUrl' => 'http://localhost:24184',
+        '@apiUrl' => 'http://localhost:24180',
+        '@imgUrl' => '@staticUrl/img',
+        '@cssUrl' => '@staticUrl/css',
+        '@jsUrl' => '@staticUrl/js',
+    ],
     'components' => [
         'db' => [
             'class' => 'yii\db\Connection',
