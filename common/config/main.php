@@ -1,4 +1,8 @@
 <?php
+
+use yii\log\DbTarget;
+use yii\log\FileTarget;
+
 return [
     'aliases' => [
         '@bower' => '@vendor/bower-asset',
@@ -36,6 +40,35 @@ return [
                         'man/error' => 'error.php',
                     ],
                 ],
+            ],
+        ],
+        'log' => [
+            'traceLevel' => YII_DEBUG ? 3 : 0,
+            'targets' => [
+                [
+                    'class' => FileTarget::class,
+                    'levels' => ['error', 'warning'],
+                    'except' => [
+                        'yii\web\HttpException:404',
+                    ],
+                ],
+                [
+                    'class' => DbTarget::class,
+                    'levels' => ['error', 'warning'],
+                    'except' => [
+                        'yii\web\HttpException:404',
+                    ],
+                ],
+//                [
+//                    'class' => EmailTarget::class,
+//                    'levels' => ['error'],
+//                    'categories' => ['yii\db\*'],
+//                    'message' => [
+//                        'from' => ['log@example.com'],
+//                        'to' => ['admin@example.com', 'developer@example.com'],
+//                        'subject' => 'Database errors at example.com',
+//                    ],
+//                ],
             ],
         ],
     ],

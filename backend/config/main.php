@@ -1,4 +1,7 @@
 <?php
+
+use common\models\User;
+
 $controllersList = 'program|client|family|location|program-price|user|weapp|weapp-log|wx-payment-log|' .
     'wx-unified-payment-order|wx-payment-log|contract|';
 
@@ -10,10 +13,10 @@ $rules = [
     'family/<id:\d+>/merge-search' => 'family/merge-search',
     'family/<id:\d+>/merge-confirm' => 'family/merge-confirm',
     'program-group/<id:\d+>/<action:(weapp-update|weapp-view|qas)>' => 'program-group/<action>',
-	'contracts/token'=>'contract/token',
-    'contracts/company'=>'contract/company',
-    'contracts/query'=>'contract/query',
-    'contracts/usersign'=>'contract/usersign'
+    'contracts/token' => 'contract/token',
+    'contracts/company' => 'contract/company',
+    'contracts/query' => 'contract/query',
+    'contracts/usersign' => 'contract/usersign'
 ];
 
 $params = array_merge(
@@ -38,22 +41,13 @@ return [
             'csrfParam' => '_csrf-backend',
         ],
         'user' => [
-            'identityClass' => 'common\models\User',
+            'identityClass' => User::class,
             'enableAutoLogin' => true,
             'identityCookie' => ['name' => '_identity-backend', 'httpOnly' => true],
         ],
         'session' => [
             // this is the name of the session cookie used for login on the backend
-            'name' => 'advanced-backend',
-        ],
-        'log' => [
-            'traceLevel' => YII_DEBUG ? 3 : 0,
-            'targets' => [
-                [
-                    'class' => 'yii\log\FileTarget',
-                    'levels' => ['error', 'warning'],
-                ],
-            ],
+            'name' => 'minihiker-app-backend',
         ],
         'errorHandler' => [
             'errorAction' => 'site/error',
