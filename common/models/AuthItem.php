@@ -3,6 +3,7 @@
 namespace common\models;
 
 use Yii;
+use yii\base\InvalidConfigException;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 
@@ -26,6 +27,11 @@ use yii\db\ActiveRecord;
  */
 class AuthItem extends ActiveRecord
 {
+    const ROLE_ADMIN = 'admin';
+    const ROLE_SYSADMIN = 'sysadmin';
+    const ROLE_USER = 'user';
+    const ROLE_CLIENT = 'client';
+
     /**
      * {@inheritdoc}
      */
@@ -110,7 +116,7 @@ class AuthItem extends ActiveRecord
      * Gets query for [[Children]].
      *
      * @return ActiveQuery
-     * @throws \yii\base\InvalidConfigException
+     * @throws InvalidConfigException
      */
     public function getChildren(): ActiveQuery
     {
@@ -122,7 +128,7 @@ class AuthItem extends ActiveRecord
      * Gets query for [[Parents]].
      *
      * @return ActiveQuery
-     * @throws \yii\base\InvalidConfigException
+     * @throws InvalidConfigException
      */
     public function getParents(): ActiveQuery
     {
