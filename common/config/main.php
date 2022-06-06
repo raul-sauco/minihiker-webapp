@@ -1,6 +1,6 @@
 <?php
 
-use yii\log\DbTarget;
+use common\log\DbTarget;
 use yii\log\FileTarget;
 
 return [

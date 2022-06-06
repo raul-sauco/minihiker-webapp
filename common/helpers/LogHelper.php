@@ -13,9 +13,13 @@ use yii\log\Logger;
  */
 class LogHelper
 {
+    /**
+     * Return a textual representation of a log level.
+     * @param Log $log
+     * @return string
+     */
     public static function getLevelText(Log $log): string
     {
-        $name = '';
         switch ($log->level) {
             case Logger::LEVEL_ERROR:
                 $name = Yii::t('app', 'Error');

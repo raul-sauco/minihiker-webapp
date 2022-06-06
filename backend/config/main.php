@@ -2,8 +2,8 @@
 
 use common\models\User;
 
-$controllersList = 'program|client|family|location|program-price|user|weapp|weapp-log|wx-payment-log|' .
-    'wx-unified-payment-order|wx-payment-log|contract|';
+$controllersList = 'program|client|family|location|log|program-price|user|weapp|weapp-log|wx-payment-log|' .
+    'wx-unified-payment-order|contract|';
 
 $rules = [
     "<controller:($controllersList)>/create" => '<controller>/create',
