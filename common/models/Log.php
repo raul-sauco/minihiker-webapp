@@ -5,6 +5,7 @@ namespace common\models;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
+use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 
 /**
@@ -16,6 +17,13 @@ use yii\db\ActiveRecord;
  * @property float|null $log_time
  * @property string|null $prefix
  * @property string|null $message
+ * @property int|null $created_at
+ * @property int|null $updated_at
+ * @property int|null $created_by
+ * @property int|null $updated_by
+ *
+ * @property User $createdBy
+ * @property User $updatedBy
  */
 class Log extends ActiveRecord
 {
@@ -65,5 +73,25 @@ class Log extends ActiveRecord
             TimestampBehavior::class,
             BlameableBehavior::class,
         ];
+    }
+
+    /**
+     * Gets query for [[CreatedBy]].
+     *
+     * @return ActiveQuery
+     */
+    public function getCreatedBy(): ActiveQuery
+    {
+        return $this->hasOne(User::class, ['id' => 'created_by']);
+    }
+
+    /**
+     * Gets query for [[UpdatedBy]].
+     *
+     * @return ActiveQuery
+     */
+    public function getUpdatedBy(): ActiveQuery
+    {
+        return $this->hasOne(User::class, ['id' => 'updated_by']);
     }
 }
