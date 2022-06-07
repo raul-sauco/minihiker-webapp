@@ -38,7 +38,3 @@ phpunit.phar
 
 /runtime/*
 _support/
-
-# rsync files
-/publish
-/excludes.txt

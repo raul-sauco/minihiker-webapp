@@ -1,0 +1,85 @@
+.bowerrrc
+.idea/
+.git/
+.gitignore
+.gitkeep
+
+# Scripts
+backup_remote_servers.sh
+clean
+excludes.txt
+launch-dev-env.sh
+php_rpm.txt
+publish.sh
+
+# Local configuration files
+config/codeception-local.php
+config/main-local.php
+config/params-local.php
+config/test-local.php
+
+environments/dev
+
+# Production configuration index files
+index.php
+index-text.php
+
+# Runtime logs and debug
+runtime
+
+api/runtime
+api/tests/_output
+api/web/assets
+api/web/index.php
+api/web/index-test.php
+
+apivp1/runtime
+apivp1/tests/_output
+apivp1/web/assets
+apivp1/web/index.php
+apivp1/web/index-test.php
+
+backend/config.rb
+backend/runtime
+backend/sass
+backend/tests/_output
+backend/web/assets
+backend/web/index.php
+backend/web/index-test.php
+backend/.sass-cache
+
+console/runtime
+
+frontend/config.rb
+frontend/runtime
+frontend/sass
+frontend/tests/_output
+frontend/web/assets
+frontend/web/index.php
+frontend/web/index-test.php
+frontend/.sass-cache
+
+static/files
+static/gpx
+static/httpd.conf
+static/img
+static/templates
+static/v
+
+# The server generates their own .htaccess files, do not overwrite
+.htaccess
+
+# Do not send development files
+init.bat
+vagrant
+requirements.php
+Vagrantfile
+yii.bat
+yii_test.bat
+Dockerfile
+
+# Do not send local data used for development
+data/
+
+# Use composer to install dependencies
+vendor/
