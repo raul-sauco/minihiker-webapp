@@ -12,6 +12,7 @@ use yii\web\ForbiddenHttpException;
 /**
  * Class ProgramSearchController
  * @package api\controllers
+ * @author Raul Sauco <sauco.raul@gmail.com>
  */
 class ProgramSearchController extends BaseController
 {

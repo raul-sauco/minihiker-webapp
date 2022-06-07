@@ -16,12 +16,11 @@ class m220606_084225_add_sysadmin_role extends Migration
         $auth = Yii::$app->authManager;
         $sysadminRole = $auth->createRole(AuthItem::ROLE_SYSADMIN);
         $sysadminRole->description = 'System administrator role. Access and manages system data like logs and RBAC';
+        $auth->add($sysadminRole);
         try {
-            $auth->add($sysadminRole);
             $auth->assign($sysadminRole, 1);
         } catch (Exception $e) {
             echo $e->getMessage();
-            $this->safeDown();
         }
     }
 
