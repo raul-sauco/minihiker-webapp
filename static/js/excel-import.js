@@ -865,7 +865,7 @@ const app = new Vue({
           } else {
             const message = `Error obtaining row ${row.index} family id`;
             console.error(message, family);
-            Mh.logError(
+            Mh.methods.logError(
               "excel-import.js:uploadClient:869",
               message + "\n" + JSON.stringify(family, null, 2)
             );
@@ -873,7 +873,7 @@ const app = new Vue({
         } catch (error) {
           const message = `Failed to create family for row ${row.index}`;
           console.error(message, error);
-          Mh.logError(
+          Mh.methods.logError(
             "excel-import.js:uploadClient:877",
             +"\n" + JSON.stringify(error, null, 2)
           );
@@ -935,7 +935,7 @@ const app = new Vue({
           } catch (error) {
             const message = `Error uploading row ${row.index} ${this.clientType[index].name}`;
             console.error(message);
-            Mh.logError(
+            Mh.methods.logError(
               "excel-import.js:uploadParents:939",
               message + "\n" + JSON.stringify(error, null, 2)
             );
@@ -981,7 +981,7 @@ const app = new Vue({
           `Error ${error.response.status} ` +
           `uploading ${index} for row ${row.index}`;
         console.error(message, error);
-        Mh.logError(
+        Mh.methods.logError(
           "excel-import.js:uploadOneParent:985",
           message + "\n" + JSON.stringify(error, null, 2)
         );
@@ -1032,7 +1032,7 @@ const app = new Vue({
             `Error ${error.response.status} trying to read ` +
             `ProgramFamily for row ${row.index}`;
           console.error(message);
-          Mh.logError(
+          Mh.methods.logError(
             "excel-import.js:uploadOneParent:1036",
             message + "\n" + JSON.stringify(error, null, 2)
           );
@@ -1048,7 +1048,7 @@ const app = new Vue({
       } catch (error) {
         const message = `Error posting program family data for row ${row.index}`;
         console.error(message, error);
-        Mh.logError(
+        Mh.methods.logError(
           "excel-import.js:uploadOneParent:1052",
           message + "\n" + JSON.stringify(error, null, 2)
         );
@@ -1078,16 +1078,16 @@ const app = new Vue({
             console.debug(
               `No ProgramClient found for ${data.program_id}:${data.client_id}`
             );
-          } else {
-            const message =
-              `Error ${error.response.status} trying to read ` +
-              `ProgramClient for row ${row.index}`;
-            console.error(message);
-            Mh.logError(
-              "excel-import.js:uploadOneParent:1087",
-              message + "\n" + JSON.stringify(error, null, 2)
-            );
           }
+        } else {
+          const message =
+            `Error ${error.response.status} trying to read ` +
+            `ProgramClient for row ${row.index}`;
+          console.error(message, error);
+          Mh.methods.logError(
+            "excel-import.js:uploadOneParent:1087",
+            message + "\n" + JSON.stringify(error, null, 2)
+          );
         }
       }
       if (res && res.data) {
@@ -1100,7 +1100,7 @@ const app = new Vue({
       } catch (error) {
         const message = `Error posting program family data for row ${row.index}`;
         console.error(message, error);
-        Mh.logError(
+        Mh.methods.logError(
           "excel-import.js:uploadOneParent:1104",
           message + "\n" + JSON.stringify(error, null, 2)
         );
@@ -1132,7 +1132,7 @@ const app = new Vue({
           `Payment upload failed with status ${error.response.status}` +
           ` for row ${row.index}`;
         console.error(message, error);
-        Mh.logError(
+        Mh.methods.logError(
           "excel-import.js:uploadOneParent:1136",
           message + "\n" + JSON.stringify(error, null, 2)
         );
