@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1cb57d9541e210105c5ad6fec96767cd",
+    "content-hash": "08415107affb16dce012e4d96b76f7b6",
     "packages": [
         {
             "name": "2amigos/yii2-file-upload-widget",
@@ -2019,6 +2019,89 @@
             "time": "2019-09-03T03:11:11+00:00"
         },
         {
+            "name": "npm-asset/adler-32",
+            "version": "1.3.1",
+            "dist": {
+                "type": "tar",
+                "url": "https://registry.npmjs.org/adler-32/-/adler-32-1.3.1.tgz"
+            },
+            "type": "npm-asset",
+            "license": [
+                "Apache-2.0"
+            ]
+        },
+        {
+            "name": "npm-asset/asynckit",
+            "version": "0.4.0",
+            "dist": {
+                "type": "tar",
+                "url": "https://registry.npmjs.org/asynckit/-/asynckit-0.4.0.tgz"
+            },
+            "type": "npm-asset",
+            "license": [
+                "MIT"
+            ]
+        },
+        {
+            "name": "npm-asset/axios",
+            "version": "0.27.2",
+            "dist": {
+                "type": "tar",
+                "url": "https://registry.npmjs.org/axios/-/axios-0.27.2.tgz"
+            },
+            "require": {
+                "npm-asset/follow-redirects": ">=1.14.9,<2.0.0",
+                "npm-asset/form-data": ">=4.0.0,<5.0.0"
+            },
+            "type": "npm-asset",
+            "license": [
+                "MIT"
+            ]
+        },
+        {
+            "name": "npm-asset/cfb",
+            "version": "1.2.2",
+            "dist": {
+                "type": "tar",
+                "url": "https://registry.npmjs.org/cfb/-/cfb-1.2.2.tgz"
+            },
+            "require": {
+                "npm-asset/adler-32": "~1.3.0",
+                "npm-asset/crc-32": "~1.2.0"
+            },
+            "type": "npm-asset",
+            "license": [
+                "Apache-2.0"
+            ]
+        },
+        {
+            "name": "npm-asset/codepage",
+            "version": "1.15.0",
+            "dist": {
+                "type": "tar",
+                "url": "https://registry.npmjs.org/codepage/-/codepage-1.15.0.tgz"
+            },
+            "type": "npm-asset",
+            "license": [
+                "Apache-2.0"
+            ]
+        },
+        {
+            "name": "npm-asset/combined-stream",
+            "version": "1.0.8",
+            "dist": {
+                "type": "tar",
+                "url": "https://registry.npmjs.org/combined-stream/-/combined-stream-1.0.8.tgz"
+            },
+            "require": {
+                "npm-asset/delayed-stream": "~1.0.0"
+            },
+            "type": "npm-asset",
+            "license": [
+                "MIT"
+            ]
+        },
+        {
             "name": "npm-asset/commander",
             "version": "2.17.1",
             "dist": {
@@ -2031,6 +2114,131 @@
             ]
         },
         {
+            "name": "npm-asset/crc-32",
+            "version": "1.2.2",
+            "dist": {
+                "type": "tar",
+                "url": "https://registry.npmjs.org/crc-32/-/crc-32-1.2.2.tgz"
+            },
+            "type": "npm-asset",
+            "license": [
+                "Apache-2.0"
+            ]
+        },
+        {
+            "name": "npm-asset/delayed-stream",
+            "version": "1.0.0",
+            "dist": {
+                "type": "tar",
+                "url": "https://registry.npmjs.org/delayed-stream/-/delayed-stream-1.0.0.tgz"
+            },
+            "type": "npm-asset",
+            "license": [
+                "MIT"
+            ]
+        },
+        {
+            "name": "npm-asset/follow-redirects",
+            "version": "1.14.9",
+            "dist": {
+                "type": "tar",
+                "url": "https://registry.npmjs.org/follow-redirects/-/follow-redirects-1.14.9.tgz"
+            },
+            "type": "npm-asset",
+            "license": [
+                "MIT"
+            ]
+        },
+        {
+            "name": "npm-asset/form-data",
+            "version": "4.0.0",
+            "dist": {
+                "type": "tar",
+                "url": "https://registry.npmjs.org/form-data/-/form-data-4.0.0.tgz"
+            },
+            "require": {
+                "npm-asset/asynckit": ">=0.4.0,<0.5.0",
+                "npm-asset/combined-stream": ">=1.0.8,<2.0.0",
+                "npm-asset/mime-types": ">=2.1.12,<3.0.0"
+            },
+            "type": "npm-asset",
+            "license": [
+                "MIT"
+            ]
+        },
+        {
+            "name": "npm-asset/frac",
+            "version": "1.1.2",
+            "dist": {
+                "type": "tar",
+                "url": "https://registry.npmjs.org/frac/-/frac-1.1.2.tgz"
+            },
+            "type": "npm-asset",
+            "license": [
+                "Apache-2.0"
+            ]
+        },
+        {
+            "name": "npm-asset/lodash",
+            "version": "4.17.21-patch1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/lodash/lodash.git",
+                "reference": "c6e281b878b315c7a10d90f9c2af4cdb112d9625"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/lodash/lodash/zipball/c6e281b878b315c7a10d90f9c2af4cdb112d9625",
+                "reference": "c6e281b878b315c7a10d90f9c2af4cdb112d9625"
+            },
+            "type": "npm-asset",
+            "license": [
+                "MIT"
+            ]
+        },
+        {
+            "name": "npm-asset/mime-db",
+            "version": "1.44.0",
+            "dist": {
+                "type": "tar",
+                "url": "https://registry.npmjs.org/mime-db/-/mime-db-1.44.0.tgz"
+            },
+            "type": "npm-asset",
+            "license": [
+                "MIT"
+            ]
+        },
+        {
+            "name": "npm-asset/mime-types",
+            "version": "2.1.27",
+            "dist": {
+                "type": "tar",
+                "url": "https://registry.npmjs.org/mime-types/-/mime-types-2.1.27.tgz"
+            },
+            "require": {
+                "npm-asset/mime-db": "1.44.0"
+            },
+            "type": "npm-asset",
+            "license": [
+                "MIT"
+            ]
+        },
+        {
+            "name": "npm-asset/ssf",
+            "version": "0.11.2",
+            "dist": {
+                "type": "tar",
+                "url": "https://registry.npmjs.org/ssf/-/ssf-0.11.2.tgz"
+            },
+            "require": {
+                "npm-asset/frac": "~1.1.2"
+            },
+            "type": "npm-asset",
+            "license": [
+                "Apache-2.0"
+            ]
+        },
+        {
             "name": "npm-asset/vue",
             "version": "2.6.14",
             "dist": {
@@ -2040,6 +2248,51 @@
             "type": "npm-asset",
             "license": [
                 "MIT"
+            ]
+        },
+        {
+            "name": "npm-asset/wmf",
+            "version": "1.0.2",
+            "dist": {
+                "type": "tar",
+                "url": "https://registry.npmjs.org/wmf/-/wmf-1.0.2.tgz"
+            },
+            "type": "npm-asset",
+            "license": [
+                "Apache-2.0"
+            ]
+        },
+        {
+            "name": "npm-asset/word",
+            "version": "0.3.0",
+            "dist": {
+                "type": "tar",
+                "url": "https://registry.npmjs.org/word/-/word-0.3.0.tgz"
+            },
+            "type": "npm-asset",
+            "license": [
+                "Apache-2.0"
+            ]
+        },
+        {
+            "name": "npm-asset/xlsx",
+            "version": "0.18.5",
+            "dist": {
+                "type": "tar",
+                "url": "https://registry.npmjs.org/xlsx/-/xlsx-0.18.5.tgz"
+            },
+            "require": {
+                "npm-asset/adler-32": "~1.3.0",
+                "npm-asset/cfb": "~1.2.1",
+                "npm-asset/codepage": "~1.15.0",
+                "npm-asset/crc-32": "~1.2.1",
+                "npm-asset/ssf": "~0.11.2",
+                "npm-asset/wmf": "~1.0.1",
+                "npm-asset/word": "~0.3.0"
+            },
+            "type": "npm-asset",
+            "license": [
+                "Apache-2.0"
             ]
         },
         {

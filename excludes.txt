@@ -82,4 +82,4 @@ Dockerfile
 data/
 
 # Use composer to install dependencies
-vendor/
+# vendor/
